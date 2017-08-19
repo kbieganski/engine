@@ -1,0 +1,4 @@
+ENGINE_INCLUDE=engine/include
+ENGINE_LIBRARY=engine.a
+EXAMPLE_EXECUTABLE=example
+TEST_EXECUTABLE=test

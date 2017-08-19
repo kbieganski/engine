@@ -1,0 +1,7 @@
+*.a
+*.d
+*.o
+*/bin
+*/deps
+*/lib
+*/obj
