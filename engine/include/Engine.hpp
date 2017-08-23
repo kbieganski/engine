@@ -1,5 +1,6 @@
 #pragma once
 #include <memory>
+#include <GLFW/glfw3.h>
 #include "ApplicationState.hpp"
 
 
@@ -17,6 +18,7 @@ private:
 	bool running;
 	shared_ptr<ApplicationState> currentState;
 	shared_ptr<ApplicationState> nextState;
+	GLFWwindow* window;
 
 	friend int main(int argc, char** argv);
 };
