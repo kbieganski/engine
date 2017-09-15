@@ -4,13 +4,6 @@
 #include <iomanip>
 
 
-#ifdef LOG_TO_STDOUT
-using std::cout;
-#endif
-using std::endl;
-#ifdef LOG_TO_FILE
-using std::fstream;
-#endif
 using std::strlen;
 using std::localtime;
 using std::time;
@@ -18,7 +11,7 @@ using std::time;
 
 namespace Logger {
 #ifdef LOG_TO_FILE
-	std::fstream outputFile;
+	fstream outputFile;
 #endif
 
 

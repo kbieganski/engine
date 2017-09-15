@@ -1,5 +1,6 @@
 #pragma once
 #include "BuildConfiguration.hpp"
+#include "Exception.hpp"
 
 #ifdef LOG_LEVEL_TRACE
 #define LOG_LEVEL_INFO
@@ -31,23 +32,30 @@
 #ifdef LOG_TO_STDOUT
 #include <iostream>
 #endif
-#include <string>
 
 
-using std::string;
+#ifdef LOG_TO_STDOUT
+using std::cout;
+#endif
+using std::endl;
+#ifdef LOG_TO_FILE
+using std::fstream;
+#endif
 
 
 namespace Logger {
-	extern std::fstream outputFile;
+#ifdef LOG_TO_FILE
+	extern fstream outputFile;
+#endif
 
 
 	template<typename Last>
 	void print(Last last) {
 #ifdef LOG_TO_FILE
-		outputFile << last << std::endl;
+		outputFile << last << endl;
 #endif
 #ifdef LOG_TO_STDOUT
-		std::cout << last << std::endl;
+		cout << last << endl;
 #endif
 	}
 
@@ -58,7 +66,7 @@ namespace Logger {
 		outputFile << first;
 #endif
 #ifdef LOG_TO_STDOUT
-		std::cout << first;
+		cout << first;
 #endif
 		print(rest...);
 	}
@@ -66,7 +74,7 @@ namespace Logger {
 
 	extern void initialize();
 	extern void finalize();
-	extern std::string getTimestamp(const char* format);
+	extern string getTimestamp(const char* format);
 }
 
 #define INITIALIZE_LOGGER() Logger::initialize()
@@ -103,13 +111,17 @@ namespace Logger {
 
 #if defined LOGGING_ENABLED && defined LOG_LEVEL_ERROR
 #define ERROR(...)\
-	Logger::print(Logger::getTimestamp(LOG_DATE_FORMAT), " | ERROR | function ", \
-				  __func__, " in ", __FILENAME__, '(', __LINE__, "): ", __VA_ARGS__)
+	Logger::print(Logger::getTimestamp(LOG_DATE_FORMAT), " | ERROR | function ",\
+				  __func__, " in ", __FILENAME__, '(', __LINE__, "): ", __VA_ARGS__);\
+	throw Exception(__VA_ARGS__)
+
 #define ASSERT(check, ...)\
-	if(!check)\
-		Logger::print(Logger::getTimestamp(LOG_DATE_FORMAT), " | ASSERTION ", #check, " FAILED | function ", \
-					  __func__, " in ", __FILENAME__, '(', __LINE__, "): ", __VA_ARGS__)
+	if (!(check))														\
+		Logger::print(Logger::getTimestamp(LOG_DATE_FORMAT), " | ASSERTION ", #check, " FAILED | function ",\
+					  __func__, " in ", __FILENAME__, '(', __LINE__, "): ", __VA_ARGS__);\
+	throw Exception(__VA_ARGS__)
+
 #else
-#define ERROR(...)
-#define ASSERT(...)
+#define ERROR(...) throw Exception(__VA_ARGS__)
+#define ASSERT(...) throw Exception(__VA_ARGS__)
 #endif
