@@ -4,7 +4,7 @@ include ../definitions.mk
 COMPILER=g++
 COMPILER_FLAGS=-c -Wall --pedantic -std=c++14 -Iinclude -I../$(ENGINE_INCLUDE)
 LINKER=g++
-LINKER_FLAGS=-lglfw
+LINKER_FLAGS=-lglfw -lvulkan
 
 # Project sources
 SOURCES=$(wildcard src/*.cpp)
