@@ -3,3 +3,8 @@
 */lib
 */obj
 */work
+
+.clang_complete
+GPATH
+GRTAGS
+GTAGS
