@@ -113,8 +113,8 @@ void RenderDescription::bindTo(VkCommandBuffer commandBuffer) const {
 		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->getLayout(), 0, 1, &descriptorSet, 0, nullptr);
 	}
 	vkCmdBindVertexBuffers(commandBuffer, 0, vertexBuffers.size(), vertexBufferHandles.data(), vertexOffsets.data());
-	vkCmdBindIndexBuffer(commandBuffer, indexBuffer->getHandle(), 0, VK_INDEX_TYPE_UINT16);
-	vkCmdDrawIndexed(commandBuffer, indexBuffer->getSize() / sizeof(uint16_t), 1, 0, 0, 0);
+	vkCmdBindIndexBuffer(commandBuffer, indexBuffer->getHandle(), 0, VK_INDEX_TYPE_UINT32);
+	vkCmdDrawIndexed(commandBuffer, indexBuffer->getSize() / sizeof(uint32_t), 1, 0, 0, 0);
 }
 
 

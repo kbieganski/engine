@@ -10,7 +10,7 @@ static const vector<float> screenRectangleVertexData = { -1,  1, 0, 1,
 														  1, -1, 1, 0,
 														 -1, -1, 0, 0,
 														  1,  1, 1, 1 };
-static const vector<uint16_t> screenRectangleIndexData = { 0, 1, 2, 1, 0, 3 };
+static const vector<uint32_t> screenRectangleIndexData = { 0, 1, 2, 1, 0, 3 };
 
 
 Renderer::Renderer(shared_ptr<const GraphicsContext> context, const GraphicsDeviceDescription& deviceDescription, shared_ptr<SwapChain> swapChain)
