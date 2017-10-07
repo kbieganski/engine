@@ -56,5 +56,5 @@ obj/debug/%.o: src/%.cpp
 	@rm -f deps/debug/$*.d.tmp
 
 clean:
-	@rm -rf bin obj deps
+	@rm -rf bin obj deps work
 	@echo "Clean finished"

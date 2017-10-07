@@ -15,18 +15,28 @@ engine-release:
 engine-debug:
 	@cd engine; make debug
 
+er: example-release-run
+err: example-release-run
+example-run: example-release-run
+example-release-run: example-release
+	@cd example/work; ../bin/release/example
+
+edr: example-debug-run
+example-debug-run: example-debug
+	@cd example/work; ../bin/debug/example
+
 example: example-release
 example-release: engine-release
 	@mkdir -p example/lib/release
 	@cp engine/lib/release/$(ENGINE_LIBRARY) example/lib/release
 	@cd example; make release
-	@cp -r engine/work/* example/bin/release
+	@cp -rf engine/work example
 
 example-debug: engine-debug
 	@mkdir -p example/lib/debug
 	@cp engine/lib/debug/$(ENGINE_LIBRARY) example/lib/debug
 	@cd example; make debug
-	@cp -r engine/work/* example/bin/debug
+	@cp -rf engine/work example
 
 t: test
 test: test-build
