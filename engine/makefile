@@ -17,8 +17,18 @@ RELEASE_COMPILER_FLAGS= -O3 -DNDEBUG
 DEBUG_OBJECTS=$(subst src/,obj/debug/,$(subst .cpp,.o,$(SOURCES)))
 DEBUG_COMPILER_FLAGS=-g -O0 -DDEBUG
 
+# Shader compiler flags
+SHADER_COMPILER=glslangValidator
+SHADER_COMPILER_FLAGS=-V
+
+# Shader sources and targets
+FRAGMENT_SHADER_SOURCES=$(wildcard shaders/*.frag)
+VERTEX_SHADER_SOURCES=$(wildcard shaders/*.vert)
+FRAGMENT_SHADERS=$(subst shaders/,work/shaders/,$(subst .frag,_frag.spv,$(FRAGMENT_SHADER_SOURCES)))
+VERTEX_SHADERS=$(subst shaders/,work/shaders/,$(subst .vert,_vert.spv,$(VERTEX_SHADER_SOURCES)))
+
 # Release build rules
-release: lib/release/$(ENGINE_LIBRARY)
+release: lib/release/$(ENGINE_LIBRARY) shaders
 
 lib/release/$(ENGINE_LIBRARY): $(RELEASE_OBJECTS)
 	@mkdir -p lib/release
@@ -35,7 +45,7 @@ obj/release/%.o: src/%.cpp
 	@rm -f deps/release/$*.d.tmp
 
 # Debug build rules
-debug: lib/debug/$(ENGINE_LIBRARY)
+debug: lib/debug/$(ENGINE_LIBRARY) shaders
 
 lib/debug/$(ENGINE_LIBRARY): $(DEBUG_OBJECTS)
 	@mkdir -p lib/debug
@@ -51,6 +61,17 @@ obj/debug/%.o: src/%.cpp
 	@sed "s/.*:/obj\/debug\/$*.o:/" < deps/debug/$*.d.tmp > deps/debug/$*.d
 	@rm -f deps/debug/$*.d.tmp
 
+shaders: $(VERTEX_SHADERS) $(FRAGMENT_SHADERS)
+	@echo "Shader compilation for engine finished"
+
+work/shaders/%_frag.spv: shaders/%.frag
+	@mkdir -p work/shaders
+	$(SHADER_COMPILER) $(SHADER_COMPILER_FLAGS) $< -o $@
+
+work/shaders/%_vert.spv: shaders/%.vert
+	@mkdir -p work/shaders
+	$(SHADER_COMPILER) $(SHADER_COMPILER_FLAGS) $< -o $@
+
 clean:
-	@rm -rf lib obj deps
+	@rm -rf lib obj deps work
 	@echo "Clean finished"

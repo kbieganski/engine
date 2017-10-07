@@ -20,11 +20,13 @@ example-release: engine-release
 	@mkdir -p example/lib/release
 	@cp engine/lib/release/$(ENGINE_LIBRARY) example/lib/release
 	@cd example; make release
+	@cp -r engine/work/* example/bin/release
 
 example-debug: engine-debug
 	@mkdir -p example/lib/debug
 	@cp engine/lib/debug/$(ENGINE_LIBRARY) example/lib/debug
 	@cd example; make debug
+	@cp -r engine/work/* example/bin/debug
 
 t: test
 test: test-build
