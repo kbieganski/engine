@@ -10,8 +10,7 @@ public:
 
 	Renderer& operator=(Renderer&& moved) = default;
 
-	void drawToGeometryBuffer(const RenderDescription& renderDescription) const;
-	void drawGeometryToScreen() const;
+	void draw(const RenderDescription& renderDescription) const;
 
 	const GeometryBuffer& getGeometryBuffer() const;
 

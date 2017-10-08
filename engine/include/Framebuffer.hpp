@@ -18,12 +18,15 @@ public:
 	Framebuffer& operator=(Framebuffer&& moved);
 
 	void bind(const RenderDescription& renderDescription) const;
+	void bindClear() const;
 	void draw(const vector<VkSemaphore>& waitSemaphores, const vector<VkSemaphore>& signalSemaphores) const;
 
 	void setClearColor(uint32_t attachment, VkClearValue color);
 
 
 private:
+	void beginRenderPass() const;
+	void endRenderPass() const;
 	void createFramebuffer();
 
 	uvec2 screenSize;

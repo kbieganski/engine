@@ -1,14 +1,17 @@
 #pragma once
+#include <memory>
 #include <set>
 #include "GraphicsDeviceDescription.hpp"
+#include "GraphicsDriver.hpp"
 
 
 using std::set;
+using std::shared_ptr;
 
 
 class GraphicsContext {
 public:
-	GraphicsContext(const GraphicsDeviceDescription& deviceDescription);
+	GraphicsContext(shared_ptr<const GraphicsDriver> driver, const GraphicsDeviceDescription& deviceDescription);
 	GraphicsContext(const GraphicsContext&) = delete;
 	GraphicsContext(GraphicsContext&& moved);
 	~GraphicsContext();
@@ -39,4 +42,5 @@ private:
 	VkQueue presentationQueue;
 	VkCommandPool commandPool;
 	VkPhysicalDeviceMemoryProperties memoryProperties;
+	shared_ptr<const GraphicsDriver> driver;
 };

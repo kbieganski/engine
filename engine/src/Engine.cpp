@@ -1,10 +1,9 @@
-#include "GraphicsDriver.hpp"
+#include "GraphicsDeviceSelector.hpp"
 #include "InitialState.hpp"
 #include "Logger.hpp"
 
 
 using std::make_shared;
-using std::make_unique;
 
 
 void Engine::changeState(shared_ptr<ApplicationState> newState) {
@@ -19,13 +18,34 @@ void Engine::stop() {
 }
 
 
+shared_ptr<const GraphicsContext> Engine::getGraphicsContext() const {
+	return graphicsContext;
+}
+
+
+shared_ptr<const Renderer> Engine::getRenderer() const {
+	return renderer;
+}
+
+
+shared_ptr<const SwapChain> Engine::getSwapChain() const {
+	return swapChain;
+}
+
+
 void Engine::run() {
+	const uvec2 screenSize(640, 480);
 	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
-	window = glfwCreateWindow(640, 480, "", nullptr, nullptr);
+	window = glfwCreateWindow(screenSize.x, screenSize.y, "Game", nullptr, nullptr);
 	INFO("Created window");
 	{
-		auto graphicsDriver = make_unique<GraphicsDriver>(window);
+		auto graphicsDriver = make_shared<GraphicsDriver>(window);
+		GraphicsDeviceSelector selector(*graphicsDriver);
+		auto deviceDescription = selector.selectBest();
+		graphicsContext = make_shared<GraphicsContext>(graphicsDriver, deviceDescription);
+		swapChain = make_shared<SwapChain>(graphicsContext, deviceDescription, graphicsDriver->getSurface(), screenSize);
+		renderer = make_shared<Renderer>(graphicsContext, deviceDescription, swapChain);
 		running = true;
 		currentState = make_shared<InitialState>(*this);
 		while (!glfwWindowShouldClose(window)) {
@@ -34,9 +54,12 @@ void Engine::run() {
 				currentState = nextState;
 				nextState = nullptr;
 			}
-			currentState->update();
 			glfwPollEvents();
+			currentState->update();
+			graphicsContext->waitForPresentationQueue();
+			swapChain->draw();
 		}
+		vkDeviceWaitIdle(graphicsContext->getDevice());
 	}
 	glfwDestroyWindow(window);
 	INFO("Destroyed window");

@@ -21,13 +21,8 @@ Renderer::Renderer(shared_ptr<const GraphicsContext> context, const GraphicsDevi
 }
 
 
-void Renderer::drawToGeometryBuffer(const RenderDescription& renderDescription) const {
+void Renderer::draw(const RenderDescription& renderDescription) const {
 	geometryBuffer.draw(renderDescription);
-}
-
-
-void Renderer::drawGeometryToScreen() const {
-	swapChain->draw();
 }
 
 

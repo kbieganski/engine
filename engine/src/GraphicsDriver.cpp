@@ -49,7 +49,7 @@ GraphicsDriver::GraphicsDriver(GraphicsDriver&& moved) {
 GraphicsDriver::~GraphicsDriver() {
 	if (surface != VK_NULL_HANDLE) {
 		vkDestroySurfaceKHR(instance, surface, nullptr);
-		INFO("Destroyed Vulkan instance ", instance);
+		INFO("Destroyed Vulkan surface ", surface);
 	}
 #ifndef NDEBUG
 	if (debugCallbackHandle != VK_NULL_HANDLE) {
@@ -62,7 +62,7 @@ GraphicsDriver::~GraphicsDriver() {
 #endif
 	if (instance != VK_NULL_HANDLE) {
 		vkDestroyInstance(instance, nullptr);
-		INFO("Destroyed window surface ", surface);
+		INFO("Destroyed window instance ", instance);
 	}
 }
 

@@ -45,25 +45,15 @@ Framebuffer& Framebuffer::operator=(Framebuffer&& moved) {
 
 
 void Framebuffer::bind(const RenderDescription& renderDescription) const {
-	VkCommandBufferBeginInfo beginInfo = {};
-	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-	beginInfo.flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
-	beginInfo.pInheritanceInfo = nullptr;
-	vkBeginCommandBuffer(commandBuffer, &beginInfo);
-	VkRenderPassBeginInfo renderPassInfo = {};
-	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-	renderPassInfo.renderPass = renderTarget->getRenderPass()->getHandle();
-	renderPassInfo.framebuffer = handle;
-	renderPassInfo.renderArea.offset = { 0,0 };
-	renderPassInfo.renderArea.extent = { screenSize.x, screenSize.y };
-	renderPassInfo.clearValueCount = clearColors.size();
-	renderPassInfo.pClearValues = clearColors.data();
-	vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+	beginRenderPass();
 	renderDescription.bindTo(commandBuffer);
-	vkCmdEndRenderPass(commandBuffer);
-	if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {
-		ERROR("Failed to record render command buffer");
-	}
+	endRenderPass();
+}
+
+
+void Framebuffer::bindClear() const {
+	beginRenderPass();
+	endRenderPass();
 }
 
 
@@ -84,6 +74,32 @@ void Framebuffer::draw(const vector<VkSemaphore>& waitSemaphores, const vector<V
 
 void Framebuffer::setClearColor(uint32_t attachment, VkClearValue color) {
 	clearColors[attachment] = color;
+}
+
+
+void Framebuffer::beginRenderPass() const {
+	VkCommandBufferBeginInfo beginInfo = {};
+	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+	beginInfo.flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
+	beginInfo.pInheritanceInfo = nullptr;
+	vkBeginCommandBuffer(commandBuffer, &beginInfo);
+	VkRenderPassBeginInfo renderPassInfo = {};
+	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+	renderPassInfo.renderPass = renderTarget->getRenderPass()->getHandle();
+	renderPassInfo.framebuffer = handle;
+	renderPassInfo.renderArea.offset = { 0,0 };
+	renderPassInfo.renderArea.extent = { screenSize.x, screenSize.y };
+	renderPassInfo.clearValueCount = clearColors.size();
+	renderPassInfo.pClearValues = clearColors.data();
+	vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+}
+
+
+void Framebuffer::endRenderPass() const {
+	vkCmdEndRenderPass(commandBuffer);
+	if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {
+		ERROR("Failed to record render command buffer");
+	}
 }
 
 

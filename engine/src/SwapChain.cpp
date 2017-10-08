@@ -17,6 +17,9 @@ SwapChain::SwapChain(shared_ptr<const GraphicsContext> context, const GraphicsDe
 	createRenderPass(surfaceFormat.format);
 	createFramebuffers(surfaceFormat.format);
 	createSemaphores();
+	for (auto& framebuffer : framebuffers) {
+		framebuffer.bindClear();
+	}
 }
 
 
@@ -72,6 +75,16 @@ void SwapChain::draw() {
 }
 
 
+uvec2 SwapChain::getScreenSize() const {
+	return screenSize;
+}
+
+
+shared_ptr<const RenderPass> SwapChain::getRenderPass() const {
+	return renderPass;
+}
+
+
 void SwapChain::present(uint32_t imageIndex) {
 	VkPresentInfoKHR presentInfo = {};
 	presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
@@ -81,16 +94,6 @@ void SwapChain::present(uint32_t imageIndex) {
 	presentInfo.pSwapchains = &handle;
 	presentInfo.pImageIndices = &imageIndex;
 	context->present(presentInfo);
-}
-
-
-uvec2 SwapChain::getScreenSize() {
-	return screenSize;
-}
-
-
-shared_ptr<RenderPass> SwapChain::getRenderPass() {
-	return renderPass;
 }
 
 

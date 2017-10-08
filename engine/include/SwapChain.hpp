@@ -3,9 +3,6 @@
 #include "RenderDescription.hpp"
 
 
-using std::vector;
-
-
 class SwapChain {
 public:
 	SwapChain(shared_ptr<const GraphicsContext> context, const GraphicsDeviceDescription& deviceDescription, VkSurfaceKHR surface, uvec2 screenSize);
@@ -18,13 +15,13 @@ public:
 
 	void bind(const RenderDescription& renderDescription);
 	void draw();
-	void present(uint32_t imageIndex);
 
-	uvec2 getScreenSize();
-	shared_ptr<RenderPass> getRenderPass();
+	uvec2 getScreenSize() const;
+	shared_ptr<const RenderPass> getRenderPass() const ;
 
 
 private:
+	void present(uint32_t imageIndex);
 	void createSwapChain(const GraphicsDeviceDescription& deviceDescription, VkSurfaceKHR surface, VkSurfaceFormatKHR surfaceFormat);
 	void createRenderPass(VkFormat format);
 	void createFramebuffers(VkFormat format);

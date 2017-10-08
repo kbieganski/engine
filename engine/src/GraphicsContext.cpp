@@ -1,12 +1,12 @@
 #include "GraphicsContext.hpp"
-#include "GraphicsDriver.hpp"
 #include "Logger.hpp"
 
 
 using std::move;
 
 
-GraphicsContext::GraphicsContext(const GraphicsDeviceDescription& deviceDescription) {
+GraphicsContext::GraphicsContext(shared_ptr<const GraphicsDriver> driver, const GraphicsDeviceDescription& deviceDescription) {
+	this->driver = driver;
 	vkGetPhysicalDeviceMemoryProperties(deviceDescription.getPhysicalDevice(), &memoryProperties);
 	createLogicalDevice(deviceDescription);
 	createCommandPool(deviceDescription);
