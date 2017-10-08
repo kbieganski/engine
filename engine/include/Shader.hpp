@@ -1,10 +1,8 @@
 #pragma once
-#include <memory>
 #include "GraphicsContext.hpp"
 
 
 using std::string;
-using std::shared_ptr;
 
 
 class Shader {

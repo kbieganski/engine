@@ -1,9 +1,7 @@
 #pragma once
-#include <memory>
 #include "GraphicsContext.hpp"
 
 
-using std::shared_ptr;
 using std::string;
 
 

@@ -1,9 +1,5 @@
 #pragma once
-#include <memory>
 #include "GraphicsContext.hpp"
-
-
-using std::shared_ptr;
 
 
 class RenderPass {

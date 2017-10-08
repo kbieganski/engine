@@ -1,10 +1,6 @@
 #pragma once
-#include <memory>
 #include "RenderDescription.hpp"
 #include "RenderTarget.hpp"
-
-
-using std::vector;
 
 
 class Framebuffer {

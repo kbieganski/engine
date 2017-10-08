@@ -1,13 +1,9 @@
 #pragma once
-#include <memory>
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 #include "ApplicationState.hpp"
 #include "Renderer.hpp"
 #include "SwapChain.hpp"
-
-
-using std::shared_ptr;
 
 
 class Engine {
