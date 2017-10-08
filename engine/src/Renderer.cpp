@@ -47,7 +47,7 @@ void Renderer::createScreenRenderDescription(shared_ptr<const GraphicsContext> c
 	auto screenPipeline = make_shared<RenderPipeline>(pipelineBuilder.build(swapChain->getRenderPass(), 1));
 	auto screenRectangleVertices = make_shared<VertexBuffer>(context, screenRectangleVertexData);
 	auto screenRectangleIndices = make_shared<IndexBuffer>(context, screenRectangleIndexData);
-	screenRender = make_unique<RenderDescription>(context, screenPipeline);
+	screenRender = make_unique<RenderDescription>(context, screenPipeline, 1, 1);
 	screenRender->addVertices(screenRectangleVertices);
 	screenRender->setIndices(screenRectangleIndices);
 	screenRender->bindUniform(0, geometryBuffer.getRenderTarget()->getTextures()[2]);

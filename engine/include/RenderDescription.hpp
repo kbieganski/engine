@@ -8,7 +8,7 @@
 
 class RenderDescription {
 public:
-	RenderDescription(shared_ptr<const GraphicsContext> context, shared_ptr<const RenderPipeline> pipeline);
+	RenderDescription(shared_ptr<const GraphicsContext> context, shared_ptr<const RenderPipeline> pipeline, uint32_t uniformBufferCount, uint32_t textureCount);
 	RenderDescription(const RenderDescription&) = delete;
 	RenderDescription(RenderDescription&& moved);
 	~RenderDescription();
@@ -24,7 +24,7 @@ public:
 
 
 private:
-	void createDescriptorPool();
+	void createDescriptorPool(uint32_t uniformBufferCount, uint32_t textureCount);
 	void createDescriptor();
 
 	VkDescriptorPool descriptorPool;

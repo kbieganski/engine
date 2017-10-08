@@ -5,11 +5,11 @@
 using std::move;
 
 
-RenderDescription::RenderDescription(shared_ptr<const GraphicsContext> context, shared_ptr<const RenderPipeline> pipeline)
+RenderDescription::RenderDescription(shared_ptr<const GraphicsContext> context, shared_ptr<const RenderPipeline> pipeline, uint32_t uniformBufferCount, uint32_t textureCount)
 	:	sampler(context) {
 	this->context = context;
 	this->pipeline = pipeline;
-	createDescriptorPool();
+	createDescriptorPool(uniformBufferCount, textureCount);
 	createDescriptor();
 }
 
@@ -118,14 +118,14 @@ void RenderDescription::bindTo(VkCommandBuffer commandBuffer) const {
 }
 
 
-void RenderDescription::createDescriptorPool() {
-	VkDescriptorPoolSize poolSize0 = {};
-	poolSize0.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-	poolSize0.descriptorCount = 1;
-	VkDescriptorPoolSize poolSize1 = {};
-	poolSize1.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-	poolSize1.descriptorCount = 1;
-	VkDescriptorPoolSize poolSizes[] = { poolSize0, poolSize1 };
+void RenderDescription::createDescriptorPool(uint32_t uniformBufferCount, uint32_t textureCount) {
+	VkDescriptorPoolSize uniformBufferDescriptorPool = {};
+	uniformBufferDescriptorPool.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+	uniformBufferDescriptorPool.descriptorCount = uniformBufferCount;
+	VkDescriptorPoolSize textureSamplerDescriptorPool = {};
+	textureSamplerDescriptorPool.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+	textureSamplerDescriptorPool.descriptorCount = textureCount;
+	VkDescriptorPoolSize poolSizes[] = { uniformBufferDescriptorPool, textureSamplerDescriptorPool };
 	VkDescriptorPoolCreateInfo createInfo = {};
 	createInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
 	createInfo.poolSizeCount = 2;
