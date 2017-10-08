@@ -87,38 +87,38 @@ namespace Logger {
 
 #if defined LOGGING_ENABLED && defined LOG_LEVEL_TRACE
 #define TRACE(...)														\
-	Logger::print(Logger::getTimestamp(LOG_DATE_FORMAT), " | TRACE | function ", \
-				  __func__, " in ", __FILENAME__, '(', __LINE__, "): ", __VA_ARGS__)
+	Logger::print(Logger::getTimestamp(LOG_DATE_FORMAT), " | TRACE | ", \
+				  __FILENAME__, '(', __LINE__, "):", __func__, " | ", __VA_ARGS__)
 #else
 #define TRACE(...)
 #endif
 
 #if defined LOGGING_ENABLED && defined LOG_LEVEL_INFO
 #define INFO(...)\
-	Logger::print(Logger::getTimestamp(LOG_DATE_FORMAT), " | INFO | function ",	\
-				  __func__, " in ", __FILENAME__, '(', __LINE__, "): ", __VA_ARGS__)
+	Logger::print(Logger::getTimestamp(LOG_DATE_FORMAT), " | INFO | ",	\
+				  __FILENAME__, '(', __LINE__, "):", __func__, " | ", __VA_ARGS__)
 #else
 #define INFO(...)
 #endif
 
 #if defined LOGGING_ENABLED && defined LOG_LEVEL_WARNING
 #define WARNING(...)\
-	Logger::print(Logger::getTimestamp(LOG_DATE_FORMAT), " | WARNING | function ", \
-				  __func__, " in ", __FILENAME__, '(', __LINE__, "): ", __VA_ARGS__)
+	Logger::print(Logger::getTimestamp(LOG_DATE_FORMAT), " | WARNING | ", \
+				  __FILENAME__, '(', __LINE__, "):", __func__, " | ", __VA_ARGS__)
 #else
 #define WARNING(...)
 #endif
 
 #if defined LOGGING_ENABLED && defined LOG_LEVEL_ERROR
 #define ERROR(...)\
-	Logger::print(Logger::getTimestamp(LOG_DATE_FORMAT), " | ERROR | function ",\
-				  __func__, " in ", __FILENAME__, '(', __LINE__, "): ", __VA_ARGS__);\
+	Logger::print(Logger::getTimestamp(LOG_DATE_FORMAT), " | ERROR | ",\
+				  __FILENAME__, '(', __LINE__, "):", __func__, " | ", __VA_ARGS__);\
 	throw Exception(__VA_ARGS__)
 
 #define ASSERT(check, ...)\
 	if (!(check))\
-		Logger::print(Logger::getTimestamp(LOG_DATE_FORMAT), " | ASSERTION ", #check, " FAILED | function ",\
-					  __func__, " in ", __FILENAME__, '(', __LINE__, "): ", __VA_ARGS__);\
+		Logger::print(Logger::getTimestamp(LOG_DATE_FORMAT), " | ASSERTION ", #check, " FAILED | ",\
+					  __FILENAME__, '(', __LINE__, "):", __func__, " | ", __VA_ARGS__); \
 	if (!(check))\
 		throw Exception(__VA_ARGS__)
 
