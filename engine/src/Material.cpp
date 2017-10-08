@@ -27,6 +27,6 @@ void Material::bindTo(RenderDescription& renderDescription, uint32_t offset) con
 
 
 void Material::createUniformBindings(RenderPipelineBuilder& pipelineBuilder, uint32_t offset) const {
-	pipelineBuilder.createBufferBinding(offset + 0);
-	pipelineBuilder.createSamplerBinding(offset + 1);
+	pipelineBuilder.createUniformBufferBinding(offset + 0);
+	pipelineBuilder.createTextureBinding(offset + 1);
 }

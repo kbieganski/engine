@@ -85,7 +85,7 @@ void RenderPipelineBuilder::createAttributeBinding(uint32_t stride, const vector
 }
 
 
-void RenderPipelineBuilder::createBufferBinding(uint32_t index) {
+void RenderPipelineBuilder::createUniformBufferBinding(uint32_t index) {
 	VkDescriptorSetLayoutBinding binding = {};
 	binding.binding = index;
 	binding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
@@ -96,7 +96,7 @@ void RenderPipelineBuilder::createBufferBinding(uint32_t index) {
 }
 
 
-void RenderPipelineBuilder::createSamplerBinding(uint32_t index) {
+void RenderPipelineBuilder::createTextureBinding(uint32_t index) {
 	VkDescriptorSetLayoutBinding binding = {};
 	binding.binding = index;
 	binding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;

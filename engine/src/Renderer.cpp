@@ -43,7 +43,7 @@ void Renderer::createScreenRenderDescription(shared_ptr<const GraphicsContext> c
 	pipelineBuilder.setFragmentShader(screenFragmentShader);
 	pipelineBuilder.setVertexShader(screenVertexShader);
 	pipelineBuilder.createAttributeBinding(4 * sizeof(float), { VK_FORMAT_R32G32_SFLOAT, VK_FORMAT_R32G32_SFLOAT }, { 0, 2 * sizeof(float) });
-	pipelineBuilder.createSamplerBinding(0);
+	pipelineBuilder.createTextureBinding(0);
 	auto screenPipeline = make_shared<RenderPipeline>(pipelineBuilder.build(swapChain->getRenderPass(), 1));
 	auto screenRectangleVertices = make_shared<VertexBuffer>(context, screenRectangleVertexData);
 	auto screenRectangleIndices = make_shared<IndexBuffer>(context, screenRectangleIndexData);

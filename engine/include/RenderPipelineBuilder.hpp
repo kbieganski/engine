@@ -12,8 +12,8 @@ public:
 	void setVertexShader(shared_ptr<const Shader> shader);
 
 	void createAttributeBinding(uint32_t stride, const vector<VkFormat>& formats, const vector<uint32_t>& offsets);
-	void createBufferBinding(uint32_t index);
-	void createSamplerBinding(uint32_t index);
+	void createUniformBufferBinding(uint32_t index);
+	void createTextureBinding(uint32_t index);
 
 
 private:
