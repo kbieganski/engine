@@ -19,7 +19,7 @@ RenderPipelineBuilder::RenderPipelineBuilder(shared_ptr<const GraphicsContext> c
 }
 
 
-RenderPipeline RenderPipelineBuilder::build(shared_ptr<const RenderPass> renderPass, uint32_t attachmentCount) const {
+RenderPipeline RenderPipelineBuilder::build(shared_ptr<const RenderPass> renderPass) const {
 	auto vertexInputStateCreateInfo = makeVertexInputStateCreateInfo();
 	VkGraphicsPipelineCreateInfo createInfo = {};
 	createInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
@@ -32,7 +32,7 @@ RenderPipeline RenderPipelineBuilder::build(shared_ptr<const RenderPass> renderP
 	createInfo.pRasterizationState = &rasterizationStateCreateInfo;
 	createInfo.pMultisampleState = &multisampleStateCreateInfo;
 	createInfo.pDepthStencilState = &depthStencilStateCreateInfo;
-	auto colorBlendAttachmentStates = makeColorBlendAttachmentStates(attachmentCount);
+	auto colorBlendAttachmentStates = makeColorBlendAttachmentStates(renderPass->getColorAttachmentCount());
 	auto colorBlendStateCreateInfo = makeColorBlendStateCreateInfo(colorBlendAttachmentStates);
 	createInfo.pColorBlendState = &colorBlendStateCreateInfo;
 	createInfo.pDynamicState = nullptr;

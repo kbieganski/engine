@@ -45,7 +45,7 @@ RenderPass RenderPassBuilder::buildRenderPass() {
 		ERROR("Failed to create render pass with ", attachmentDescriptions.size(), " attachments");
 	}
 	INFO("Created render pass ", renderPass, " with ", attachmentDescriptions.size(), " attachments");
-	return RenderPass(context, renderPass);
+	return RenderPass(context, renderPass, colorAttachmentReferences.size());
 }
 
 

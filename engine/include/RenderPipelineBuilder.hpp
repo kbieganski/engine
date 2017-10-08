@@ -6,7 +6,7 @@ class RenderPipelineBuilder {
 public:
 	RenderPipelineBuilder(shared_ptr<const GraphicsContext> context, uvec2 screenSize);
 
-	RenderPipeline build(shared_ptr<const RenderPass> renderPass, uint32_t attachmentCount) const;
+	RenderPipeline build(shared_ptr<const RenderPass> renderPass) const;
 
 	void setFragmentShader(shared_ptr<const Shader> shader);
 	void setVertexShader(shared_ptr<const Shader> shader);

@@ -6,9 +6,10 @@ using std::make_shared;
 using std::move;
 
 
-RenderPass::RenderPass(shared_ptr<const GraphicsContext> context, VkRenderPass handle) {
-	this->context = context;
+RenderPass::RenderPass(shared_ptr<const GraphicsContext> context, VkRenderPass handle, uint32_t colorAttachmentCount) {
+	this->colorAttachmentCount = colorAttachmentCount;
 	this->handle = handle;
+	this->context = context;
 }
 
 
@@ -26,8 +27,9 @@ RenderPass::~RenderPass() {
 
 
 RenderPass& RenderPass::operator=(RenderPass&& moved) {
-	context = moved.context;
+	colorAttachmentCount = moved.colorAttachmentCount;
 	handle = moved.handle;
+	context = moved.context;
 	moved.handle = VK_NULL_HANDLE;
 	return *this;
 }
@@ -35,4 +37,9 @@ RenderPass& RenderPass::operator=(RenderPass&& moved) {
 
 VkRenderPass RenderPass::getHandle() const {
 	return handle;
+}
+
+
+uint32_t RenderPass::getColorAttachmentCount() const {
+	return colorAttachmentCount;
 }
