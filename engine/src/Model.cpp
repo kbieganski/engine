@@ -18,6 +18,16 @@ void Model::createUniformBindings(RenderPipelineBuilder& pipelineBuilder, uint32
 
 
 void Model::describe(RenderDescription& renderDescription, uint32_t uniformOffset) const {
+	describeAttributes(renderDescription);
+	describeUniforms(renderDescription, uniformOffset);
+}
+
+
+void Model::describeAttributes(RenderDescription& renderDescription) const {
 	mesh->describe(renderDescription);
-	material->bindTo(renderDescription, uniformOffset);
+}
+
+
+void Model::describeUniforms(RenderDescription& renderDescription, uint32_t uniformOffset) const {
+	material->describe(renderDescription, uniformOffset);
 }

@@ -10,6 +10,8 @@ public:
 	void createAttributeBindings(RenderPipelineBuilder& pipelineBuilder) const;
 	void createUniformBindings(RenderPipelineBuilder& pipelineBuilder, uint32_t offset) const;
 	void describe(RenderDescription& renderDescription, uint32_t uniformOffset) const;
+	void describeAttributes(RenderDescription& renderDescription) const;
+	void describeUniforms(RenderDescription& renderDescription, uint32_t uniformOffset) const;
 
 
 private:

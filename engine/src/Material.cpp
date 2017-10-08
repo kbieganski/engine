@@ -20,7 +20,7 @@ Material::Material(shared_ptr<const GraphicsContext> context, shared_ptr<const T
 }
 
 
-void Material::bindTo(RenderDescription& renderDescription, uint32_t offset) const {
+void Material::describe(RenderDescription& renderDescription, uint32_t offset) const {
 	renderDescription.bindUniform(offset + 0, uniformBuffer);
 	renderDescription.bindUniform(offset + 1, texture);
 }
