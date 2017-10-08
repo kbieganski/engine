@@ -116,12 +116,15 @@ namespace Logger {
 	throw Exception(__VA_ARGS__)
 
 #define ASSERT(check, ...)\
-	if (!(check))														\
+	if (!(check))\
 		Logger::print(Logger::getTimestamp(LOG_DATE_FORMAT), " | ASSERTION ", #check, " FAILED | function ",\
 					  __func__, " in ", __FILENAME__, '(', __LINE__, "): ", __VA_ARGS__);\
-	throw Exception(__VA_ARGS__)
+	if (!(check))\
+		throw Exception(__VA_ARGS__)
 
 #else
 #define ERROR(...) throw Exception(__VA_ARGS__)
-#define ASSERT(...) throw Exception(__VA_ARGS__)
+#define ASSERT(...)
+	if (!(check))\
+		throw Exception(__VA_ARGS__)
 #endif
