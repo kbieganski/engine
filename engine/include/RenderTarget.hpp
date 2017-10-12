@@ -14,10 +14,12 @@ public:
 	RenderTarget& operator=(RenderTarget&& moved) = default;
 
 	shared_ptr<const RenderPass> getRenderPass() const;
+	uvec2 getSize() const;
 	const vector<shared_ptr<Texture>>& getTextures() const;
 
 
 private:
+	uvec2 size;
 	shared_ptr<const GraphicsContext> context;
 	shared_ptr<RenderPass> renderPass;
 	vector<shared_ptr<Texture>> textures;

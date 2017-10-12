@@ -1,17 +1,17 @@
 #include <algorithm>
 #include "Logger.hpp"
 #include "RenderPipelineBuilder.hpp"
+#include "RenderTarget.hpp"
 
 
 using std::min;
 
 
-RenderPipelineBuilder::RenderPipelineBuilder(shared_ptr<const GraphicsContext> context, uvec2 screenSize) {
+RenderPipelineBuilder::RenderPipelineBuilder(shared_ptr<const GraphicsContext> context) {
 	this->context = context;
 	makeVertexStageCreateInfo();
 	makeFragmentStageCreateInfo();
 	makeInputAssemblyStateCreateInfo();
-	makeViewportStateCreateInfo(screenSize);
 	makeRasterizationStateCreateInfo();
 	makeMultisampleStateCreateInfo();
 	makeDepthStencilStateCreateInfo();
@@ -19,7 +19,12 @@ RenderPipelineBuilder::RenderPipelineBuilder(shared_ptr<const GraphicsContext> c
 }
 
 
-RenderPipeline RenderPipelineBuilder::build(shared_ptr<const RenderPass> renderPass) const {
+RenderPipeline RenderPipelineBuilder::build(const RenderTarget& renderTarget) const {
+	return build(renderTarget.getRenderPass(), renderTarget.getSize());
+}
+
+
+RenderPipeline RenderPipelineBuilder::build(shared_ptr<const RenderPass> renderPass, uvec2 screenSize) const {
 	auto vertexInputStateCreateInfo = makeVertexInputStateCreateInfo();
 	VkGraphicsPipelineCreateInfo createInfo = {};
 	createInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
@@ -28,6 +33,7 @@ RenderPipeline RenderPipelineBuilder::build(shared_ptr<const RenderPass> renderP
 	createInfo.pStages = shaderStages;
 	createInfo.pVertexInputState = &vertexInputStateCreateInfo;
 	createInfo.pInputAssemblyState = &inputAssemblyStateCreateInfo;
+	auto viewportStateCreateInfo = makeViewportStateCreateInfo(screenSize);
 	createInfo.pViewportState = &viewportStateCreateInfo;
 	createInfo.pRasterizationState = &rasterizationStateCreateInfo;
 	createInfo.pMultisampleState = &multisampleStateCreateInfo;
@@ -90,7 +96,7 @@ void RenderPipelineBuilder::createUniformBufferBinding(uint32_t index) {
 	binding.binding = index;
 	binding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 	binding.descriptorCount = 1;
-	binding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+	binding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
 	binding.pImmutableSamplers = nullptr;
 	descriptorSetLayoutBindings.push_back(binding);
 }
@@ -139,6 +145,27 @@ VkDescriptorSetLayout RenderPipelineBuilder::createDescriptorSetLayout() const {
 	}
 	INFO("Created descriptor set layout ", descriptorSetLayout);
 	return descriptorSetLayout;
+}
+
+
+VkPipelineViewportStateCreateInfo RenderPipelineBuilder::makeViewportStateCreateInfo(uvec2 screenSize) const {
+	static VkViewport viewport = {};
+	viewport.x = 0.0f;
+	viewport.y = 0.0f;
+	viewport.width = static_cast<float>(screenSize.x);
+	viewport.height = static_cast<float>(screenSize.y);
+	viewport.minDepth = 0.0f;
+	viewport.maxDepth = 1.0f;
+	static VkRect2D scissor = {};
+	scissor.offset = { 0, 0 };
+	scissor.extent = { screenSize.x, screenSize.y };
+	VkPipelineViewportStateCreateInfo viewportStateCreateInfo = {};
+	viewportStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
+	viewportStateCreateInfo.viewportCount = 1;
+	viewportStateCreateInfo.pViewports = &viewport;
+	viewportStateCreateInfo.scissorCount = 1;
+	viewportStateCreateInfo.pScissors = &scissor;
+	return viewportStateCreateInfo;
 }
 
 
@@ -201,25 +228,6 @@ void RenderPipelineBuilder::makeInputAssemblyStateCreateInfo() {
 	inputAssemblyStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
 	inputAssemblyStateCreateInfo.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
 	inputAssemblyStateCreateInfo.primitiveRestartEnable = VK_FALSE;
-}
-
-
-void RenderPipelineBuilder::makeViewportStateCreateInfo(uvec2 screenSize) {
-	static VkViewport viewport = {};
-	viewport.x = 0.0f;
-	viewport.y = 0.0f;
-	viewport.width = static_cast<float>(screenSize.x);
-	viewport.height = static_cast<float>(screenSize.y);
-	viewport.minDepth = 0.0f;
-	viewport.maxDepth = 1.0f;
-	static VkRect2D scissor = {};
-	scissor.offset = { 0, 0 };
-	scissor.extent = { screenSize.x, screenSize.y };
-	viewportStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
-	viewportStateCreateInfo.viewportCount = 1;
-	viewportStateCreateInfo.pViewports = &viewport;
-	viewportStateCreateInfo.scissorCount = 1;
-	viewportStateCreateInfo.pScissors = &scissor;
 }
 
 

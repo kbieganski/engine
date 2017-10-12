@@ -5,9 +5,8 @@
 using std::move;
 
 
-Framebuffer::Framebuffer(shared_ptr<const GraphicsContext> context, uvec2 screenSize, shared_ptr<RenderTarget> renderTarget) {
+Framebuffer::Framebuffer(shared_ptr<const GraphicsContext> context, shared_ptr<RenderTarget> renderTarget) {
 	this->context = context;
-	this->screenSize = screenSize;
 	this->renderTarget = renderTarget;
 	clearColors.resize(renderTarget->getTextures().size());
 	createFramebuffer();
@@ -32,7 +31,6 @@ Framebuffer::~Framebuffer() {
 
 
 Framebuffer& Framebuffer::operator=(Framebuffer&& moved) {
-	screenSize = moved.screenSize;
 	handle = moved.handle;
 	commandBuffer = moved.commandBuffer;
 	context = moved.context;
@@ -77,6 +75,11 @@ void Framebuffer::setClearColor(uint32_t attachment, VkClearValue color) {
 }
 
 
+const RenderTarget& Framebuffer::getRenderTarget() const {
+	return *renderTarget;
+}
+
+
 void Framebuffer::beginRenderPass() const {
 	VkCommandBufferBeginInfo beginInfo = {};
 	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
@@ -88,6 +91,7 @@ void Framebuffer::beginRenderPass() const {
 	renderPassInfo.renderPass = renderTarget->getRenderPass()->getHandle();
 	renderPassInfo.framebuffer = handle;
 	renderPassInfo.renderArea.offset = { 0,0 };
+	auto screenSize = renderTarget->getSize();
 	renderPassInfo.renderArea.extent = { screenSize.x, screenSize.y };
 	renderPassInfo.clearValueCount = clearColors.size();
 	renderPassInfo.pClearValues = clearColors.data();
@@ -114,6 +118,7 @@ void Framebuffer::createFramebuffer() {
 	}
 	createInfo.attachmentCount = attachments.size();
 	createInfo.pAttachments = attachments.data();
+	auto screenSize = renderTarget->getSize();
 	createInfo.width = screenSize.x;
 	createInfo.height = screenSize.y;
 	createInfo.layers = 1;

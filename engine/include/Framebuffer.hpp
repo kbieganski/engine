@@ -5,7 +5,7 @@
 
 class Framebuffer {
 public:
-	Framebuffer(shared_ptr<const GraphicsContext> context, uvec2 screenSize, shared_ptr<RenderTarget> renderTarget);
+	Framebuffer(shared_ptr<const GraphicsContext> context, shared_ptr<RenderTarget> renderTarget);
 	Framebuffer(const Framebuffer&) = delete;
 	Framebuffer(Framebuffer&& moved);
 	~Framebuffer();
@@ -19,13 +19,14 @@ public:
 
 	void setClearColor(uint32_t attachment, VkClearValue color);
 
+	const RenderTarget& getRenderTarget() const;
+
 
 private:
 	void beginRenderPass() const;
 	void endRenderPass() const;
 	void createFramebuffer();
 
-	uvec2 screenSize;
 	VkFramebuffer handle;
 	VkCommandBuffer commandBuffer;
 	shared_ptr<RenderTarget> renderTarget;

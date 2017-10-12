@@ -2,11 +2,15 @@
 #include "RenderPipeline.hpp"
 
 
+class RenderTarget;
+
+
 class RenderPipelineBuilder {
 public:
-	RenderPipelineBuilder(shared_ptr<const GraphicsContext> context, uvec2 screenSize);
+	RenderPipelineBuilder(shared_ptr<const GraphicsContext> context);
 
-	RenderPipeline build(shared_ptr<const RenderPass> renderPass) const;
+	RenderPipeline build(const RenderTarget& renderTarget) const;
+	RenderPipeline build(shared_ptr<const RenderPass> renderPass, uvec2 screenSize) const;
 
 	void setFragmentShader(shared_ptr<const Shader> shader);
 	void setVertexShader(shared_ptr<const Shader> shader);
@@ -20,12 +24,12 @@ private:
 	VkPipelineLayout createPipelineLayout(VkDescriptorSetLayout descriptorSetLayout) const;
 	VkDescriptorSetLayout createDescriptorSetLayout() const;
 	VkPipelineVertexInputStateCreateInfo makeVertexInputStateCreateInfo() const;
+	VkPipelineViewportStateCreateInfo makeViewportStateCreateInfo(uvec2 screenSize) const;
 	VkPipelineColorBlendStateCreateInfo makeColorBlendStateCreateInfo(const vector<VkPipelineColorBlendAttachmentState>& attachments) const;
 	vector<VkPipelineColorBlendAttachmentState> makeColorBlendAttachmentStates(uint32_t attachmentCount) const;
 	void makeVertexStageCreateInfo();
 	void makeFragmentStageCreateInfo();
 	void makeInputAssemblyStateCreateInfo();
-	void makeViewportStateCreateInfo(uvec2 screenSize);
 	void makeRasterizationStateCreateInfo();
 	void makeMultisampleStateCreateInfo();
 	void makeDepthStencilStateCreateInfo();
@@ -34,7 +38,6 @@ private:
 	VkPipelineShaderStageCreateInfo vertexStageCreateInfo = {};
 	VkPipelineShaderStageCreateInfo fragmentStageCreateInfo = {};
 	VkPipelineInputAssemblyStateCreateInfo inputAssemblyStateCreateInfo = {};
-	VkPipelineViewportStateCreateInfo viewportStateCreateInfo = {};
 	VkPipelineRasterizationStateCreateInfo rasterizationStateCreateInfo = {};
 	VkPipelineMultisampleStateCreateInfo multisampleStateCreateInfo = {};
 	VkPipelineDepthStencilStateCreateInfo depthStencilStateCreateInfo = {};
