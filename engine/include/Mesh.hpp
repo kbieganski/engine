@@ -16,8 +16,9 @@ class Mesh {
 public:
 	Mesh(shared_ptr<const GraphicsContext> context, const string& filename);
 
-	void createAttributeBindings(RenderPipelineBuilder& pipelineBuilder) const;
 	void describe(RenderDescription& renderDescription) const;
+
+	static void createAttributeBindings(RenderPipelineBuilder& pipelineBuilder);
 
 
 private:

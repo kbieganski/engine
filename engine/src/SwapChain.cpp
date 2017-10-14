@@ -140,7 +140,7 @@ void SwapChain::createFramebuffers(VkFormat format) {
 	for (auto image : images) {
 		auto renderTexture = make_shared<Texture>(context, image, screenSize, format, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
 		auto renderTarget = make_shared<RenderTarget>(context, renderPass, renderTexture);
-		framebuffers.push_back(Framebuffer(context, screenSize, renderTarget));
+		framebuffers.push_back(Framebuffer(context, renderTarget));
 		framebuffers.back().setClearColor(0, {{{ 0, 0, 0, 1 }}});
 	}
 }

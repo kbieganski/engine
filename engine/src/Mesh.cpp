@@ -43,16 +43,16 @@ Mesh::Mesh(shared_ptr<const GraphicsContext> context, const string& filename) {
 }
 
 
-void Mesh::createAttributeBindings(RenderPipelineBuilder& pipelineBuilder) const {
-	pipelineBuilder.createAttributeBinding(sizeof(Vertex),
-										   { VK_FORMAT_R32G32B32_SFLOAT, VK_FORMAT_R32G32B32_SFLOAT, VK_FORMAT_R32G32_SFLOAT },
-										   { offsetof(Vertex, position), offsetof(Vertex, normal), offsetof(Vertex, textureCoordinates) });
-}
-
-
 void Mesh::describe(RenderDescription& renderDescription) const {
 	renderDescription.addVertices(vertexBuffer);
 	renderDescription.setIndices(indexBuffer);
+}
+
+
+void Mesh::createAttributeBindings(RenderPipelineBuilder& pipelineBuilder) {
+	pipelineBuilder.createAttributeBinding(sizeof(Vertex),
+										   { VK_FORMAT_R32G32B32_SFLOAT, VK_FORMAT_R32G32B32_SFLOAT, VK_FORMAT_R32G32_SFLOAT },
+										   { offsetof(Vertex, position), offsetof(Vertex, normal), offsetof(Vertex, textureCoordinates) });
 }
 
 

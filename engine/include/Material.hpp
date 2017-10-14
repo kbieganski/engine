@@ -16,7 +16,8 @@ public:
 	Material(shared_ptr<const GraphicsContext> context, shared_ptr<const Texture> texture, vec3 specularColor, float specularHardness);
 
 	void describe(RenderDescription& renderDescription, uint32_t offset) const;
-	void createUniformBindings(RenderPipelineBuilder& pipelineBuilder, uint32_t offset) const;
+
+	static void createUniformBindings(RenderPipelineBuilder& pipelineBuilder, uint32_t offset);
 
 
 private:

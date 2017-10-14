@@ -1,24 +1,29 @@
 #pragma once
-#include "GeometryBuffer.hpp"
-#include "SwapChain.hpp"
+#include "Framebuffer.hpp"
+
+
+using std::unique_ptr;
 
 
 class Renderer {
 public:
-	Renderer(shared_ptr<const GraphicsContext> context, const GraphicsDeviceDescription& deviceDescription, shared_ptr<SwapChain> swapChain);
+	Renderer(shared_ptr<const GraphicsContext> context);
 	Renderer(Renderer&& moved) = default;
 
 	Renderer& operator=(Renderer&& moved) = default;
 
-	void draw(const RenderDescription& renderDescription) const;
+	void render() const;
 
-	const GeometryBuffer& getGeometryBuffer() const;
+	shared_ptr<const RenderTarget> getRenderTarget() const;
 
+
+protected:
+	RenderDescription& addRender(shared_ptr<RenderPipeline> pipeline, uint32_t uniformBufferCount, uint32_t textureCount);
+
+	shared_ptr<RenderTarget> renderTarget;
+	shared_ptr<const GraphicsContext> context;
+	unique_ptr<Framebuffer> framebuffer;
 
 private:
-	void createScreenRenderDescription(shared_ptr<const GraphicsContext> context);
-
-	GeometryBuffer geometryBuffer;
-	unique_ptr<RenderDescription> screenRender;
-	shared_ptr<SwapChain> swapChain;
+	vector<RenderDescription> renderDescriptions;
 };

@@ -4,6 +4,7 @@
 
 
 using std::make_shared;
+using std::make_unique;
 
 
 void Engine::changeState(shared_ptr<ApplicationState> newState) {
@@ -23,18 +24,13 @@ shared_ptr<const GraphicsContext> Engine::getGraphicsContext() const {
 }
 
 
-shared_ptr<const Renderer> Engine::getRenderer() const {
-	return renderer;
-}
-
-
 shared_ptr<const SwapChain> Engine::getSwapChain() const {
 	return swapChain;
 }
 
 
 void Engine::run() {
-	const uvec2 screenSize(640, 480);
+	const uvec2 screenSize(800, 600);
 	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 	window = glfwCreateWindow(screenSize.x, screenSize.y, "Game", nullptr, nullptr);
@@ -45,7 +41,6 @@ void Engine::run() {
 		auto deviceDescription = selector.selectBest();
 		graphicsContext = make_shared<GraphicsContext>(graphicsDriver, deviceDescription);
 		swapChain = make_shared<SwapChain>(graphicsContext, deviceDescription, graphicsDriver->getSurface(), screenSize);
-		renderer = make_shared<Renderer>(graphicsContext, deviceDescription, swapChain);
 		running = true;
 		currentState = make_shared<InitialState>(*this);
 		while (!glfwWindowShouldClose(window)) {
