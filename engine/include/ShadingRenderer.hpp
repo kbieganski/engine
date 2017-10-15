@@ -1,10 +1,11 @@
 #pragma once
+#include "AssetCache.hpp"
 #include "Renderer.hpp"
 
 
 class ShadingRenderer : public Renderer {
 public:
-	ShadingRenderer(shared_ptr<const GraphicsContext> context, shared_ptr<const RenderTarget> geometryBuffer);
+	ShadingRenderer(shared_ptr<const GraphicsContext> context, shared_ptr<const RenderTarget> geometryBuffer, AssetCache<Shader> &shaderAssets);
 	ShadingRenderer(ShadingRenderer&& moved) = default;
 
 	ShadingRenderer& operator=(ShadingRenderer&& moved) = default;
@@ -14,7 +15,7 @@ public:
 
 private:
 	void createScreenSurface(uvec2);
-	void createShadingRenderDescription();
+	void createRenderPipeline(AssetCache<Shader> &shaderAssets);
 	void createFramebuffer();
 
 	shared_ptr<const RenderTarget> geometryBuffer;

@@ -9,12 +9,12 @@ using std::make_shared;
 using std::make_unique;
 
 
-SceneRenderer::SceneRenderer(shared_ptr<const GraphicsContext> context, uvec2 size)
+SceneRenderer::SceneRenderer(shared_ptr<const GraphicsContext> context, AssetCache<Shader> &shaderAssets, uvec2 size)
 	:	Renderer(context) {
 	this->context = context;
 	createGeometryBuffer(context->getDeviceDescription(), size);
 	createFramebuffer();
-	createRenderPipeline();
+	createRenderPipeline(shaderAssets);
 }
 
 
@@ -47,9 +47,9 @@ void SceneRenderer::createFramebuffer() {
 }
 
 
-void SceneRenderer::createRenderPipeline() {
-	auto fragmentShader = make_shared<Shader>(context, "shaders/scene_frag.spv");
-	auto vertexShader = make_shared<Shader>(context, "shaders/scene_vert.spv");
+void SceneRenderer::createRenderPipeline(AssetCache<Shader> &shaderAssets) {
+	auto fragmentShader = shaderAssets.load("shaders/scene_frag.spv");
+	auto vertexShader = shaderAssets.load("shaders/scene_vert.spv");
 	RenderPipelineBuilder pipelineBuilder(context);
 	pipelineBuilder.setFragmentShader(fragmentShader);
 	pipelineBuilder.setVertexShader(vertexShader);

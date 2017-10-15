@@ -14,12 +14,12 @@ static const vector<float> screenRectangleVertexData = { -1,  1, 0, 1,
 static const vector<uint32_t> screenRectangleIndexData = { 0, 1, 2, 1, 0, 3 };
 
 
-ShadingRenderer::ShadingRenderer(shared_ptr<const GraphicsContext> context, shared_ptr<const RenderTarget> geometryBuffer)
+ShadingRenderer::ShadingRenderer(shared_ptr<const GraphicsContext> context, shared_ptr<const RenderTarget> geometryBuffer, AssetCache<Shader> &shaderAssets)
 	:	Renderer(context) {
 	this->geometryBuffer = geometryBuffer;
 	createScreenSurface(geometryBuffer->getSize());
 	createFramebuffer();
-	createShadingRenderDescription();
+	createRenderPipeline(shaderAssets);
 }
 
 
@@ -53,9 +53,9 @@ void ShadingRenderer::createFramebuffer() {
 }
 
 
-void ShadingRenderer::createShadingRenderDescription() {
-	auto frag = make_shared<Shader>(context, "shaders/shading_frag.spv");
-	auto vert = make_shared<Shader>(context, "shaders/shading_vert.spv");
+void ShadingRenderer::createRenderPipeline(AssetCache<Shader> &shaderAssets) {
+	auto frag = shaderAssets.load("shaders/shading_frag.spv");
+	auto vert = shaderAssets.load("shaders/shading_vert.spv");
 	RenderPipelineBuilder pipelineBuilder(context);
 	pipelineBuilder.setFragmentShader(frag);
 	pipelineBuilder.setVertexShader(vert);

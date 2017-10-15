@@ -14,12 +14,12 @@ struct Vertex {
 };
 
 
-ShadowMapRenderer::ShadowMapRenderer(shared_ptr<const GraphicsContext> context, uint32_t resolution)
+ShadowMapRenderer::ShadowMapRenderer(shared_ptr<const GraphicsContext> context, AssetCache<Shader> &shaderAssets, uint32_t resolution)
 	:	Renderer(context) {
 	this->context = context;
 	createShadowMap(context->getDeviceDescription(), resolution);
 	createFramebuffer();
-	createRenderPipeline();
+	createRenderPipeline(shaderAssets);
 }
 
 
@@ -45,9 +45,9 @@ void ShadowMapRenderer::createFramebuffer() {
 }
 
 
-void ShadowMapRenderer::createRenderPipeline() {
-	auto fragmentShader = make_shared<Shader>(context, "shaders/shadowmap_frag.spv");
-	auto vertexShader = make_shared<Shader>(context, "shaders/shadowmap_vert.spv");
+void ShadowMapRenderer::createRenderPipeline(AssetCache<Shader> &shaderAssets) {
+	auto fragmentShader = shaderAssets.load("shaders/shadowmap_frag.spv");
+	auto vertexShader = shaderAssets.load("shaders/shadowmap_vert.spv");
 	RenderPipelineBuilder pipelineBuilder(context);
 	pipelineBuilder.setFragmentShader(fragmentShader);
 	pipelineBuilder.setVertexShader(vertexShader);

@@ -21,7 +21,7 @@ public:
 		vec4 eyePosition;
 	};
 
-	LightSourceComponent(shared_ptr<const GraphicsContext> context, uint32_t shadowMapResolution, const TransformComponent& transform);
+	LightSourceComponent(shared_ptr<const GraphicsContext> context, AssetCache<Shader> &shaderAssets, uint32_t shadowMapResolution, const TransformComponent& transform);
 
 	void addTo(ShadingRenderer& shadingRenderer) const;
 	void update(vec3 eyePosition, vec3 ambientLightColor);

@@ -9,8 +9,8 @@ using glm::normalize;
 using glm::ortho;
 
 
-LightSourceComponent::LightSourceComponent(shared_ptr<const GraphicsContext> context, uint32_t shadowMapResolution, const TransformComponent& _transform)
-	:	shadowMapRenderer(context, shadowMapResolution),
+LightSourceComponent::LightSourceComponent(shared_ptr<const GraphicsContext> context, AssetCache<Shader> &shaderAssets, uint32_t shadowMapResolution, const TransformComponent& _transform)
+	:	shadowMapRenderer(context, shaderAssets, shadowMapResolution),
 		transform(_transform) {
 	color = vec3(1);
 	localDirection = vec3(0, 0, 1);
