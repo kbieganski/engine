@@ -7,7 +7,6 @@ layout(binding = 0) uniform Shading {
 	uniform vec4 lightDirection;
 	uniform mat4 lightView;
 	uniform vec4 eyePosition;
-	uniform float lightAttenuation;
 } shading;
 
 layout(binding = 1) uniform sampler2D positionMap;
@@ -28,12 +27,12 @@ float multisampleShadowMap(vec3 coordinates) {
 		vec2(-0.094184101, -0.92938870),
 		vec2(0.34495938, 0.29387760)
 	);
-	float sum = 0;
+	float illuminationFactor = 0;
 	for (int i = 0; i < 4; i++) {
 		vec3 bias = vec3(poissonDisk[i] / 800, -0.01);
-		sum += texture(shadowMap, coordinates + bias).r;
+		illuminationFactor += texture(shadowMap, coordinates + bias).r / 4;
 	}
-	return sum / 4;
+	return illuminationFactor;
 }
 
 float calculateIlluminationFactor(vec3 fragPosition) {
@@ -57,7 +56,7 @@ vec3 calculateSpecularComponent(vec3 fragPosition, vec3 fragNormal, vec3 specula
 	float specularFactor = dot(vertexToEye, lightReflect);
 	specularFactor = clamp(specularFactor, 0, 1);
 	specularFactor = pow(specularFactor, specularHardness);
-	return specularColor * shading.lightColor.rgb * specularFactor;
+	return specularColor * specularFactor * shading.lightColor.rgb;
 }
 
 void main() {

@@ -9,11 +9,12 @@ using std::make_shared;
 using std::move;
 
 
-SwapChain::SwapChain(shared_ptr<const GraphicsContext> context, const GraphicsDeviceDescription& deviceDescription, VkSurfaceKHR surface, uvec2 screenSize) {
+SwapChain::SwapChain(shared_ptr<const GraphicsContext> context, VkSurfaceKHR surface, uvec2 screenSize) {
 	this->context = context;
+	auto& deviceDescription = context->getDeviceDescription();
 	this->screenSize = deviceDescription.chooseScreenSize(screenSize);
 	VkSurfaceFormatKHR surfaceFormat = deviceDescription.getBestSurfaceFormat();
-	createSwapChain(deviceDescription, surface, surfaceFormat);
+	createSwapChain(surface, surfaceFormat);
 	createRenderPass(surfaceFormat.format);
 	createFramebuffers(surfaceFormat.format);
 	createSemaphores();
@@ -97,7 +98,8 @@ void SwapChain::present(uint32_t imageIndex) {
 }
 
 
-void SwapChain::createSwapChain(const GraphicsDeviceDescription& deviceDescription, VkSurfaceKHR surface, VkSurfaceFormatKHR surfaceFormat) {
+void SwapChain::createSwapChain(VkSurfaceKHR surface, VkSurfaceFormatKHR surfaceFormat) {
+	auto& deviceDescription = context->getDeviceDescription();
 	VkPresentModeKHR presentationMode = deviceDescription.getBestPresentationMode();
 	uint32_t imageCount = deviceDescription.getSurfaceCapabilities().minImageCount + 1;
 	uint32_t maxImageCount = deviceDescription.getSurfaceCapabilities().maxImageCount;

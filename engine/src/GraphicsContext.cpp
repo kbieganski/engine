@@ -5,7 +5,8 @@
 using std::move;
 
 
-GraphicsContext::GraphicsContext(shared_ptr<const GraphicsDriver> driver, const GraphicsDeviceDescription& deviceDescription) {
+GraphicsContext::GraphicsContext(shared_ptr<const GraphicsDriver> driver, const GraphicsDeviceDescription& _deviceDescription)
+	:	deviceDescription(_deviceDescription) {
 	this->driver = driver;
 	vkGetPhysicalDeviceMemoryProperties(deviceDescription.getPhysicalDevice(), &memoryProperties);
 	createLogicalDevice(deviceDescription);
@@ -13,7 +14,8 @@ GraphicsContext::GraphicsContext(shared_ptr<const GraphicsDriver> driver, const 
 }
 
 
-GraphicsContext::GraphicsContext(GraphicsContext&& moved) {
+GraphicsContext::GraphicsContext(GraphicsContext&& moved)
+	:	deviceDescription(moved.deviceDescription) {
 	*this = move(moved);
 }
 

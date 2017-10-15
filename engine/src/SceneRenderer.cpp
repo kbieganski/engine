@@ -9,10 +9,10 @@ using std::make_shared;
 using std::make_unique;
 
 
-SceneRenderer::SceneRenderer(shared_ptr<const GraphicsContext> context, const GraphicsDeviceDescription& deviceDescription, uvec2 size)
+SceneRenderer::SceneRenderer(shared_ptr<const GraphicsContext> context, uvec2 size)
 	:	Renderer(context) {
 	this->context = context;
-	createGeometryBuffer(deviceDescription, size);
+	createGeometryBuffer(context->getDeviceDescription(), size);
 	createFramebuffer();
 	createRenderPipeline();
 }

@@ -30,6 +30,7 @@ public:
 	void waitForPresentationQueue() const;
 
 	VkDevice getDevice() const;
+	const GraphicsDeviceDescription& getDeviceDescription() const { return deviceDescription;}
 
 
 private:
@@ -42,5 +43,6 @@ private:
 	VkQueue presentationQueue;
 	VkCommandPool commandPool;
 	VkPhysicalDeviceMemoryProperties memoryProperties;
+	GraphicsDeviceDescription deviceDescription;
 	shared_ptr<const GraphicsDriver> driver;
 };

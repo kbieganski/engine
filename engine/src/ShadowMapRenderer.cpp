@@ -14,17 +14,19 @@ struct Vertex {
 };
 
 
-ShadowMapRenderer::ShadowMapRenderer(shared_ptr<const GraphicsContext> context, const GraphicsDeviceDescription& deviceDescription, uint32_t resolution)
+ShadowMapRenderer::ShadowMapRenderer(shared_ptr<const GraphicsContext> context, uint32_t resolution)
 	:	Renderer(context) {
 	this->context = context;
-	createShadowMap(deviceDescription, resolution);
+	createShadowMap(context->getDeviceDescription(), resolution);
 	createFramebuffer();
 	createRenderPipeline();
 }
 
 
 RenderDescription& ShadowMapRenderer::addRender() {
-	return Renderer::addRender(pipeline, 1, 0);
+	auto& renderDescription = Renderer::addRender(pipeline, 2, 0);
+	renderDescription.bindUniform(1, viewProjectionBuffer);
+	return renderDescription;
 }
 
 
@@ -50,6 +52,7 @@ void ShadowMapRenderer::createRenderPipeline() {
 	pipelineBuilder.setFragmentShader(fragmentShader);
 	pipelineBuilder.setVertexShader(vertexShader);
 	pipelineBuilder.createUniformBufferBinding(0);
+	pipelineBuilder.createUniformBufferBinding(1);
 	pipelineBuilder.createAttributeBinding(sizeof(Vertex),
 										   { VK_FORMAT_R32G32B32_SFLOAT, VK_FORMAT_R32G32B32_SFLOAT, VK_FORMAT_R32G32_SFLOAT },
 										   { offsetof(Vertex, position), offsetof(Vertex, normal), offsetof(Vertex, textureCoordinates) });

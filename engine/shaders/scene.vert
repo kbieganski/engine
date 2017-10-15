@@ -2,8 +2,9 @@
 #extension GL_ARB_separate_shader_objects : enable
 
 layout(binding = 0) uniform Transform {
+	mat4 orientation;
 	mat4 world;
-	mat4 viewProjection;
+	mat4 worldViewProjection;
 } transform;
 
 layout(location = 0) in vec3 inPosition;
@@ -19,9 +20,8 @@ out gl_PerVertex {
 };
 
 void main() {
-	vec4 position = transform.world * vec4(inPosition, 1.0);
-	gl_Position = transform.viewProjection * position;
-	fragPosition = position.xyz;
+	gl_Position = transform.worldViewProjection * vec4(inPosition, 1.0);
+	fragPosition = (transform.world * vec4(inPosition, 1.0)).xyz;
 	fragNormal = inNormal;
 	fragTexCoords = inTexCoords;
 }

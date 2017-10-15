@@ -5,7 +5,7 @@
 
 class SwapChain {
 public:
-	SwapChain(shared_ptr<const GraphicsContext> context, const GraphicsDeviceDescription& deviceDescription, VkSurfaceKHR surface, uvec2 screenSize);
+	SwapChain(shared_ptr<const GraphicsContext> context, VkSurfaceKHR surface, uvec2 screenSize);
 	SwapChain(const SwapChain&) = delete;
 	SwapChain(SwapChain&& moved);
 	~SwapChain();
@@ -22,7 +22,7 @@ public:
 
 private:
 	void present(uint32_t imageIndex);
-	void createSwapChain(const GraphicsDeviceDescription& deviceDescription, VkSurfaceKHR surface, VkSurfaceFormatKHR surfaceFormat);
+	void createSwapChain(VkSurfaceKHR surface, VkSurfaceFormatKHR surfaceFormat);
 	void createRenderPass(VkFormat format);
 	void createFramebuffers(VkFormat format);
 	void createSemaphores();

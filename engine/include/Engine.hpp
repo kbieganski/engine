@@ -11,7 +11,6 @@ public:
 	void stop();
 
 	shared_ptr<const GraphicsContext> getGraphicsContext() const;
-	const Renderer& getRenderer() const;
 	shared_ptr<const SwapChain> getSwapChain() const;
 
 

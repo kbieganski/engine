@@ -4,7 +4,7 @@
 
 class SceneRenderer : public Renderer {
 public:
-	SceneRenderer(shared_ptr<const GraphicsContext> context, const GraphicsDeviceDescription& deviceDescription, uvec2 size);
+	SceneRenderer(shared_ptr<const GraphicsContext> context, uvec2 size);
 	SceneRenderer(SceneRenderer&& moved) = default;
 
 	SceneRenderer& operator=(SceneRenderer&& moved) = default;

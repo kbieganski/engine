@@ -1,9 +1,15 @@
 #version 450
 #extension GL_ARB_separate_shader_objects : enable
 
-layout(binding = 0) uniform Light {
-	mat4 wvpTransform;
-} light;
+layout(binding = 0) uniform Object {
+	mat4 orientation;
+	mat4 transform;
+	mat4 worldViewProjection;
+} object;
+
+layout(binding = 1) uniform Eye {
+	mat4 viewProjection;
+} eye;
 
 layout(location = 0) in vec3 inPosition;
 
@@ -12,5 +18,5 @@ out gl_PerVertex {
 };
 
 void main() {
-	gl_Position = light.wvpTransform * vec4(inPosition, 1.0);
+	gl_Position = eye.viewProjection * object.transform * vec4(inPosition, 1.0);
 }

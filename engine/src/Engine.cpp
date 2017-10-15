@@ -38,9 +38,8 @@ void Engine::run() {
 	{
 		auto graphicsDriver = make_shared<GraphicsDriver>(window);
 		GraphicsDeviceSelector selector(*graphicsDriver);
-		auto deviceDescription = selector.selectBest();
-		graphicsContext = make_shared<GraphicsContext>(graphicsDriver, deviceDescription);
-		swapChain = make_shared<SwapChain>(graphicsContext, deviceDescription, graphicsDriver->getSurface(), screenSize);
+		graphicsContext = make_shared<GraphicsContext>(graphicsDriver, selector.selectBest());
+		swapChain = make_shared<SwapChain>(graphicsContext, graphicsDriver->getSurface(), screenSize);
 		running = true;
 		currentState = make_shared<InitialState>(*this);
 		while (!glfwWindowShouldClose(window)) {

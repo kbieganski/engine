@@ -20,7 +20,7 @@ layout(location = 4) out float outSpecularHardness;
 
 void main() {
 	outPosition = fragPosition;
-	outNormal = fragNormal;
+	outNormal = normalize(fragNormal);
 	outDiffuse = texture(modelTexture, fragTexCoords);
 	outSpecularColor = vec4(material.specularColor.rgb, 1);
 	outSpecularHardness = material.specularHardness;
