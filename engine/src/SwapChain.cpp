@@ -61,14 +61,14 @@ SwapChain& SwapChain::operator=(SwapChain&& moved) {
 }
 
 
-void SwapChain::bind(const RenderDescription& renderDescription) {
+void SwapChain::bind(const RenderDescription& renderDescription) const {
 	for (auto& framebuffer : framebuffers) {
 		framebuffer.bind(renderDescription);
 	}
 }
 
 
-void SwapChain::draw() {
+void SwapChain::draw() const {
 	uint32_t imageIndex;
 	vkAcquireNextImageKHR(context->getDevice(), handle, std::numeric_limits<uint64_t>::max(), imageAvailableSemaphore, VK_NULL_HANDLE, &imageIndex);
 	framebuffers[imageIndex].draw({ imageAvailableSemaphore }, { renderFinishedSemaphore });
@@ -86,7 +86,7 @@ shared_ptr<const RenderPass> SwapChain::getRenderPass() const {
 }
 
 
-void SwapChain::present(uint32_t imageIndex) {
+void SwapChain::present(uint32_t imageIndex) const {
 	VkPresentInfoKHR presentInfo = {};
 	presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
 	presentInfo.waitSemaphoreCount = 1;
