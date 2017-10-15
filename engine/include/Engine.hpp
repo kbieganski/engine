@@ -2,10 +2,6 @@
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 #include "ApplicationState.hpp"
-#include "ShadowMapRenderer.hpp"
-#include "ShadingRenderer.hpp"
-#include "SceneRenderer.hpp"
-#include "ScreenRenderer.hpp"
 #include "SwapChain.hpp"
 
 
@@ -15,7 +11,9 @@ public:
 	void stop();
 
 	shared_ptr<const GraphicsContext> getGraphicsContext() const;
+	const Renderer& getRenderer() const;
 	shared_ptr<const SwapChain> getSwapChain() const;
+
 
 private:
 	void run();
