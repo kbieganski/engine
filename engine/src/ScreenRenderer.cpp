@@ -14,15 +14,25 @@ static const vector<float> screenRectangleVertexData = { -1,  1, 0, 1,
 static const vector<uint32_t> screenRectangleIndexData = { 0, 1, 2, 1, 0, 3 };
 
 
-ScreenRenderer::ScreenRenderer(shared_ptr<const GraphicsContext> context, shared_ptr<const SwapChain> swapChain, shared_ptr<const RenderTarget> screenSurface, AssetCache<Shader> &shaderAssets) {
-	createScreenRenderDescription(context, swapChain, screenSurface, shaderAssets);
-	swapChain->bind(*screenRender);
+ScreenRenderer::ScreenRenderer(shared_ptr<const GraphicsContext> context, shared_ptr<const SwapChain> swapChain, shared_ptr<const RenderTarget> screenSurface, AssetCache<Shader> &shaderAssets)
+	:	Renderer(context) {
+	this->swapChain = swapChain;
+	createScreenRenderDescription(context, screenSurface, shaderAssets);
 }
 
 
-void ScreenRenderer::createScreenRenderDescription(shared_ptr<const GraphicsContext> context, shared_ptr<const SwapChain> swapChain, shared_ptr<const RenderTarget> screenSurface, AssetCache<Shader> &shaderAssets) {
-	auto screenVertexShader = make_shared<Shader>(context, "shaders/screen_vert.spv");
-	auto screenFragmentShader = make_shared<Shader>(context, "shaders/screen_frag.spv");
+void ScreenRenderer::render() {
+	swapChain->acquireNextImage();
+	framebuffer = &swapChain->getCurrentFramebuffer();
+	dirty = true;
+	Renderer::render();
+	swapChain->present();
+}
+
+
+void ScreenRenderer::createScreenRenderDescription(shared_ptr<const GraphicsContext> context, shared_ptr<const RenderTarget> screenSurface, AssetCache<Shader> &shaderAssets) {
+	auto screenVertexShader = shaderAssets.load("shaders/screen_vert.spv");
+	auto screenFragmentShader = shaderAssets.load("shaders/screen_frag.spv");
 	RenderPipelineBuilder pipelineBuilder(context);
 	pipelineBuilder.setFragmentShader(screenFragmentShader);
 	pipelineBuilder.setVertexShader(screenVertexShader);
@@ -31,8 +41,8 @@ void ScreenRenderer::createScreenRenderDescription(shared_ptr<const GraphicsCont
 	auto screenPipeline = make_shared<RenderPipeline>(pipelineBuilder.build(swapChain->getRenderPass(), swapChain->getScreenSize()));
 	auto screenRectangleVertices = make_shared<VertexBuffer>(context, screenRectangleVertexData);
 	auto screenRectangleIndices = make_shared<IndexBuffer>(context, screenRectangleIndexData);
-	screenRender = make_unique<RenderDescription>(context, screenPipeline, 1, 1);
-	screenRender->addVertices(screenRectangleVertices);
-	screenRender->setIndices(screenRectangleIndices);
-	screenRender->bindUniform(0, screenSurface->getTextures()[0]);
+	auto& screenRender = addRender(screenPipeline, 1, 1);
+	screenRender.addVertices(screenRectangleVertices);
+	screenRender.setIndices(screenRectangleIndices);
+	screenRender.bindUniform(0, screenSurface->getTextures()[0]);
 }

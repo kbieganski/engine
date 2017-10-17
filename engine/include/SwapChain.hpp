@@ -13,20 +13,21 @@ public:
 	SwapChain& operator=(const SwapChain&) = delete;
 	SwapChain& operator=(SwapChain&& moved);
 
-	void bind(const RenderDescription& renderDescription) const;
-	void draw() const;
+	void present() const;
 
 	uvec2 getScreenSize() const;
-	shared_ptr<const RenderPass> getRenderPass() const ;
+	shared_ptr<const RenderPass> getRenderPass() const;
+	const Framebuffer& getCurrentFramebuffer() const;
 
 
+	void acquireNextImage() const;
 private:
-	void present(uint32_t imageIndex) const;
 	void createSwapChain(VkSurfaceKHR surface, VkSurfaceFormatKHR surfaceFormat);
 	void createRenderPass(VkFormat format);
-	void createFramebuffers(VkFormat format);
 	void createSemaphores();
+	void createFramebuffers(VkFormat format);
 
+	mutable uint32_t currentImage;
 	uvec2 screenSize;
 	VkSwapchainKHR handle;
 	VkSemaphore imageAvailableSemaphore;

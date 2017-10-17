@@ -16,11 +16,8 @@ SwapChain::SwapChain(shared_ptr<const GraphicsContext> context, VkSurfaceKHR sur
 	VkSurfaceFormatKHR surfaceFormat = deviceDescription.getBestSurfaceFormat();
 	createSwapChain(surface, surfaceFormat);
 	createRenderPass(surfaceFormat.format);
-	createFramebuffers(surfaceFormat.format);
 	createSemaphores();
-	for (auto& framebuffer : framebuffers) {
-		framebuffer.bindClear();
-	}
+	createFramebuffers(surfaceFormat.format);
 }
 
 
@@ -47,6 +44,7 @@ SwapChain::~SwapChain() {
 
 
 SwapChain& SwapChain::operator=(SwapChain&& moved) {
+	currentImage = moved.currentImage;
 	screenSize = moved.screenSize;
 	handle = moved.handle;
 	imageAvailableSemaphore = moved.renderFinishedSemaphore;
@@ -61,18 +59,16 @@ SwapChain& SwapChain::operator=(SwapChain&& moved) {
 }
 
 
-void SwapChain::bind(const RenderDescription& renderDescription) const {
-	for (auto& framebuffer : framebuffers) {
-		framebuffer.bind(renderDescription);
-	}
-}
-
-
-void SwapChain::draw() const {
-	uint32_t imageIndex;
-	vkAcquireNextImageKHR(context->getDevice(), handle, std::numeric_limits<uint64_t>::max(), imageAvailableSemaphore, VK_NULL_HANDLE, &imageIndex);
-	framebuffers[imageIndex].draw({ imageAvailableSemaphore }, { renderFinishedSemaphore });
-	present(imageIndex);
+void SwapChain::present() const {
+	VkPresentInfoKHR presentInfo = {};
+	presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+	presentInfo.waitSemaphoreCount = 1;
+	presentInfo.pWaitSemaphores = &renderFinishedSemaphore;
+	presentInfo.swapchainCount = 1;
+	presentInfo.pSwapchains = &handle;
+	presentInfo.pImageIndices = &currentImage;
+	context->present(presentInfo);
+//	acquireNextImage();
 }
 
 
@@ -86,15 +82,13 @@ shared_ptr<const RenderPass> SwapChain::getRenderPass() const {
 }
 
 
-void SwapChain::present(uint32_t imageIndex) const {
-	VkPresentInfoKHR presentInfo = {};
-	presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
-	presentInfo.waitSemaphoreCount = 1;
-	presentInfo.pWaitSemaphores = &renderFinishedSemaphore;
-	presentInfo.swapchainCount = 1;
-	presentInfo.pSwapchains = &handle;
-	presentInfo.pImageIndices = &imageIndex;
-	context->present(presentInfo);
+const Framebuffer& SwapChain::getCurrentFramebuffer() const {
+	return framebuffers[currentImage];
+}
+
+
+void SwapChain::acquireNextImage() const {
+	vkAcquireNextImageKHR(context->getDevice(), handle, std::numeric_limits<uint64_t>::max(), imageAvailableSemaphore, VK_NULL_HANDLE, &currentImage);
 }
 
 
@@ -133,21 +127,6 @@ void SwapChain::createRenderPass(VkFormat format) {
 }
 
 
-void SwapChain::createFramebuffers(VkFormat format) {
-	uint32_t imageCount;
-	vkGetSwapchainImagesKHR(context->getDevice(), handle, &imageCount, nullptr);
-	vector<VkImage> images(imageCount);
-	vkGetSwapchainImagesKHR(context->getDevice(), handle, &imageCount, images.data());
-	framebuffers.reserve(images.size());
-	for (auto image : images) {
-		auto renderTexture = make_shared<Texture>(context, image, screenSize, format, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
-		auto renderTarget = make_shared<RenderTarget>(context, renderPass, renderTexture);
-		framebuffers.push_back(Framebuffer(context, renderTarget));
-		framebuffers.back().setClearColor(0, {{{ 0, 0, 0, 1 }}});
-	}
-}
-
-
 void SwapChain::createSemaphores() {
 	VkSemaphoreCreateInfo semaphoreCreateInfo = {};
 	semaphoreCreateInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
@@ -159,4 +138,21 @@ void SwapChain::createSemaphores() {
 		ERROR("Failed to create render finished semaphore");
 	}
 	INFO("Created render finished semaphore");
+}
+
+
+void SwapChain::createFramebuffers(VkFormat format) {
+	uint32_t imageCount;
+	vkGetSwapchainImagesKHR(context->getDevice(), handle, &imageCount, nullptr);
+	vector<VkImage> images(imageCount);
+	vkGetSwapchainImagesKHR(context->getDevice(), handle, &imageCount, images.data());
+	framebuffers.reserve(images.size());
+	for (auto image : images) {
+		auto renderTexture = make_shared<Texture>(context, image, screenSize, format, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
+		auto renderTarget = make_shared<RenderTarget>(context, renderPass, renderTexture);
+		framebuffers.push_back(Framebuffer(context, renderTarget));
+		framebuffers.back().setClearColor(0, {{{ 0, 0, 0, 1 }}});
+		framebuffers.back().addWaitSemaphore(imageAvailableSemaphore);
+		framebuffers.back().addSignalSemaphore(renderFinishedSemaphore);
+	}
 }

@@ -1,5 +1,6 @@
 #pragma once
 #include "Framebuffer.hpp"
+#include "RenderDescription.hpp"
 
 
 using std::unique_ptr;
@@ -8,11 +9,14 @@ using std::unique_ptr;
 class Renderer {
 public:
 	Renderer(shared_ptr<const GraphicsContext> context);
-	Renderer(Renderer&& moved) = default;
+	Renderer(const Renderer&);
+	Renderer(Renderer&& moved);
+	virtual ~Renderer();
 
-	Renderer& operator=(Renderer&& moved) = default;
+	Renderer& operator=(const Renderer&) = delete;
+	Renderer& operator=(Renderer&& moved);
 
-	void render() const;
+	virtual void render();
 
 	shared_ptr<const RenderTarget> getRenderTarget() const;
 
@@ -22,8 +26,15 @@ protected:
 
 	shared_ptr<RenderTarget> renderTarget;
 	shared_ptr<const GraphicsContext> context;
-	unique_ptr<Framebuffer> framebuffer;
+	const Framebuffer* framebuffer;
+
+	bool dirty = false;
 
 private:
+	void recreateCommandBuffer();
+	void beginCommandBuffer();
+	void endCommandBuffer();
+
+	VkCommandBuffer commandBuffer;
 	vector<RenderDescription> renderDescriptions;
 };

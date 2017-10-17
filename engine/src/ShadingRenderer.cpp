@@ -5,6 +5,7 @@
 
 using std::make_shared;
 using std::make_unique;
+using std::move;
 
 
 static const vector<float> screenRectangleVertexData = { -1,  1, 0, 1,
@@ -20,6 +21,28 @@ ShadingRenderer::ShadingRenderer(shared_ptr<const GraphicsContext> context, shar
 	createScreenSurface(geometryBuffer->getSize());
 	createFramebuffer();
 	createRenderPipeline(shaderAssets);
+}
+
+
+ShadingRenderer::ShadingRenderer(ShadingRenderer&& moved)
+	:	Renderer(move(moved)) {
+	geometryBuffer = move(moved.geometryBuffer);
+	pipeline = move(moved.pipeline);
+}
+
+
+ShadingRenderer::~ShadingRenderer() {
+	if (framebuffer) {
+		delete framebuffer;
+	}
+}
+
+
+ShadingRenderer& ShadingRenderer::operator=(ShadingRenderer&& moved) {
+	static_cast<Renderer&>(*this) = move(moved);
+	geometryBuffer = move(moved.geometryBuffer);
+	pipeline = move(moved.pipeline);
+	return *this;
 }
 
 
@@ -48,8 +71,9 @@ void ShadingRenderer::createScreenSurface(uvec2 size) {
 
 
 void ShadingRenderer::createFramebuffer() {
-	framebuffer = make_unique<Framebuffer>(context, renderTarget);
+	auto framebuffer = new Framebuffer(context, renderTarget);
 	framebuffer->setClearColor(0, {{{ 0, 0, 0, 1 }}});
+	this->framebuffer = framebuffer;
 }
 
 

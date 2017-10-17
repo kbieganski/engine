@@ -1,3 +1,4 @@
+#include "Mesh.hpp"
 #include "RenderPassBuilder.hpp"
 #include "RenderPipelineBuilder.hpp"
 #include "ShadowMapRenderer.hpp"
@@ -5,13 +6,7 @@
 
 using std::make_shared;
 using std::make_unique;
-
-
-struct Vertex {
-	glm::vec3 position;
-	glm::vec3 normal;
-	glm::vec2 textureCoordinates;
-};
+using std::move;
 
 
 ShadowMapRenderer::ShadowMapRenderer(shared_ptr<const GraphicsContext> context, AssetCache<Shader> &shaderAssets, uint32_t resolution)
@@ -23,10 +18,37 @@ ShadowMapRenderer::ShadowMapRenderer(shared_ptr<const GraphicsContext> context, 
 }
 
 
+ShadowMapRenderer::ShadowMapRenderer(ShadowMapRenderer&& moved)
+	:	Renderer(move(moved)) {
+	pipeline = move(moved.pipeline);
+	viewProjectionBuffer = move(moved.viewProjectionBuffer);
+}
+
+
+ShadowMapRenderer::~ShadowMapRenderer() {
+	if (framebuffer) {
+		delete framebuffer;
+	}
+}
+
+
+ShadowMapRenderer& ShadowMapRenderer::operator=(ShadowMapRenderer&& moved) {
+	static_cast<Renderer&>(*this) = move(moved);
+	pipeline = move(moved.pipeline);
+	viewProjectionBuffer = move(moved.viewProjectionBuffer);
+	return *this;
+}
+
+
 RenderDescription& ShadowMapRenderer::addRender() {
 	auto& renderDescription = Renderer::addRender(pipeline, 2, 0);
 	renderDescription.bindUniform(1, viewProjectionBuffer);
 	return renderDescription;
+}
+
+
+void ShadowMapRenderer::setUniformBuffer(shared_ptr<UniformBuffer> buffer) {
+	viewProjectionBuffer = buffer;
 }
 
 
@@ -40,8 +62,9 @@ void ShadowMapRenderer::createShadowMap(const GraphicsDeviceDescription& deviceD
 
 
 void ShadowMapRenderer::createFramebuffer() {
-	framebuffer = make_unique<Framebuffer>(context, renderTarget);
+	auto framebuffer = new Framebuffer(context, renderTarget);
 	framebuffer->setClearColor(0, {{{ 1, 0 }}});
+	this->framebuffer = framebuffer;
 }
 
 
@@ -53,8 +76,6 @@ void ShadowMapRenderer::createRenderPipeline(AssetCache<Shader> &shaderAssets) {
 	pipelineBuilder.setVertexShader(vertexShader);
 	pipelineBuilder.createUniformBufferBinding(0);
 	pipelineBuilder.createUniformBufferBinding(1);
-	pipelineBuilder.createAttributeBinding(sizeof(Vertex),
-										   { VK_FORMAT_R32G32B32_SFLOAT, VK_FORMAT_R32G32B32_SFLOAT, VK_FORMAT_R32G32_SFLOAT },
-										   { offsetof(Vertex, position), offsetof(Vertex, normal), offsetof(Vertex, textureCoordinates) });
+	Mesh::createAttributeBindings(pipelineBuilder);
 	pipeline = make_shared<RenderPipeline>(pipelineBuilder.build(*renderTarget));
 }

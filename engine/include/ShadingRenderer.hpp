@@ -6,9 +6,10 @@
 class ShadingRenderer : public Renderer {
 public:
 	ShadingRenderer(shared_ptr<const GraphicsContext> context, shared_ptr<const RenderTarget> geometryBuffer, AssetCache<Shader> &shaderAssets);
-	ShadingRenderer(ShadingRenderer&& moved) = default;
+	ShadingRenderer(ShadingRenderer&& moved);
+	virtual ~ShadingRenderer();
 
-	ShadingRenderer& operator=(ShadingRenderer&& moved) = default;
+	ShadingRenderer& operator=(ShadingRenderer&& moved);
 
 	RenderDescription& addRender(shared_ptr<const UniformBuffer> uniformBuffer, shared_ptr<const Texture> shadowMap);
 

@@ -10,7 +10,6 @@ Framebuffer::Framebuffer(shared_ptr<const GraphicsContext> context, shared_ptr<R
 	this->renderTarget = renderTarget;
 	clearColors.resize(renderTarget->getTextures().size());
 	createFramebuffer();
-	commandBuffer = context->createCommandBuffer();
 }
 
 
@@ -20,9 +19,6 @@ Framebuffer::Framebuffer(Framebuffer&& moved) {
 
 
 Framebuffer::~Framebuffer() {
-	if (commandBuffer != VK_NULL_HANDLE) {
-		context->destroy(commandBuffer);
-	}
 	if (handle != VK_NULL_HANDLE) {
 		vkDestroyFramebuffer(context->getDevice(), handle, nullptr);
 		INFO("Destroyed framebuffer ", handle);
@@ -32,30 +28,17 @@ Framebuffer::~Framebuffer() {
 
 Framebuffer& Framebuffer::operator=(Framebuffer&& moved) {
 	handle = moved.handle;
-	commandBuffer = moved.commandBuffer;
+	waitSemaphores = move(moved.waitSemaphores);
+	signalSemaphores = move(moved.signalSemaphores);
 	context = moved.context;
 	renderTarget = move(moved.renderTarget);
 	clearColors = move(moved.clearColors);
-	moved.commandBuffer = VK_NULL_HANDLE;
 	moved.handle = VK_NULL_HANDLE;
 	return *this;
 }
 
 
-void Framebuffer::bind(const RenderDescription& renderDescription) const {
-	beginRenderPass();
-	renderDescription.bindTo(commandBuffer);
-	endRenderPass();
-}
-
-
-void Framebuffer::bindClear() const {
-	beginRenderPass();
-	endRenderPass();
-}
-
-
-void Framebuffer::draw(const vector<VkSemaphore>& waitSemaphores, const vector<VkSemaphore>& signalSemaphores) const {
+void Framebuffer::draw(VkCommandBuffer commandBuffer) const {
 	VkSubmitInfo submitInfo = {};
 	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 	VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
@@ -70,6 +53,16 @@ void Framebuffer::draw(const vector<VkSemaphore>& waitSemaphores, const vector<V
 }
 
 
+void Framebuffer::addWaitSemaphore(VkSemaphore semaphore) {
+	waitSemaphores.push_back(semaphore);
+}
+
+
+void Framebuffer::addSignalSemaphore(VkSemaphore semaphore) {
+	signalSemaphores.push_back(semaphore);
+}
+
+
 void Framebuffer::setClearColor(uint32_t attachment, VkClearValue color) {
 	clearColors[attachment] = color;
 }
@@ -80,30 +73,17 @@ const RenderTarget& Framebuffer::getRenderTarget() const {
 }
 
 
-void Framebuffer::beginRenderPass() const {
-	VkCommandBufferBeginInfo beginInfo = {};
-	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-	beginInfo.flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
-	beginInfo.pInheritanceInfo = nullptr;
-	vkBeginCommandBuffer(commandBuffer, &beginInfo);
+void Framebuffer::beginRenderPass(VkCommandBuffer commandBuffer) const {
 	VkRenderPassBeginInfo renderPassInfo = {};
 	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
 	renderPassInfo.renderPass = renderTarget->getRenderPass()->getHandle();
 	renderPassInfo.framebuffer = handle;
-	renderPassInfo.renderArea.offset = { 0,0 };
+	renderPassInfo.renderArea.offset = { 0, 0 };
 	auto screenSize = renderTarget->getSize();
 	renderPassInfo.renderArea.extent = { screenSize.x, screenSize.y };
 	renderPassInfo.clearValueCount = clearColors.size();
 	renderPassInfo.pClearValues = clearColors.data();
 	vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-}
-
-
-void Framebuffer::endRenderPass() const {
-	vkCmdEndRenderPass(commandBuffer);
-	if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {
-		ERROR("Failed to record render command buffer");
-	}
 }
 
 

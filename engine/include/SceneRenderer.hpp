@@ -6,9 +6,10 @@
 class SceneRenderer : public Renderer {
 public:
 	SceneRenderer(shared_ptr<const GraphicsContext> context, AssetCache<Shader> &shaderAssets, uvec2 size);
-	SceneRenderer(SceneRenderer&& moved) = default;
+	SceneRenderer(SceneRenderer&& moved);
+	virtual ~SceneRenderer();
 
-	SceneRenderer& operator=(SceneRenderer&& moved) = default;
+	SceneRenderer& operator=(SceneRenderer&& moved);
 
 	RenderDescription& addRender();
 

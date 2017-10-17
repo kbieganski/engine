@@ -7,6 +7,7 @@
 
 using std::make_shared;
 using std::make_unique;
+using std::move;
 
 
 SceneRenderer::SceneRenderer(shared_ptr<const GraphicsContext> context, AssetCache<Shader> &shaderAssets, uvec2 size)
@@ -15,6 +16,26 @@ SceneRenderer::SceneRenderer(shared_ptr<const GraphicsContext> context, AssetCac
 	createGeometryBuffer(context->getDeviceDescription(), size);
 	createFramebuffer();
 	createRenderPipeline(shaderAssets);
+}
+
+
+SceneRenderer::SceneRenderer(SceneRenderer&& moved)
+	:	Renderer(move(moved)) {
+	pipeline = move(moved.pipeline);
+}
+
+
+SceneRenderer::~SceneRenderer() {
+	if (framebuffer) {
+		delete framebuffer;
+	}
+}
+
+
+SceneRenderer& SceneRenderer::operator=(SceneRenderer&& moved) {
+	static_cast<Renderer&>(*this) = move(moved);
+	pipeline = move(moved.pipeline);
+	return *this;
 }
 
 
@@ -37,13 +58,14 @@ void SceneRenderer::createGeometryBuffer(const GraphicsDeviceDescription& device
 
 
 void SceneRenderer::createFramebuffer() {
-	framebuffer = make_unique<Framebuffer>(context, renderTarget);
+	auto framebuffer = new Framebuffer(context, renderTarget);
 	framebuffer->setClearColor(0, {{{ 0, 0, 0, 1 }}});
 	framebuffer->setClearColor(1, {{{ 0, 0, 0, 1 }}});
 	framebuffer->setClearColor(2, {{{ 0, 0, 0, 1 }}});
 	framebuffer->setClearColor(3, {{{ 0, 0, 0, 1 }}});
 	framebuffer->setClearColor(4, {{{ 0, 0, 0, 1 }}});
 	framebuffer->setClearColor(5, {{{ 1, 0 }}});
+	this->framebuffer = framebuffer;
 }
 
 
