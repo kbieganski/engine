@@ -35,7 +35,7 @@ void TransformComponent::setLocalScale(vec3 scale) {
 
 quat TransformComponent::getOrientation() const {
 	if (parent) {
-		return getLocalOrientation() * parent->getOrientation();
+		return parent->getOrientation() * getLocalOrientation();
 	} else {
 		return getLocalOrientation();
 	}
@@ -44,7 +44,7 @@ quat TransformComponent::getOrientation() const {
 
 vec3 TransformComponent::getPosition() const {
 	if (parent) {
-		return getLocalPosition() + parent->getPosition();
+		return parent->getPosition() + getLocalPosition();
 	} else {
 		return getLocalPosition();
 	}
@@ -53,7 +53,7 @@ vec3 TransformComponent::getPosition() const {
 
 vec3 TransformComponent::getScale() const {
 	if (parent) {
-		return getLocalScale() * parent->getScale();
+		return parent->getScale() * getLocalScale();
 	} else {
 		return getLocalScale();
 	}
@@ -62,7 +62,7 @@ vec3 TransformComponent::getScale() const {
 
 mat4 TransformComponent::getTransform() const {
 	if (parent) {
-		return getLocalTransform() * parent->getTransform();
+		return parent->getTransform() * getLocalTransform();
 	} else {
 		return getLocalTransform();
 	}
@@ -85,5 +85,8 @@ vec3 TransformComponent::getLocalScale() const {
 
 
 mat4 TransformComponent::getLocalTransform() const {
-	return translate(toMat4(orientation) * glm::scale(mat4(1), scale), position);
+	auto scaleMatrix = glm::scale(mat4(1), scale);
+	auto orientationMatrix = toMat4(orientation);
+	auto translationMatrix = translate(mat4(1), position);
+	return translationMatrix * orientationMatrix * scaleMatrix;
 }

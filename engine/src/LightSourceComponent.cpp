@@ -1,4 +1,5 @@
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
+#define GLM_FORCE_LEFT_HANDED
 #include <glm/gtx/transform.hpp>
 #include "LightSourceComponent.hpp"
 
@@ -28,9 +29,8 @@ void LightSourceComponent::addTo(ShadingRenderer& shadingRenderer) const {
 void LightSourceComponent::update(vec3 eyePosition, vec3 ambientLightColor) {
 	auto position = transform.getPosition();
 	auto direction = getDirection();
-	auto view = lookAt(position, position + direction, vec3(0, 1, 0));
+	auto view = lookAt(position, position + direction, vec3(0, -1, 0));
 	auto projection = ortho(-20.f, 20.0f, -20.0f, 20.0f, -100.0f, 100.f);
-	projection[1][1] *= -1;
 	auto viewProjection = projection * view;
 	ShadowMapUniform shadowMapUniform;
 	shadowMapUniform.viewProjection = viewProjection;

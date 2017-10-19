@@ -1,4 +1,5 @@
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
+#define GLM_FORCE_LEFT_HANDED
 #include <glm/gtx/transform.hpp>
 #include "EyeComponent.hpp"
 
@@ -77,13 +78,13 @@ vec3 EyeComponent::getLocalDirection() const {
 
 mat4 EyeComponent::getViewTransform() const {
 	vec3 position = transform.getPosition();
-	return lookAt(position, position + getDirection(), vec3(0, 1, 0));
+	return lookAt(position, position + getDirection(), vec3(0, -1, 0));
 }
 
 
 mat4 EyeComponent::getProjectionTransform() const {
 	auto projection = perspective(fov, aspectRatio, near, far);
-	projection[1][1] *= -1;
+	//projection[1][1] *= -1;
 	return projection;
 }
 
