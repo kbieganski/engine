@@ -20,8 +20,8 @@ out gl_PerVertex {
 };
 
 void main() {
-	gl_Position = transform.worldViewProjection * vec4(inPosition, 1.0);
-	fragPosition = (transform.world * vec4(inPosition, 1.0)).xyz;
-	fragNormal = inNormal;
+	gl_Position = transform.worldViewProjection * vec4(inPosition, 1);
+	fragPosition = (transform.world * vec4(inPosition, 1)).xyz;
+	fragNormal = (transform.orientation * vec4(inNormal, 1)).xyz;
 	fragTexCoords = inTexCoords;
 }
