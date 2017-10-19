@@ -41,12 +41,14 @@ float calculateIlluminationFactor(vec3 fragPosition) {
 	return multisampleShadowMap(shadowMapCoords);
 }
 
-vec3 calculateAmbientComponent(vec3 diffuseColor) {
-	return diffuseColor * shading.ambientLightColor.rgb;
+vec3 calculateAmbientComponent(vec3 fragNormal, vec3 diffuseColor) {
+	float factor = (dot(fragNormal, vec3(0, 1, 0)) + 1) / 2;
+	return factor * diffuseColor * shading.ambientLightColor.rgb;
 }
 
 vec3 calculateDiffuseComponent(vec3 fragNormal, vec3 diffuseColor) {
 	float diffuseFactor = dot(fragNormal, -shading.lightDirection.xyz);
+	diffuseFactor = clamp(diffuseFactor, 0, 1);
 	return diffuseColor * shading.lightColor.xyz * diffuseFactor;
 }
 
@@ -66,7 +68,7 @@ void main() {
 	vec3 specularColor = texture(specularColorMap, fragTexCoord).rgb;
 	float specularHardness = texture(specularHardnessMap, fragTexCoord).r;
 	float illuminationFactor = calculateIlluminationFactor(fragPosition);
-	vec3 ambientComponent = calculateAmbientComponent(diffuseColor);
+	vec3 ambientComponent = calculateAmbientComponent(fragNormal, diffuseColor);
 	vec3 diffuseComponent = calculateDiffuseComponent(fragNormal, diffuseColor);
 	vec3 specularComponent = calculateSpecularComponent(fragPosition, fragNormal, specularColor, specularHardness);
 	outColor = vec4(illuminationFactor * (diffuseComponent + specularComponent) + ambientComponent, 1);
