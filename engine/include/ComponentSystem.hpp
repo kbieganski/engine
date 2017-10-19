@@ -15,6 +15,9 @@ public:
 	void add(EntityId entityId, Arguments&&... arguments);
 	void remove(EntityId entityId);
 
+	typename unordered_map<EntityId, Component>::iterator begin();
+	typename unordered_map<EntityId, Component>::iterator end();
+
 	template<typename... Arguments>
 	void update(Arguments&&... arguments);
 
@@ -36,6 +39,18 @@ void ComponentSystem<Component>::add(EntityId entityId, Arguments&&... arguments
 template<typename Component>
 void ComponentSystem<Component>::remove(EntityId entityId) {
 	components.erase(entityId);
+}
+
+
+template<typename Component>
+typename unordered_map<EntityId, Component>::iterator ComponentSystem<Component>::begin() {
+	return components.begin();
+}
+
+
+template<typename Component>
+typename unordered_map<EntityId, Component>::iterator ComponentSystem<Component>::end() {
+	return components.end();
 }
 
 
