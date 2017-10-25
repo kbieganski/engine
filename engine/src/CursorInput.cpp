@@ -38,7 +38,7 @@ CursorInput::~CursorInput() {
 
 
 void CursorInput::bindMovement(const string& binding) {
-	positionInput.setGetter(binding, [this]() {
+	positionInput.addGetter(binding, [this]() {
 		double x, y;
 		glfwGetCursorPos(window, &x, &y);
 		return transformCoordinates(vec2(x, y), windowSize);

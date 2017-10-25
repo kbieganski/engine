@@ -1,10 +1,6 @@
 #pragma once
-#include <vector>
 #include <GLFW/glfw3.h>
 #include <UserInput.hpp>
-
-
-using std::vector;
 
 
 class MouseInput {

@@ -16,10 +16,10 @@ GamepadInput::GamepadInput(GLFWwindow* window, int gamepad, UserInput<float>& _d
 
 
 void GamepadInput::bindAxis(const string& binding, Direction direction, int axis) {
-	pressInput.setGetter(binding, [this, axis]() {
+	pressInput.addGetter(binding, [this, axis]() {
 			return abs(axes[axis].value) > 0.5;
 		});
-	directionInput.setGetter(binding, [this, axis]() {
+	directionInput.addGetter(binding, [this, axis]() {
 			return axes[axis].value;
 		});
 	axes[axis].positive = binding;
@@ -35,10 +35,10 @@ void GamepadInput::bindAxis(const string& binding, Direction direction, int axis
 
 
 void GamepadInput::bindPositiveAxis(const string& binding, Direction direction, int axis) {
-	pressInput.setGetter(binding, [this, axis]() {
+	pressInput.addGetter(binding, [this, axis]() {
 			return axes[axis].value > 0.5;
 		});
-	directionInput.setGetter(binding, [this, direction, axis]() {
+	directionInput.addGetter(binding, [this, direction, axis]() {
 			if (axes[axis].value > 0) {
 				if (direction == POSITIVE) {
 					return axes[axis].value;
@@ -56,10 +56,10 @@ void GamepadInput::bindPositiveAxis(const string& binding, Direction direction, 
 
 
 void GamepadInput::bindNegativeAxis(const string& binding, Direction direction, int axis) {
-	pressInput.setGetter(binding, [this, axis]() {
+	pressInput.addGetter(binding, [this, axis]() {
 			return axes[axis].value < -0.5;
 		});
-	directionInput.setGetter(binding, [this, direction, axis]() {
+	directionInput.addGetter(binding, [this, direction, axis]() {
 			if (axes[axis].value < 0) {
 				if (direction == NEGATIVE) {
 					return axes[axis].value;
@@ -77,10 +77,10 @@ void GamepadInput::bindNegativeAxis(const string& binding, Direction direction, 
 
 
 void GamepadInput::bindButton(const string& binding, Direction direction, int button) {
-	pressInput.setGetter(binding, [this, button]() {
+	pressInput.addGetter(binding, [this, button]() {
 		return buttons[button].buttonPressed;
 	});
-	directionInput.setGetter(binding, [this, button, direction]() {
+	directionInput.addGetter(binding, [this, button, direction]() {
 		if (buttons[button].buttonPressed) {
 			if (direction == POSITIVE) {
 				return 1.0f;

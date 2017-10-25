@@ -38,7 +38,7 @@ MouseInput::MouseInput(MouseInput&& moved)
 
 void MouseInput::bindButton(const string& binding, Direction direction, int button) {
 	auto window = this->window;
-	directionInput.setGetter(binding, [window, button, direction]() {
+	directionInput.addGetter(binding, [window, button, direction]() {
 		if (glfwGetMouseButton(window, button) == GLFW_PRESS) {
 			if (direction == POSITIVE) {
 				return 1.0f;
@@ -49,7 +49,7 @@ void MouseInput::bindButton(const string& binding, Direction direction, int butt
 			return 0.0f;
 		}
 	});
-	pressInput.setGetter(binding, [window, button]() {
+	pressInput.addGetter(binding, [window, button]() {
 		return glfwGetMouseButton(window, button) == GLFW_PRESS;
 	});
 	buttons[button].name = binding;
@@ -59,10 +59,10 @@ void MouseInput::bindButton(const string& binding, Direction direction, int butt
 
 
 void MouseInput::bindScroll(const string& binding, Direction direction, Scroll scroll) {
-	pressInput.setGetter(binding, []() {
+	pressInput.addGetter(binding, []() {
 			return false;
 		});
-	directionInput.setGetter(binding, []() {
+	directionInput.addGetter(binding, []() {
 			return 0.0f;
 		});
 	scrolls[scroll].positive = binding;
@@ -78,10 +78,10 @@ void MouseInput::bindScroll(const string& binding, Direction direction, Scroll s
 
 
 void MouseInput::bindPositiveScroll(const string& binding, Direction direction, Scroll scroll) {
-	pressInput.setGetter(binding, []() {
+	pressInput.addGetter(binding, []() {
 			return false;
 		});
-	directionInput.setGetter(binding, []() {
+	directionInput.addGetter(binding, []() {
 			return 0.0f;
 		});
 	scrolls[scroll].positive = binding;
@@ -91,10 +91,10 @@ void MouseInput::bindPositiveScroll(const string& binding, Direction direction, 
 
 
 void MouseInput::bindNegativeScroll(const string& binding, Direction direction, Scroll scroll) {
-	pressInput.setGetter(binding, []() {
+	pressInput.addGetter(binding, []() {
 			return false;
 		});
-	directionInput.setGetter(binding, []() {
+	directionInput.addGetter(binding, []() {
 			return 0.0f;
 		});
 	scrolls[scroll].negative = binding;

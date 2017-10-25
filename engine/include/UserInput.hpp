@@ -2,6 +2,7 @@
 #include <functional>
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 
 using std::function;
@@ -9,6 +10,7 @@ using std::make_pair;
 using std::move;
 using std::string;
 using std::unordered_map;
+using std::vector;
 
 
 template<typename Type>
@@ -24,8 +26,8 @@ public:
 	void createBinding(const string& name);
 	void invokeCallback(const string& binding, Type value) const;
 
+	void addGetter(const string& binding, function<Type ()> getter);
 	void setCallback(const string& binding, function<void (Type)> callback);
-	void setGetter(const string& binding, function<Type ()> getter);
 
 	Type get(const string& binding) const;
 
@@ -33,7 +35,7 @@ public:
 private:
 	struct Binding {
 		function<void (Type)> callback;
-		function<Type ()> getter;
+		vector<function<Type ()>> getters;
 	};
 
 
@@ -61,7 +63,7 @@ UserInput<Type>& UserInput<Type>::operator=(UserInput&& moved) {
 
 template<typename Type>
 void UserInput<Type>::createBinding(const string& name) {
-	bindings.insert(make_pair(name, Binding { [](Type) {}, []() { return Type(); } }));
+	bindings.insert(make_pair(name, Binding { [](Type) {} }));
 }
 
 
@@ -70,6 +72,15 @@ void UserInput<Type>::invokeCallback(const string& binding, Type value) const {
 	auto it = bindings.find(binding);
 	if (it != bindings.end()) {
 		it->second.callback(value);
+	}
+}
+
+
+template<typename Type>
+void UserInput<Type>::addGetter(const string& binding, function<Type ()> getter) {
+	auto it = bindings.find(binding);
+	if (it != bindings.end()) {
+		it->second.getters.push_back(getter);
 	}
 }
 
@@ -84,15 +95,15 @@ void UserInput<Type>::setCallback(const string& binding, function<void (Type)> c
 
 
 template<typename Type>
-void UserInput<Type>::setGetter(const string& binding, function<Type ()> getter) {
-	auto it = bindings.find(binding);
-	if (it != bindings.end()) {
-		it->second.getter = getter;
+Type UserInput<Type>::get(const string& bindingName) const {
+	auto& binding = bindings.at(bindingName);
+	Type value = Type();
+	for (auto getter : binding.getters) {
+		value += getter();
 	}
+	return value;
 }
 
 
-template<typename Type>
-Type UserInput<Type>::get(const string& binding) const {
-	return bindings.at(binding).getter();
-}
+template<>
+bool UserInput<bool>::get(const string& bindingName) const;

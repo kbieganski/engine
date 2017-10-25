@@ -34,7 +34,7 @@ KeyboardInput::~KeyboardInput() {
 
 void KeyboardInput::bindKey(const string& binding, Direction direction, int key) {
 	auto window = this->window;
-	directionInput.setGetter(binding, [window, key, direction]() {
+	directionInput.addGetter(binding, [window, key, direction]() {
 		if (glfwGetKey(window, key) == GLFW_PRESS) {
 			if (direction == POSITIVE) {
 				return 1.0f;
@@ -45,7 +45,7 @@ void KeyboardInput::bindKey(const string& binding, Direction direction, int key)
 			return 0.0f;
 		}
 	});
-	pressInput.setGetter(binding, [window, key]() {
+	pressInput.addGetter(binding, [window, key]() {
 		return glfwGetKey(window, key) == GLFW_PRESS;
 	});
 	auto it = keys.find(key);
