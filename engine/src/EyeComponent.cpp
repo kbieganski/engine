@@ -14,7 +14,7 @@ using glm::radians;
 EyeComponent::EyeComponent(const TransformComponent& _transform)
 	:	transform(_transform) {
 	aspectRatio = 1;
-	fov = radians(45.0f);
+	fov = radians(90.0f);
 	near = 0.1;
 	far = 100;
 	localDirection = vec3(0, 0, 1);
@@ -78,13 +78,12 @@ vec3 EyeComponent::getLocalDirection() const {
 
 mat4 EyeComponent::getViewTransform() const {
 	vec3 position = transform.getPosition();
-	return lookAt(position, position + getDirection(), vec3(0, -1, 0));
+	return lookAt(position, position + getDirection(), vec3(0, 1, 0));
 }
 
 
 mat4 EyeComponent::getProjectionTransform() const {
 	auto projection = perspective(fov, aspectRatio, near, far);
-	//projection[1][1] *= -1;
 	return projection;
 }
 
