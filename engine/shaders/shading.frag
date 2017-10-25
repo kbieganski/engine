@@ -6,7 +6,7 @@ layout(binding = 0) uniform Shading {
 	uniform vec4 lightColor;
 	uniform vec4 lightDirection;
 	uniform mat4 lightView;
-	uniform vec4 eyePosition;
+	uniform vec4 cameraPosition;
 } shading;
 
 layout(binding = 1) uniform sampler2D positionMap;
@@ -53,9 +53,9 @@ vec3 calculateDiffuseComponent(vec3 fragNormal, vec3 diffuseColor) {
 }
 
 vec3 calculateSpecularComponent(vec3 fragPosition, vec3 fragNormal, vec3 specularColor, float specularHardness) {
-	vec3 vertexToEye = normalize(shading.eyePosition.xyz - fragPosition);
+	vec3 vertexToCamera = normalize(shading.cameraPosition.xyz - fragPosition);
 	vec3 lightReflect = normalize(reflect(shading.lightDirection.xyz, fragNormal));
-	float specularFactor = dot(vertexToEye, lightReflect);
+	float specularFactor = dot(vertexToCamera, lightReflect);
 	specularFactor = clamp(specularFactor, 0, 1);
 	specularFactor = pow(specularFactor, specularHardness);
 	return specularColor * specularFactor * shading.lightColor.rgb;

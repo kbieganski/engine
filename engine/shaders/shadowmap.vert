@@ -7,9 +7,9 @@ layout(binding = 0) uniform Object {
 	mat4 worldViewProjection;
 } object;
 
-layout(binding = 1) uniform Eye {
+layout(binding = 1) uniform Light {
 	mat4 viewProjection;
-} eye;
+} light;
 
 layout(location = 0) in vec3 inPosition;
 
@@ -18,5 +18,5 @@ out gl_PerVertex {
 };
 
 void main() {
-	gl_Position = eye.viewProjection * object.transform * vec4(inPosition, 1.0);
+	gl_Position = light.viewProjection * object.transform * vec4(inPosition, 1.0);
 }

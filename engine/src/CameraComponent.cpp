@@ -1,7 +1,7 @@
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #define GLM_FORCE_LEFT_HANDED
 #include <glm/gtx/transform.hpp>
-#include "EyeComponent.hpp"
+#include "CameraComponent.hpp"
 
 
 using std::make_shared;
@@ -11,7 +11,7 @@ using glm::perspective;
 using glm::radians;
 
 
-EyeComponent::EyeComponent(const TransformComponent& _transform)
+CameraComponent::CameraComponent(const TransformComponent& _transform)
 	:	transform(_transform) {
 	aspectRatio = 1;
 	fov = radians(90.0f);
@@ -21,73 +21,73 @@ EyeComponent::EyeComponent(const TransformComponent& _transform)
 }
 
 
-void EyeComponent::setAspectRatio(float aspectRatio) {
+void CameraComponent::setAspectRatio(float aspectRatio) {
 	this->aspectRatio = aspectRatio;
 }
 
 
-void EyeComponent::setFieldOfView(float fov) {
+void CameraComponent::setFieldOfView(float fov) {
 	this->fov = fov;
 }
 
 
-void EyeComponent::setNearPlane(float near) {
+void CameraComponent::setNearPlane(float near) {
 	this->near = near;
 }
 
 
-void EyeComponent::setFarPlane(float far) {
+void CameraComponent::setFarPlane(float far) {
 	this->far = far;
 }
 
 
-void EyeComponent::setLocalDirection(vec3 direction) {
+void CameraComponent::setLocalDirection(vec3 direction) {
 	localDirection = normalize(direction);
 }
 
 
-float EyeComponent::getAspectRatio() const {
+float CameraComponent::getAspectRatio() const {
 	return aspectRatio;
 }
 
 
-float EyeComponent::getFieldOfView() const {
+float CameraComponent::getFieldOfView() const {
 	return fov;
 }
 
 
-float EyeComponent::getNearPlane() const {
+float CameraComponent::getNearPlane() const {
 	return near;
 }
 
 
-float EyeComponent::getFarPlane() const {
+float CameraComponent::getFarPlane() const {
 	return far;
 }
 
 
-vec3 EyeComponent::getDirection() const {
+vec3 CameraComponent::getDirection() const {
 	return transform.getOrientation() * localDirection;
 }
 
 
-vec3 EyeComponent::getLocalDirection() const {
+vec3 CameraComponent::getLocalDirection() const {
 	return localDirection;
 }
 
 
-mat4 EyeComponent::getViewTransform() const {
+mat4 CameraComponent::getViewTransform() const {
 	vec3 position = transform.getPosition();
 	return lookAt(position, position + getDirection(), vec3(0, 1, 0));
 }
 
 
-mat4 EyeComponent::getProjectionTransform() const {
+mat4 CameraComponent::getProjectionTransform() const {
 	auto projection = perspective(fov, aspectRatio, near, far);
 	return projection;
 }
 
 
-mat4 EyeComponent::getViewProjectionTransform() const {
+mat4 CameraComponent::getViewProjectionTransform() const {
 	return getProjectionTransform() * getViewTransform();
 }

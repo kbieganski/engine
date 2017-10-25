@@ -1,6 +1,6 @@
 #pragma once
 #include "ComponentSystem.hpp"
-#include "EyeComponent.hpp"
+#include "CameraComponent.hpp"
 #include "LightSourceComponent.hpp"
 #include "ModelRenderComponent.hpp"
 #include "SceneRenderer.hpp"
@@ -16,23 +16,23 @@ public:
 
 	void addModelRender(EntityId entity, shared_ptr<const Model> model);
 	void addLightSource(EntityId entity, uint32_t resolution);
-	void addEye(EntityId entity);
+	void addCamera(EntityId entity);
 
 	void update();
 	void render();
 
 	void setAmbientColor(vec3 ambientColor);
-	void setCurrentEye(EntityId entity);
+	void setCurrentCamera(EntityId entity);
 
 	ModelRenderComponent& getModelRender(EntityId entity);
 	LightSourceComponent& getLightSource(EntityId entity);
-	EyeComponent& getEye(EntityId entity);
-	EyeComponent& getCurrentEye();
+	CameraComponent& getCamera(EntityId entity);
+	CameraComponent& getCurrentCamera();
 	vec3 getAmbientColor() const;
 	const ModelRenderComponent& getModelRender(EntityId entity) const;
 	const LightSourceComponent& getLightSource(EntityId entity) const;
-	const EyeComponent& getEye(EntityId entity) const;
-	const EyeComponent& getCurrentEye() const;
+	const CameraComponent& getCamera(EntityId entity) const;
+	const CameraComponent& getCurrentCamera() const;
 
 
 private:
@@ -45,7 +45,7 @@ private:
 	ComponentSystem<TransformComponent>& transforms;
 	ComponentSystem<ModelRenderComponent> modelRenders;
 	ComponentSystem<LightSourceComponent> lightSources;
-	ComponentSystem<EyeComponent> eyes;
-	EyeComponent* currentEye;
-	EntityId currentEyeId;
+	ComponentSystem<CameraComponent> cameras;
+	CameraComponent* currentCamera;
+	EntityId currentCameraId;
 };

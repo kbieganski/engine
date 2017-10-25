@@ -1,6 +1,6 @@
 #pragma once
 #include "CharacterComponent.hpp"
-#include "EyeComponent.hpp"
+#include "CameraComponent.hpp"
 #include "UserInput.hpp"
 
 
@@ -9,7 +9,7 @@ using glm::vec2;
 
 class FirstPersonControls {
 public:
-	FirstPersonControls(CharacterComponent& character, EyeComponent& eye, UserInput<float>& direction, UserInput<vec2>& cursor);
+	FirstPersonControls(CharacterComponent& character, CameraComponent& camera, UserInput<float>& direction, UserInput<vec2>& cursor);
 
 	void update(float dt);
 
@@ -18,7 +18,7 @@ private:
 	void updateMovement();
 
 	CharacterComponent& character;
-	EyeComponent& eye;
+	CameraComponent& camera;
 	UserInput<float>& direction;
 	UserInput<vec2>& cursor;
 };

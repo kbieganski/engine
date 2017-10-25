@@ -7,9 +7,9 @@
 using glm::vec4;
 
 
-class EyeComponent {
+class CameraComponent {
 public:
-	EyeComponent(const TransformComponent& transform);
+	CameraComponent(const TransformComponent& transform);
 
 	void setAspectRatio(float aspectRatio);
 	void setFieldOfView(float fov);

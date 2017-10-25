@@ -7,9 +7,9 @@ using glm::cross;
 using glm::normalize;
 
 
-FirstPersonControls::FirstPersonControls(CharacterComponent& _character, EyeComponent& _eye, UserInput<float>& _direction, UserInput<vec2>& _cursor)
+FirstPersonControls::FirstPersonControls(CharacterComponent& _character, CameraComponent& _camera, UserInput<float>& _direction, UserInput<vec2>& _cursor)
 	:	character(_character),
-		eye(_eye),
+		camera(_camera),
 		direction(_direction),
 		cursor(_cursor) {
 
@@ -32,17 +32,17 @@ void FirstPersonControls::updateMovement() {
 
 
 void FirstPersonControls::updateDirection(float dt) {
-	auto eyeDirection = eye.getDirection();
-	auto forward = normalize(vec3(eyeDirection.x, 0, eyeDirection.z));
+	auto cameraDirection = camera.getDirection();
+	auto forward = normalize(vec3(cameraDirection.x, 0, cameraDirection.z));
 	auto right = cross(forward, vec3(0, 1, 0));
 	auto cursorPosition = cursor.get("mouselook");
-	cursorPosition.x *= eye.getAspectRatio();
+	cursorPosition.x *= camera.getAspectRatio();
 	auto rotationAngles = cursorPosition * 180.0f * dt;
 	auto pitchRotation = angleAxis(-rotationAngles.y, right);
 	auto yawRotation = angleAxis(rotationAngles.x, vec3(0, 1, 0));
 	auto rotation = yawRotation * pitchRotation;
-	auto newEyeDirection = rotation * eyeDirection;
-	eye.setLocalDirection(newEyeDirection);
+	auto newCameraDirection = rotation * cameraDirection;
+	camera.setLocalDirection(newCameraDirection);
 	auto newCharDirection = yawRotation * forward;
 	character.setLocalDirection(newCharDirection);
 }

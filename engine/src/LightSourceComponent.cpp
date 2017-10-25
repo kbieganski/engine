@@ -26,7 +26,7 @@ void LightSourceComponent::addTo(ShadingRenderer& shadingRenderer) const {
 }
 
 
-void LightSourceComponent::update(vec3 eyePosition, vec3 ambientLightColor) {
+void LightSourceComponent::update(vec3 cameraPosition, vec3 ambientLightColor) {
 	auto position = transform.getPosition();
 	auto direction = getDirection();
 	auto view = lookAt(position, position + direction, vec3(0, 1, 0));
@@ -41,7 +41,7 @@ void LightSourceComponent::update(vec3 eyePosition, vec3 ambientLightColor) {
 	shadingUniform.lightColor = vec4(color, 1);
 	shadingUniform.lightDirection = vec4(direction, 1);
 	shadingUniform.lightViewProjection = viewProjection;
-	shadingUniform.eyePosition = vec4(eyePosition, 1);
+	shadingUniform.cameraPosition = vec4(cameraPosition, 1);
 	shadingUniformBuffer->set(&shadingUniform);
 	shadowMapRenderer.render();
 }

@@ -29,9 +29,10 @@ void CharacterComponent::move(vec2 movement) {
 
 void CharacterComponent::update() {
 	auto velocity = rigidBody.getBody().getLinearVelocity();
-	auto speed = velocity.length();
-	if (speed > 10) {
-		velocity *= 10 / speed;
+	auto speed = btVector3(velocity.x(), 0, velocity.z()).length();
+	if (speed > 8) {
+		velocity.setX(velocity.x() * 8 / speed);
+		velocity.setZ(velocity.z() * 8 / speed);
 		rigidBody.getBody().setLinearVelocity(velocity);
 	}
 }

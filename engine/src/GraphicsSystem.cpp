@@ -28,21 +28,21 @@ void GraphicsSystem::addLightSource(EntityId entity, uint32_t resolution) {
 }
 
 
-void GraphicsSystem::addEye(EntityId entity) {
-	eyes.add(entity, transforms[entity]);
+void GraphicsSystem::addCamera(EntityId entity) {
+	cameras.add(entity, transforms[entity]);
 }
 
 
 void GraphicsSystem::update() {
-	if (currentEye) {
-		modelRenders.update(currentEye->getViewProjectionTransform());
-		lightSources.update(transforms[currentEyeId].getPosition(), ambientColor);
+	if (currentCamera) {
+		modelRenders.update(currentCamera->getViewProjectionTransform());
+		lightSources.update(transforms[currentCameraId].getPosition(), ambientColor);
 	}
 }
 
 
 void GraphicsSystem::render() {
-	if (currentEye) {
+	if (currentCamera) {
 		sceneRenderer.render();
 		shadingRenderer.render();
 		screenRenderer.render();
@@ -55,9 +55,9 @@ void GraphicsSystem::setAmbientColor(vec3 ambientColor) {
 }
 
 
-void GraphicsSystem::setCurrentEye(EntityId entity) {
-	currentEyeId = entity;
-	currentEye = &eyes[entity];
+void GraphicsSystem::setCurrentCamera(EntityId entity) {
+	currentCameraId = entity;
+	currentCamera = &cameras[entity];
 }
 
 
@@ -71,13 +71,13 @@ LightSourceComponent& GraphicsSystem::getLightSource(EntityId entity) {
 }
 
 
-EyeComponent& GraphicsSystem::getEye(EntityId entity) {
-	return eyes[entity];
+CameraComponent& GraphicsSystem::getCamera(EntityId entity) {
+	return cameras[entity];
 }
 
 
-EyeComponent& GraphicsSystem::getCurrentEye() {
-	return *currentEye;
+CameraComponent& GraphicsSystem::getCurrentCamera() {
+	return *currentCamera;
 }
 
 
@@ -96,11 +96,11 @@ const LightSourceComponent& GraphicsSystem::getLightSource(EntityId entity) cons
 }
 
 
-const EyeComponent& GraphicsSystem::getEye(EntityId entity) const {
-	return eyes[entity];
+const CameraComponent& GraphicsSystem::getCamera(EntityId entity) const {
+	return cameras[entity];
 }
 
 
-const EyeComponent& GraphicsSystem::getCurrentEye() const {
-	return *currentEye;
+const CameraComponent& GraphicsSystem::getCurrentCamera() const {
+	return *currentCamera;
 }
