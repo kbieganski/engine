@@ -12,11 +12,10 @@
 
 class GraphicsSystem {
 public:
-	GraphicsSystem(shared_ptr<const GraphicsContext> context, shared_ptr<const SwapChain> swapChain, AssetCache<Shader> &shaders, ComponentSystem<TransformComponent>& transforms);
+	GraphicsSystem(shared_ptr<const GraphicsContext> context, shared_ptr<const SwapChain> swapChain, AssetCache<Shader> &shaders, ComponentSystem<TransformComponent>& transforms, ComponentSystem<CameraComponent>& cameras);
 
 	void addModelRender(EntityId entity, shared_ptr<const Model> model);
 	void addLightSource(EntityId entity, uint32_t resolution);
-	void addCamera(EntityId entity);
 
 	void update();
 	void render();
@@ -26,12 +25,10 @@ public:
 
 	ModelRenderComponent& getModelRender(EntityId entity);
 	LightSourceComponent& getLightSource(EntityId entity);
-	CameraComponent& getCamera(EntityId entity);
 	CameraComponent& getCurrentCamera();
 	vec3 getAmbientColor() const;
 	const ModelRenderComponent& getModelRender(EntityId entity) const;
 	const LightSourceComponent& getLightSource(EntityId entity) const;
-	const CameraComponent& getCamera(EntityId entity) const;
 	const CameraComponent& getCurrentCamera() const;
 
 
@@ -43,9 +40,9 @@ private:
 	ShadingRenderer shadingRenderer;
 	ScreenRenderer screenRenderer;
 	ComponentSystem<TransformComponent>& transforms;
+	ComponentSystem<CameraComponent>& cameras;
 	ComponentSystem<ModelRenderComponent> modelRenders;
 	ComponentSystem<LightSourceComponent> lightSources;
-	ComponentSystem<CameraComponent> cameras;
-	CameraComponent* currentCamera;
+	CameraComponent* currentCamera = nullptr;
 	EntityId currentCameraId;
 };

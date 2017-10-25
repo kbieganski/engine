@@ -1,12 +1,13 @@
 #include "GraphicsSystem.hpp"
 
 
-GraphicsSystem::GraphicsSystem(shared_ptr<const GraphicsContext> context, shared_ptr<const SwapChain> swapChain, AssetCache<Shader> &shaderAssets, ComponentSystem<TransformComponent>& _transforms)
+GraphicsSystem::GraphicsSystem(shared_ptr<const GraphicsContext> context, shared_ptr<const SwapChain> swapChain, AssetCache<Shader> &shaderAssets, ComponentSystem<TransformComponent>& _transforms, ComponentSystem<CameraComponent>& _cameras)
 	:	shaders(shaderAssets),
 		sceneRenderer(context, shaderAssets, swapChain->getScreenSize()),
 		shadingRenderer(context, sceneRenderer.getRenderTarget(), shaderAssets),
 		screenRenderer(context, swapChain, shadingRenderer.getRenderTarget(), shaderAssets),
-		transforms(_transforms) {
+		transforms(_transforms),
+		cameras(_cameras) {
 	ambientColor = vec3(0.1);
 	this->context = context;
 }
@@ -25,11 +26,6 @@ void GraphicsSystem::addModelRender(EntityId entity, shared_ptr<const Model> mod
 void GraphicsSystem::addLightSource(EntityId entity, uint32_t resolution) {
 	lightSources.add(entity, context, shaders, resolution, transforms[entity]);
 	lightSources[entity].addTo(shadingRenderer);
-}
-
-
-void GraphicsSystem::addCamera(EntityId entity) {
-	cameras.add(entity, transforms[entity]);
 }
 
 
@@ -71,11 +67,6 @@ LightSourceComponent& GraphicsSystem::getLightSource(EntityId entity) {
 }
 
 
-CameraComponent& GraphicsSystem::getCamera(EntityId entity) {
-	return cameras[entity];
-}
-
-
 CameraComponent& GraphicsSystem::getCurrentCamera() {
 	return *currentCamera;
 }
@@ -93,11 +84,6 @@ const ModelRenderComponent& GraphicsSystem::getModelRender(EntityId entity) cons
 
 const LightSourceComponent& GraphicsSystem::getLightSource(EntityId entity) const {
 	return lightSources[entity];
-}
-
-
-const CameraComponent& GraphicsSystem::getCamera(EntityId entity) const {
-	return cameras[entity];
 }
 
 
