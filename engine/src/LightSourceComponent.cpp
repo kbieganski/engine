@@ -1,5 +1,4 @@
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
-#define GLM_FORCE_LEFT_HANDED
 #include <glm/gtx/transform.hpp>
 #include "LightSourceComponent.hpp"
 
@@ -13,6 +12,7 @@ using glm::ortho;
 LightSourceComponent::LightSourceComponent(shared_ptr<const GraphicsContext> context, AssetCache<Shader> &shaderAssets, uint32_t shadowMapResolution, const TransformComponent& _transform)
 	:	shadowMapRenderer(context, shaderAssets, shadowMapResolution),
 		transform(_transform) {
+	areaSize = vec3(80);
 	color = vec3(1);
 	localDirection = vec3(0, 0, 1);
 	shadowMapUniformBuffer = make_shared<UniformBuffer>(context, sizeof(ShadowMapUniform));
@@ -29,8 +29,9 @@ void LightSourceComponent::addTo(ShadingRenderer& shadingRenderer) const {
 void LightSourceComponent::update(vec3 eyePosition, vec3 ambientLightColor) {
 	auto position = transform.getPosition();
 	auto direction = getDirection();
-	auto view = lookAt(position, position + direction, vec3(0, -1, 0));
-	auto projection = ortho(-20.f, 20.0f, -20.0f, 20.0f, -100.0f, 100.f);
+	auto view = lookAt(position, position + direction, vec3(0, 1, 0));
+	auto halfAreaSize = transform.getScale() * areaSize / 2.0f;
+	auto projection = ortho(-halfAreaSize.x, halfAreaSize.x, -halfAreaSize.y, halfAreaSize.y, -halfAreaSize.z, halfAreaSize.z);
 	auto viewProjection = projection * view;
 	ShadowMapUniform shadowMapUniform;
 	shadowMapUniform.viewProjection = viewProjection;
@@ -43,6 +44,11 @@ void LightSourceComponent::update(vec3 eyePosition, vec3 ambientLightColor) {
 	shadingUniform.eyePosition = vec4(eyePosition, 1);
 	shadingUniformBuffer->set(&shadingUniform);
 	shadowMapRenderer.render();
+}
+
+
+void LightSourceComponent::setAreaSize(vec3 areaSize) {
+	this->areaSize = areaSize;
 }
 
 
@@ -66,11 +72,21 @@ vec3 LightSourceComponent::getDirection() const {
 }
 
 
+vec3 LightSourceComponent::getAreaSize() const {
+	return transform.getScale() * areaSize;
+}
+
+
 vec3 LightSourceComponent::getLocalDirection() const {
 	return localDirection;
 }
 
 
 ShadowMapRenderer& LightSourceComponent::getShadowMapRenderer() {
+	return shadowMapRenderer;
+}
+
+
+const ShadowMapRenderer& LightSourceComponent::getShadowMapRenderer() const {
 	return shadowMapRenderer;
 }

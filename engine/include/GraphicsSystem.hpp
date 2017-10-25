@@ -21,12 +21,14 @@ public:
 	void update();
 	void render();
 
+	void setAmbientColor(vec3 ambientColor);
 	void setCurrentEye(EntityId entity);
 
 	ModelRenderComponent& getModelRender(EntityId entity);
 	LightSourceComponent& getLightSource(EntityId entity);
 	EyeComponent& getEye(EntityId entity);
 	EyeComponent& getCurrentEye();
+	vec3 getAmbientColor() const;
 	const ModelRenderComponent& getModelRender(EntityId entity) const;
 	const LightSourceComponent& getLightSource(EntityId entity) const;
 	const EyeComponent& getEye(EntityId entity) const;
@@ -34,6 +36,7 @@ public:
 
 
 private:
+	vec3 ambientColor;
 	shared_ptr<const GraphicsContext> context;
 	AssetCache<Shader> &shaders;
 	SceneRenderer sceneRenderer;

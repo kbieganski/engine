@@ -7,6 +7,7 @@ GraphicsSystem::GraphicsSystem(shared_ptr<const GraphicsContext> context, shared
 		shadingRenderer(context, sceneRenderer.getRenderTarget(), shaderAssets),
 		screenRenderer(context, swapChain, shadingRenderer.getRenderTarget(), shaderAssets),
 		transforms(_transforms) {
+	ambientColor = vec3(0.1);
 	this->context = context;
 }
 
@@ -35,7 +36,7 @@ void GraphicsSystem::addEye(EntityId entity) {
 void GraphicsSystem::update() {
 	if (currentEye) {
 		modelRenders.update(currentEye->getViewProjectionTransform());
-		lightSources.update(transforms[currentEyeId].getPosition(), vec4(0.075, 0.12, 0.15, 1.0));
+		lightSources.update(transforms[currentEyeId].getPosition(), ambientColor);
 	}
 }
 
@@ -46,6 +47,11 @@ void GraphicsSystem::render() {
 		shadingRenderer.render();
 		screenRenderer.render();
 	}
+}
+
+
+void GraphicsSystem::setAmbientColor(vec3 ambientColor) {
+	this->ambientColor = ambientColor;
 }
 
 
@@ -71,8 +77,12 @@ EyeComponent& GraphicsSystem::getEye(EntityId entity) {
 
 
 EyeComponent& GraphicsSystem::getCurrentEye() {
-
 	return *currentEye;
+}
+
+
+vec3 GraphicsSystem::getAmbientColor() const {
+	return ambientColor;
 }
 
 
