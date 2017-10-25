@@ -18,5 +18,4 @@ private:
 	void createScreenRenderDescription(shared_ptr<const GraphicsContext> context, shared_ptr<const RenderTarget> screenSurface, AssetCache<Shader> &shaderAssets);
 
 	shared_ptr<const SwapChain> swapChain;
-	unique_ptr<RenderDescription> screenRender;
 };
