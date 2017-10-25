@@ -1,6 +1,7 @@
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <unordered_map>
 #include <glm/gtx/hash.hpp>
+#include <bullet/BulletCollision/CollisionShapes/btShapeHull.h>
 #include "Logger.hpp"
 #include "Mesh.hpp"
 #include "RenderDescription.hpp"
@@ -11,6 +12,7 @@ using glm::vec2;
 using glm::vec3;
 using std::get;
 using std::make_shared;
+using std::make_unique;
 using std::unordered_map;
 
 
@@ -46,6 +48,11 @@ Mesh::Mesh(shared_ptr<const GraphicsContext> context, const string& filename) {
 void Mesh::describe(RenderDescription& renderDescription) const {
 	renderDescription.addVertices(vertexBuffer);
 	renderDescription.setIndices(indexBuffer);
+}
+
+
+const btConvexHullShape& Mesh::getConvexHull() const {
+	return *convexHull.get();
 }
 
 
@@ -91,6 +98,11 @@ void Mesh::createBuffers(shared_ptr<const GraphicsContext> context, tinyobj::att
 			indices.push_back(uniqueVertices[vertex]);
 		}
 	}
-	vertexBuffer = make_shared<VertexBuffer>(context, vertices);
 	indexBuffer = make_shared<IndexBuffer>(context, indices);
+	vertexBuffer = make_shared<VertexBuffer>(context, vertices);
+	btConvexHullShape tempConvexHull(reinterpret_cast<float*>(vertices.data()), vertices.size(), sizeof(Vertex));
+	btShapeHull hull(&tempConvexHull);
+	auto margin = tempConvexHull.getMargin();
+	hull.buildHull(margin);
+	convexHull = make_unique<btConvexHullShape>(reinterpret_cast<const float*>(hull.getVertexPointer()), hull.numVertices());
 }
