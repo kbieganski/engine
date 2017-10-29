@@ -7,9 +7,10 @@ using glm::cross;
 using glm::normalize;
 
 
-FirstPersonControls::FirstPersonControls(CharacterComponent& _character, CameraComponent& _camera, UserInput<float>& _direction, UserInput<vec2>& _cursor)
+FirstPersonControls::FirstPersonControls(CharacterComponent& _character, CameraComponent& _camera, UserInput<bool>& _press, UserInput<float>& _direction, UserInput<vec2>& _cursor)
 	:	character(_character),
 		camera(_camera),
+		press(_press),
 		direction(_direction),
 		cursor(_cursor) {
 
@@ -27,6 +28,9 @@ void FirstPersonControls::updateMovement() {
 	if (movement != vec2(0)) {
 		movement = normalize(movement);
 		character.move(movement);
+	}
+	if (press.get("jump")) {
+		character.jump();
 	}
 }
 

@@ -9,7 +9,7 @@ using glm::vec2;
 
 class FirstPersonControls {
 public:
-	FirstPersonControls(CharacterComponent& character, CameraComponent& camera, UserInput<float>& direction, UserInput<vec2>& cursor);
+	FirstPersonControls(CharacterComponent& character, CameraComponent& camera, UserInput<bool>& press, UserInput<float>& direction, UserInput<vec2>& cursor);
 
 	void update(float dt);
 
@@ -19,6 +19,7 @@ private:
 
 	CharacterComponent& character;
 	CameraComponent& camera;
+	UserInput<bool>& press;
 	UserInput<float>& direction;
 	UserInput<vec2>& cursor;
 };

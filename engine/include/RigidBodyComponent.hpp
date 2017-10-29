@@ -36,6 +36,8 @@ public:
 	float getMass() const;
 	virtual void getWorldTransform(btTransform& physicsTransform) const;
 
+	bool isOnGround() const;
+
 
 private:
 	float mass = 0;

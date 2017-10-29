@@ -153,3 +153,15 @@ void RigidBodyComponent::getWorldTransform(btTransform& physicsTransform) const 
 	auto position = transform.getPosition();
 	physicsTransform.setOrigin(btVector3(position.x, position.y, position.z));
 }
+
+
+bool RigidBodyComponent::isOnGround() const {
+	auto position = transform.getPosition();
+	btVector3 aabbMin, aabbMax;
+	body->getAabb(aabbMin, aabbMax);
+	btVector3 from(position.x, position.y, position.z);
+	btVector3 to(position.x, aabbMin.y() - 0.1f, position.z);
+	btDynamicsWorld::ClosestRayResultCallback result(from, to);
+	dynamicsWorld.rayTest(from, to, result);
+	return result.hasHit();
+}
