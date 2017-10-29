@@ -14,7 +14,7 @@ LightSourceComponent::LightSourceComponent(shared_ptr<const GraphicsContext> con
 		transform(_transform) {
 	areaSize = vec3(80);
 	color = vec3(1);
-	localDirection = vec3(0, 0, 1);
+	localDirection = vec3(0, 0, -1);
 	shadowMapUniformBuffer = make_shared<UniformBuffer>(context, sizeof(ShadowMapUniform));
 	shadingUniformBuffer = make_shared<UniformBuffer>(context, sizeof(ShadingUniform));
 	shadowMapRenderer.setUniformBuffer(shadowMapUniformBuffer);
@@ -31,7 +31,7 @@ void LightSourceComponent::update(vec3 cameraPosition, vec3 ambientLightColor) {
 	auto direction = getDirection();
 	auto view = lookAt(position, position + direction, vec3(0, 1, 0));
 	auto halfAreaSize = transform.getScale() * areaSize / 2.0f;
-	auto projection = ortho(-halfAreaSize.x, halfAreaSize.x, -halfAreaSize.y, halfAreaSize.y, -halfAreaSize.z, halfAreaSize.z);
+	auto projection = ortho(halfAreaSize.x, -halfAreaSize.x, -halfAreaSize.y, halfAreaSize.y, -halfAreaSize.z, halfAreaSize.z);
 	auto viewProjection = projection * view;
 	ShadowMapUniform shadowMapUniform;
 	shadowMapUniform.viewProjection = viewProjection;
