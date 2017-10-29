@@ -139,7 +139,7 @@ void GraphicsContext::createLogicalDevice(const GraphicsDeviceDescription& devic
 	if (vkCreateDevice(deviceDescription.getPhysicalDevice(), &createInfo, nullptr, &device) != VK_SUCCESS) {
 		ERROR("Failed to create logical graphics device");
 	}
-	INFO("Created logical graphics device", device);
+	INFO("Created logical graphics device ", device);
 	vkGetDeviceQueue(device, deviceDescription.getGraphicsQueueFamilyIndex(), 0, &graphicsQueue);
 	vkGetDeviceQueue(device, deviceDescription.getPresentationQueueFamilyIndex(), 0, &presentationQueue);
 }
@@ -153,7 +153,7 @@ void GraphicsContext::createCommandPool(const GraphicsDeviceDescription& deviceD
 	if (vkCreateCommandPool(device, &poolCreateInfo, nullptr, &commandPool) != VK_SUCCESS) {
 		ERROR("Failed to create command pool");
 	}
-	INFO("Created command pool", commandPool);
+	INFO("Created command pool ", commandPool);
 }
 
 
