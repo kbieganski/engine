@@ -48,6 +48,11 @@ void CursorInput::bindMovement(const string& binding) {
 }
 
 
+void CursorInput::setPosition(vec2 position) {
+	glfwSetCursorPos(window, (position.x + 1) / 2 * windowSize.x, (1 - position.y) / 2 * windowSize.y);
+}
+
+
 void CursorInput::setupMovementCallback() {
 	glfwSetCursorPosCallback(window, [](GLFWwindow* window, double x, double y) {
 		auto& cursorInput = *cursorInputs.at(window);

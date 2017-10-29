@@ -20,6 +20,8 @@ public:
 
 	void bindMovement(const string& binding);
 
+	void setPosition(vec2 position);
+
 
 private:
 	void setupMovementCallback();

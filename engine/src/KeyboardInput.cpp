@@ -55,7 +55,10 @@ void KeyboardInput::bindKey(const string& binding, Direction direction, int key)
 	} else {
 		keys.insert(make_pair(key, Binding{ binding, direction }));
 	}
-	INFO("Bound ", glfwGetKeyName(key, 0), " to '", binding, '\'');
+	const char* keyName = glfwGetKeyName(key, 0);
+	if (keyName) {
+		INFO("Bound ", keyName, " to '", binding, '\'');
+	}
 }
 
 

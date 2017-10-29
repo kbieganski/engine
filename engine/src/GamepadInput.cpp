@@ -19,8 +19,15 @@ void GamepadInput::bindAxis(const string& binding, Direction direction, int axis
 	pressInput.addGetter(binding, [this, axis]() {
 			return abs(axes[axis].value) > 0.5;
 		});
-	directionInput.addGetter(binding, [this, axis]() {
-			return axes[axis].value;
+	directionInput.addGetter(binding, [this, direction, axis]() {
+			if (abs(axes[axis].value) < deadzone) {
+				return 0.0f;
+			}
+			if (direction == POSITIVE) {
+				return axes[axis].value;
+			} else {
+				return -axes[axis].value;
+			}
 		});
 	axes[axis].positive = binding;
 	axes[axis].negative = binding;
@@ -39,7 +46,7 @@ void GamepadInput::bindPositiveAxis(const string& binding, Direction direction, 
 			return axes[axis].value > 0.5;
 		});
 	directionInput.addGetter(binding, [this, direction, axis]() {
-			if (axes[axis].value > 0) {
+			if (axes[axis].value >= deadzone) {
 				if (direction == POSITIVE) {
 					return axes[axis].value;
 				} else {
@@ -60,7 +67,7 @@ void GamepadInput::bindNegativeAxis(const string& binding, Direction direction, 
 			return axes[axis].value < -0.5;
 		});
 	directionInput.addGetter(binding, [this, direction, axis]() {
-			if (axes[axis].value < 0) {
+			if (axes[axis].value <= -deadzone) {
 				if (direction == NEGATIVE) {
 					return axes[axis].value;
 				} else {
@@ -104,7 +111,7 @@ void GamepadInput::update() {
 
 
 void GamepadInput::setDeadzone(int axis, float deadzone) {
-	axes[axis].deadzone = deadzone;
+	axes[axis].deadzone = abs(deadzone);
 }
 
 
