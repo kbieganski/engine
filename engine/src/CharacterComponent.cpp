@@ -3,12 +3,13 @@
 
 using std::make_shared;
 using glm::cross;
+using glm::length;
 using glm::normalize;
 
 
 CharacterComponent::CharacterComponent(RigidBodyComponent& _rigidBody)
 	:	rigidBody(_rigidBody) {
-	rigidBody.setShape(make_shared<btCapsuleShape>(0.4, 2));
+	rigidBody.setShape(make_shared<btCapsuleShape>(0.4, 1.8));
 	rigidBody.setMass(80);
 	rigidBody.setAngularFactor(0);
 }
@@ -19,11 +20,11 @@ void CharacterComponent::move(vec2 movement) {
 		auto forward = direction;
 		auto right = cross(forward, vec3(0, 1, 0));
 		auto forceDirection = forward * movement.y + right * movement.x;
-		if (forceDirection != vec3(0)) {
+		if (length(forceDirection) > 1) {
 			forceDirection = normalize(forceDirection);
-			auto force = forceDirection * acceleration * rigidBody.getMass();
-			rigidBody.applyForce(force);
 		}
+		auto force = forceDirection * acceleration * rigidBody.getMass();
+		rigidBody.applyForce(force);
 	}
 }
 

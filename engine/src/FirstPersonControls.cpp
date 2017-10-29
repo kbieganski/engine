@@ -23,12 +23,19 @@ void FirstPersonControls::update(float dt) {
 }
 
 
+void FirstPersonControls::setMouseSensitivity(float sensitivity) {
+	this->sensitivity = sensitivity;
+}
+
+
+float FirstPersonControls::getMouseSensitivity() const {
+	return sensitivity;
+}
+
+
 void FirstPersonControls::updateMovement() {
 	auto movement = vec2(direction.get("horizontal"), -direction.get("vertical"));
-	if (movement != vec2(0)) {
-		movement = normalize(movement);
-		character.move(movement);
-	}
+	character.move(movement);
 	if (press.get("jump")) {
 		character.jump();
 	}
@@ -41,6 +48,7 @@ void FirstPersonControls::updateDirection(float dt) {
 	auto right = cross(forward, vec3(0, 1, 0));
 	auto cursorPosition = cursor.get("mouselook");
 	cursorPosition.x *= camera.getAspectRatio();
+	cursorPosition *= sensitivity;
 	auto rotationAngles = cursorPosition * 180.0f * dt;
 	auto pitchRotation = angleAxis(-rotationAngles.y, right);
 	auto yawRotation = angleAxis(rotationAngles.x, vec3(0, 1, 0));
