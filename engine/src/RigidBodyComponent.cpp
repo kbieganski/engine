@@ -39,20 +39,35 @@ void RigidBodyComponent::applyForce(vec3 force) {
 }
 
 
-void RigidBodyComponent::setWorldTransform(const btTransform& physicsTransform) {
-	auto orientation = physicsTransform.getRotation();
-	transform.setLocalOrientation(quat(orientation.w(), orientation.x(), orientation.y(), orientation.z()));
-	auto position = physicsTransform.getOrigin();
-	transform.setLocalPosition(vec3(position.x(), position.y(), position.z()));
+void RigidBodyComponent::setAngularFactor(vec3 factor) {
+	body->setAngularFactor(btVector3(factor.x, factor.y, factor.z));
 }
 
 
-void RigidBodyComponent::getWorldTransform(btTransform& physicsTransform) const {
-	physicsTransform.setIdentity();
-	auto orientation = transform.getOrientation();
-	physicsTransform.setRotation(btQuaternion(orientation.x, orientation.y, orientation.z, orientation.w));
-	auto position = transform.getPosition();
-	physicsTransform.setOrigin(btVector3(position.x, position.y, position.z));
+void RigidBodyComponent::setAngularFactor(float factor) {
+	body->setAngularFactor(factor);
+}
+
+
+void RigidBodyComponent::setLinearFactor(vec3 factor) {
+	body->setLinearFactor(btVector3(factor.x, factor.y, factor.z));
+}
+
+
+void RigidBodyComponent::setAngularVelocity(vec3 velocity) {
+	body->setAngularVelocity(btVector3(velocity.x, velocity.y, velocity.z));
+	body->activate();
+}
+
+
+void RigidBodyComponent::setLinearVelocity(vec3 velocity) {
+	body->setLinearVelocity(btVector3(velocity.x, velocity.y, velocity.z));
+	body->activate();
+}
+
+
+void RigidBodyComponent::setFriction(float friction) {
+	body->setFriction(friction);
 }
 
 
@@ -79,6 +94,14 @@ void RigidBodyComponent::setShape(shared_ptr<const btCollisionShape> collisionSh
 }
 
 
+void RigidBodyComponent::setWorldTransform(const btTransform& physicsTransform) {
+	auto orientation = physicsTransform.getRotation();
+	transform.setLocalOrientation(quat(orientation.w(), orientation.x(), orientation.y(), orientation.z()));
+	auto position = physicsTransform.getOrigin();
+	transform.setLocalPosition(vec3(position.x(), position.y(), position.z()));
+}
+
+
 void RigidBodyComponent::setShape(shared_ptr<const Mesh> collisionMesh) {
 	setShape(shared_ptr<const btCollisionShape>(collisionMesh, &collisionMesh->getConvexHull()));
 }
@@ -89,6 +112,44 @@ btRigidBody& RigidBodyComponent::getBody() {
 }
 
 
-float RigidBodyComponent::getMass() {
+vec3 RigidBodyComponent::getAngularFactor() const {
+	auto factor = body->getAngularFactor();
+	return vec3(factor.x(), factor.y(), factor.z());
+}
+
+
+vec3 RigidBodyComponent::getLinearFactor() const {
+	auto factor = body->getLinearFactor();
+	return vec3(factor.x(), factor.y(), factor.z());
+}
+
+
+vec3 RigidBodyComponent::getAngularVelocity() const {
+	auto velocity = body->getAngularVelocity();
+	return vec3(velocity.x(), velocity.y(), velocity.z());
+}
+
+
+vec3 RigidBodyComponent::getLinearVelocity() const {
+	auto velocity = body->getLinearVelocity();
+	return vec3(velocity.x(), velocity.y(), velocity.z());
+}
+
+
+float RigidBodyComponent::getFriction() const {
+	return body->getFriction();
+}
+
+
+float RigidBodyComponent::getMass() const {
 	return mass;
+}
+
+
+void RigidBodyComponent::getWorldTransform(btTransform& physicsTransform) const {
+	physicsTransform.setIdentity();
+	auto orientation = transform.getOrientation();
+	physicsTransform.setRotation(btQuaternion(orientation.x, orientation.y, orientation.z, orientation.w));
+	auto position = transform.getPosition();
+	physicsTransform.setOrigin(btVector3(position.x, position.y, position.z));
 }
