@@ -12,7 +12,7 @@ Shader::Shader(shared_ptr<const GraphicsContext> context, const string& filename
 	this->context = context;
 	ifstream file(filename, ios::ate | ios::binary);
 	if (!file.is_open()) {
-		ERROR("Failed to open file " + filename);
+		ERROR("Failed to open file ", filename);
 	}
 	auto shaderFileSize = file.tellg();
 	vector<char> code(shaderFileSize);

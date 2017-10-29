@@ -36,6 +36,8 @@ GraphicsContext& GraphicsContext::operator=(GraphicsContext&& moved) {
 	presentationQueue = moved.presentationQueue;
 	commandPool = moved.commandPool;
 	memoryProperties = moved.memoryProperties;
+	deviceDescription = deviceDescription;
+	driver = move(moved.driver);
 	moved.device = VK_NULL_HANDLE;
 	moved.commandPool = VK_NULL_HANDLE;
 	return *this;

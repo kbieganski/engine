@@ -12,7 +12,6 @@ using std::move;
 
 SceneRenderer::SceneRenderer(shared_ptr<const GraphicsContext> context, AssetCache<Shader> &shaderAssets, uvec2 size)
 	:	Renderer(context) {
-	this->context = context;
 	createGeometryBuffer(context->getDeviceDescription(), size);
 	createFramebuffer();
 	createRenderPipeline(shaderAssets);
