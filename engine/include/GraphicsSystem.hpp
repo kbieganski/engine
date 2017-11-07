@@ -20,13 +20,15 @@ public:
 	void update();
 	void render();
 
-	void setAmbientColor(vec3 ambientColor);
+	void setAmbientLightColor(vec3 ambientColor);
+	void setSkyColor(vec3 skyColor);
 	void setCurrentCamera(EntityId entity);
 
 	ModelRenderComponent& getModelRender(EntityId entity);
 	LightSourceComponent& getLightSource(EntityId entity);
 	CameraComponent& getCurrentCamera();
-	vec3 getAmbientColor() const;
+	vec3 getAmbientLightColor() const;
+	vec3 getSkyColor() const;
 	const ModelRenderComponent& getModelRender(EntityId entity) const;
 	const LightSourceComponent& getLightSource(EntityId entity) const;
 	const CameraComponent& getCurrentCamera() const;

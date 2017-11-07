@@ -7,8 +7,17 @@
 using std::min;
 
 
-RenderPipelineBuilder::RenderPipelineBuilder(shared_ptr<const GraphicsContext> context) {
+RenderPipelineBuilder::RenderPipelineBuilder(shared_ptr<const GraphicsContext> context, const RenderTarget& renderTarget)
+	:	RenderPipelineBuilder(context, renderTarget.getRenderPass(), renderTarget.getSize()) {
+
+}
+
+
+RenderPipelineBuilder::RenderPipelineBuilder(shared_ptr<const GraphicsContext> context, shared_ptr<const RenderPass> renderPass, uvec2 screenSize) {
+	this->screenSize = screenSize;
 	this->context = context;
+	this->renderPass = renderPass;
+	makeColorBlendAttachmentStates(renderPass->getColorAttachmentCount());
 	makeVertexStageCreateInfo();
 	makeFragmentStageCreateInfo();
 	makeInputAssemblyStateCreateInfo();
@@ -19,12 +28,7 @@ RenderPipelineBuilder::RenderPipelineBuilder(shared_ptr<const GraphicsContext> c
 }
 
 
-RenderPipeline RenderPipelineBuilder::build(const RenderTarget& renderTarget) const {
-	return build(renderTarget.getRenderPass(), renderTarget.getSize());
-}
-
-
-RenderPipeline RenderPipelineBuilder::build(shared_ptr<const RenderPass> renderPass, uvec2 screenSize) const {
+RenderPipeline RenderPipelineBuilder::build() const {
 	auto vertexInputStateCreateInfo = makeVertexInputStateCreateInfo();
 	VkGraphicsPipelineCreateInfo createInfo = {};
 	createInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
@@ -38,8 +42,7 @@ RenderPipeline RenderPipelineBuilder::build(shared_ptr<const RenderPass> renderP
 	createInfo.pRasterizationState = &rasterizationStateCreateInfo;
 	createInfo.pMultisampleState = &multisampleStateCreateInfo;
 	createInfo.pDepthStencilState = &depthStencilStateCreateInfo;
-	auto colorBlendAttachmentStates = makeColorBlendAttachmentStates(renderPass->getColorAttachmentCount());
-	auto colorBlendStateCreateInfo = makeColorBlendStateCreateInfo(colorBlendAttachmentStates);
+	auto colorBlendStateCreateInfo = makeColorBlendStateCreateInfo();
 	createInfo.pColorBlendState = &colorBlendStateCreateInfo;
 	createInfo.pDynamicState = nullptr;
 	auto descriptorSetLayout = createDescriptorSetLayout();
@@ -54,20 +57,6 @@ RenderPipeline RenderPipelineBuilder::build(shared_ptr<const RenderPass> renderP
 	}
 	INFO("Created render pipeline ", graphicsPipeline);
 	return RenderPipeline(context, renderPass, { vertexShader, fragmentShader }, graphicsPipeline, createInfo.layout, descriptorSetLayout);
-}
-
-
-void RenderPipelineBuilder::setFragmentShader(shared_ptr<const Shader> shader) {
-	fragmentShader = shader;
-	fragmentStageCreateInfo.module = shader->getHandle();
-	fragmentStageCreateInfo.pName = "main";
-}
-
-
-void RenderPipelineBuilder::setVertexShader(shared_ptr<const Shader> shader) {
-	vertexShader = shader;
-	vertexStageCreateInfo.module = shader->getHandle();
-	vertexStageCreateInfo.pName = "main";
 }
 
 
@@ -148,6 +137,25 @@ VkDescriptorSetLayout RenderPipelineBuilder::createDescriptorSetLayout() const {
 }
 
 
+void RenderPipelineBuilder::setFragmentShader(shared_ptr<const Shader> shader) {
+	fragmentShader = shader;
+	fragmentStageCreateInfo.module = shader->getHandle();
+	fragmentStageCreateInfo.pName = "main";
+}
+
+
+void RenderPipelineBuilder::setVertexShader(shared_ptr<const Shader> shader) {
+	vertexShader = shader;
+	vertexStageCreateInfo.module = shader->getHandle();
+	vertexStageCreateInfo.pName = "main";
+}
+
+
+void RenderPipelineBuilder::setColorBlendAttachmentState(uint32_t attachment, VkPipelineColorBlendAttachmentState state) {
+	colorBlendAttachmentStates[attachment] = state;
+}
+
+
 VkPipelineViewportStateCreateInfo RenderPipelineBuilder::makeViewportStateCreateInfo(uvec2 screenSize) const {
 	static VkViewport viewport = {};
 	viewport.x = 0.0f;
@@ -180,13 +188,13 @@ VkPipelineVertexInputStateCreateInfo RenderPipelineBuilder::makeVertexInputState
 }
 
 
-VkPipelineColorBlendStateCreateInfo RenderPipelineBuilder::makeColorBlendStateCreateInfo(const vector<VkPipelineColorBlendAttachmentState>& attachments) const {
+VkPipelineColorBlendStateCreateInfo RenderPipelineBuilder::makeColorBlendStateCreateInfo() const {
 	VkPipelineColorBlendStateCreateInfo colorBlendStateCreateInfo = {};
 	colorBlendStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
 	colorBlendStateCreateInfo.logicOpEnable = VK_FALSE;
 	colorBlendStateCreateInfo.logicOp = VK_LOGIC_OP_COPY;
-	colorBlendStateCreateInfo.attachmentCount = attachments.size();
-	colorBlendStateCreateInfo.pAttachments = attachments.data();
+	colorBlendStateCreateInfo.attachmentCount = colorBlendAttachmentStates.size();
+	colorBlendStateCreateInfo.pAttachments = colorBlendAttachmentStates.data();
 	colorBlendStateCreateInfo.blendConstants[0] = 0.0f;
 	colorBlendStateCreateInfo.blendConstants[1] = 0.0f;
 	colorBlendStateCreateInfo.blendConstants[2] = 0.0f;
@@ -195,20 +203,18 @@ VkPipelineColorBlendStateCreateInfo RenderPipelineBuilder::makeColorBlendStateCr
 }
 
 
-vector<VkPipelineColorBlendAttachmentState> RenderPipelineBuilder::makeColorBlendAttachmentStates(uint32_t attachmentCount) const {
-	vector<VkPipelineColorBlendAttachmentState> colorBlendAttachmentStates;
+void RenderPipelineBuilder::makeColorBlendAttachmentStates(uint32_t attachmentCount) {
 	colorBlendAttachmentStates.resize(attachmentCount);
 	for (auto& colorBlendAttachmentState : colorBlendAttachmentStates) {
 		colorBlendAttachmentState.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
 		colorBlendAttachmentState.blendEnable = VK_FALSE;
 		colorBlendAttachmentState.srcColorBlendFactor = VK_BLEND_FACTOR_ONE;
-		colorBlendAttachmentState.dstColorBlendFactor = VK_BLEND_FACTOR_ZERO;
+		colorBlendAttachmentState.dstColorBlendFactor = VK_BLEND_FACTOR_ONE;
 		colorBlendAttachmentState.colorBlendOp = VK_BLEND_OP_ADD;
 		colorBlendAttachmentState.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
 		colorBlendAttachmentState.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
 		colorBlendAttachmentState.alphaBlendOp = VK_BLEND_OP_ADD;
 	}
-	return colorBlendAttachmentStates;
 }
 
 

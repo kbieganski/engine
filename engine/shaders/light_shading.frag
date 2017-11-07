@@ -2,7 +2,6 @@
 #extension GL_ARB_separate_shader_objects : enable
 
 layout(binding = 0) uniform Shading {
-	uniform vec4 ambientLightColor;
 	uniform vec4 lightColor;
 	uniform vec4 lightDirection;
 	uniform mat4 lightView;
@@ -29,7 +28,7 @@ float multisampleShadowMap(vec3 coordinates) {
 	);
 	float illuminationFactor = 0;
 	for (int i = 0; i < 4; i++) {
-		vec3 bias = vec3(poissonDisk[i] / 800, -0.01);
+		vec3 bias = vec3(poissonDisk[i] / 800, -0.005);
 		illuminationFactor += texture(shadowMap, coordinates + bias).r / 4;
 	}
 	return illuminationFactor;
@@ -39,11 +38,6 @@ float calculateIlluminationFactor(vec3 fragPosition) {
 	vec3 shadowMapCoords = (shading.lightView * vec4(fragPosition, 1.0)).xyz;
 	shadowMapCoords.xy = (shadowMapCoords.xy + vec2(1)) / 2;
 	return multisampleShadowMap(shadowMapCoords);
-}
-
-vec3 calculateAmbientComponent(vec3 fragNormal, vec3 diffuseColor) {
-	float factor = (dot(fragNormal, vec3(0, 1, 0)) + 1) / 2;
-	return factor * diffuseColor * shading.ambientLightColor.rgb;
 }
 
 vec3 calculateDiffuseComponent(vec3 fragNormal, vec3 diffuseColor) {
@@ -68,8 +62,7 @@ void main() {
 	vec3 specularColor = texture(specularColorMap, fragTexCoord).rgb;
 	float specularHardness = texture(specularHardnessMap, fragTexCoord).r;
 	float illuminationFactor = calculateIlluminationFactor(fragPosition);
-	vec3 ambientComponent = calculateAmbientComponent(fragNormal, diffuseColor);
 	vec3 diffuseComponent = calculateDiffuseComponent(fragNormal, diffuseColor);
 	vec3 specularComponent = calculateSpecularComponent(fragPosition, fragNormal, specularColor, specularHardness);
-	outColor = vec4(illuminationFactor * (diffuseComponent + specularComponent) + ambientComponent, 1);
+	outColor = vec4(illuminationFactor * (diffuseComponent + specularComponent), 1);
 }

@@ -26,13 +26,16 @@ void GraphicsSystem::addModelRender(EntityId entity, shared_ptr<const Model> mod
 void GraphicsSystem::addLightSource(EntityId entity, uint32_t resolution) {
 	lightSources.add(entity, context, shaders, resolution, transforms[entity]);
 	lightSources[entity].addTo(shadingRenderer);
+	for (auto& modelRender : modelRenders) {
+		modelRender.second.addTo(lightSources[entity].getShadowMapRenderer());
+	}
 }
 
 
 void GraphicsSystem::update() {
 	if (currentCamera) {
 		modelRenders.update(currentCamera->getViewProjectionTransform());
-		lightSources.update(transforms[currentCameraId].getPosition(), ambientColor);
+		lightSources.update(transforms[currentCameraId].getPosition());
 	}
 }
 
@@ -46,8 +49,13 @@ void GraphicsSystem::render() {
 }
 
 
-void GraphicsSystem::setAmbientColor(vec3 ambientColor) {
-	this->ambientColor = ambientColor;
+void GraphicsSystem::setAmbientLightColor(vec3 ambientColor) {
+	shadingRenderer.setAmbientLightColor(ambientColor);
+}
+
+
+void GraphicsSystem::setSkyColor(vec3 skyColor) {
+	shadingRenderer.setSkyColor(skyColor);
 }
 
 
@@ -72,8 +80,13 @@ CameraComponent& GraphicsSystem::getCurrentCamera() {
 }
 
 
-vec3 GraphicsSystem::getAmbientColor() const {
-	return ambientColor;
+vec3 GraphicsSystem::getAmbientLightColor() const {
+	return shadingRenderer.getAmbientLightColor();
+}
+
+
+vec3 GraphicsSystem::getSkyColor() const {
+	return shadingRenderer.getSkyColor();
 }
 
 

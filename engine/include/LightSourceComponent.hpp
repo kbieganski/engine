@@ -14,7 +14,6 @@ public:
 	};
 
 	struct ShadingUniform {
-		vec4 ambientLightColor;
 		vec4 lightColor;
 		vec4 lightDirection;
 		mat4 lightViewProjection;
@@ -24,7 +23,7 @@ public:
 	LightSourceComponent(shared_ptr<const GraphicsContext> context, AssetCache<Shader> &shaderAssets, uint32_t shadowMapResolution, const TransformComponent& transform);
 
 	void addTo(ShadingRenderer& shadingRenderer) const;
-	void update(vec3 cameraPosition, vec3 ambientLightColor);
+	void update(vec3 cameraPosition);
 
 	void setAreaSize(vec3 size);
 	void setColor(vec3 color);

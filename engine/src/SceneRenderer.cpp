@@ -71,11 +71,11 @@ void SceneRenderer::createFramebuffer() {
 void SceneRenderer::createRenderPipeline(AssetCache<Shader> &shaderAssets) {
 	auto fragmentShader = shaderAssets.load("shaders/scene_frag.spv");
 	auto vertexShader = shaderAssets.load("shaders/scene_vert.spv");
-	RenderPipelineBuilder pipelineBuilder(context);
+	RenderPipelineBuilder pipelineBuilder(context, *renderTarget);
 	pipelineBuilder.setFragmentShader(fragmentShader);
 	pipelineBuilder.setVertexShader(vertexShader);
 	Mesh::createAttributeBindings(pipelineBuilder);
 	pipelineBuilder.createUniformBufferBinding(0);
 	Material::createUniformBindings(pipelineBuilder, 1);
-	pipeline = make_shared<RenderPipeline>(pipelineBuilder.build(*renderTarget));
+	pipeline = make_shared<RenderPipeline>(pipelineBuilder.build());
 }

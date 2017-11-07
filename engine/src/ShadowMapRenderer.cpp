@@ -71,11 +71,11 @@ void ShadowMapRenderer::createFramebuffer() {
 void ShadowMapRenderer::createRenderPipeline(AssetCache<Shader> &shaderAssets) {
 	auto fragmentShader = shaderAssets.load("shaders/shadowmap_frag.spv");
 	auto vertexShader = shaderAssets.load("shaders/shadowmap_vert.spv");
-	RenderPipelineBuilder pipelineBuilder(context);
+	RenderPipelineBuilder pipelineBuilder(context, *renderTarget);
 	pipelineBuilder.setFragmentShader(fragmentShader);
 	pipelineBuilder.setVertexShader(vertexShader);
 	pipelineBuilder.createUniformBufferBinding(0);
 	pipelineBuilder.createUniformBufferBinding(1);
 	Mesh::createAttributeBindings(pipelineBuilder);
-	pipeline = make_shared<RenderPipeline>(pipelineBuilder.build(*renderTarget));
+	pipeline = make_shared<RenderPipeline>(pipelineBuilder.build());
 }

@@ -7,17 +7,18 @@ class RenderTarget;
 
 class RenderPipelineBuilder {
 public:
-	RenderPipelineBuilder(shared_ptr<const GraphicsContext> context);
+	RenderPipelineBuilder(shared_ptr<const GraphicsContext> context, const RenderTarget& renderTarget);
+	RenderPipelineBuilder(shared_ptr<const GraphicsContext> context, shared_ptr<const RenderPass> renderPass, uvec2 screenSize);
 
-	RenderPipeline build(const RenderTarget& renderTarget) const;
-	RenderPipeline build(shared_ptr<const RenderPass> renderPass, uvec2 screenSize) const;
-
-	void setFragmentShader(shared_ptr<const Shader> shader);
-	void setVertexShader(shared_ptr<const Shader> shader);
+	RenderPipeline build() const;
 
 	void createAttributeBinding(uint32_t stride, const vector<VkFormat>& formats, const vector<uint32_t>& offsets);
 	void createUniformBufferBinding(uint32_t index);
 	void createTextureBinding(uint32_t index);
+
+	void setFragmentShader(shared_ptr<const Shader> shader);
+	void setVertexShader(shared_ptr<const Shader> shader);
+	void setColorBlendAttachmentState(uint32_t attachment, VkPipelineColorBlendAttachmentState state);
 
 
 private:
@@ -25,8 +26,8 @@ private:
 	VkDescriptorSetLayout createDescriptorSetLayout() const;
 	VkPipelineVertexInputStateCreateInfo makeVertexInputStateCreateInfo() const;
 	VkPipelineViewportStateCreateInfo makeViewportStateCreateInfo(uvec2 screenSize) const;
-	VkPipelineColorBlendStateCreateInfo makeColorBlendStateCreateInfo(const vector<VkPipelineColorBlendAttachmentState>& attachments) const;
-	vector<VkPipelineColorBlendAttachmentState> makeColorBlendAttachmentStates(uint32_t attachmentCount) const;
+	VkPipelineColorBlendStateCreateInfo makeColorBlendStateCreateInfo() const;
+	void makeColorBlendAttachmentStates(uint32_t attachmentCcount);
 	void makeVertexStageCreateInfo();
 	void makeFragmentStageCreateInfo();
 	void makeInputAssemblyStateCreateInfo();
@@ -35,6 +36,7 @@ private:
 	void makeDepthStencilStateCreateInfo();
 	void makeDynamicStateCreateInfo();
 
+	uvec2 screenSize;
 	VkPipelineShaderStageCreateInfo vertexStageCreateInfo = {};
 	VkPipelineShaderStageCreateInfo fragmentStageCreateInfo = {};
 	VkPipelineInputAssemblyStateCreateInfo inputAssemblyStateCreateInfo = {};
@@ -42,10 +44,12 @@ private:
 	VkPipelineMultisampleStateCreateInfo multisampleStateCreateInfo = {};
 	VkPipelineDepthStencilStateCreateInfo depthStencilStateCreateInfo = {};
 	VkPipelineDynamicStateCreateInfo dynamicStateCreateInfo = {};
+	vector<VkPipelineColorBlendAttachmentState> colorBlendAttachmentStates;
 	vector<VkDescriptorSetLayoutBinding> descriptorSetLayoutBindings;
 	vector<VkVertexInputBindingDescription> bindingDescriptions;
 	vector<VkVertexInputAttributeDescription> attributeDescriptions;
 	shared_ptr<const GraphicsContext> context;
+	shared_ptr<const RenderPass> renderPass;
 	shared_ptr<const Shader> fragmentShader;
 	shared_ptr<const Shader> vertexShader;
 };
