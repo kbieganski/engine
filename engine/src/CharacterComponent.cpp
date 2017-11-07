@@ -18,7 +18,7 @@ CharacterComponent::CharacterComponent(RigidBodyComponent& _rigidBody)
 void CharacterComponent::move(vec2 movement) {
 	if (rigidBody.isOnGround()) {
 		auto forward = direction;
-		auto right = cross(forward, vec3(0, 1, 0));
+		auto right = cross(vec3(0, 1, 0), forward);
 		auto forceDirection = forward * movement.y + right * movement.x;
 		if (length(forceDirection) > 1) {
 			forceDirection = normalize(forceDirection);

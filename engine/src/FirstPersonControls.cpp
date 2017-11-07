@@ -34,7 +34,7 @@ float FirstPersonControls::getMouseSensitivity() const {
 
 
 void FirstPersonControls::updateMovement() {
-	auto movement = vec2(direction.get("horizontal"), -direction.get("vertical"));
+	auto movement = vec2(direction.get("horizontal"), direction.get("vertical"));
 	character.move(movement);
 	if (press.get("jump")) {
 		character.jump();
@@ -45,7 +45,7 @@ void FirstPersonControls::updateMovement() {
 void FirstPersonControls::updateDirection(float dt) {
 	auto cameraDirection = camera.getDirection();
 	auto forward = normalize(vec3(cameraDirection.x, 0, cameraDirection.z));
-	auto right = cross(forward, vec3(0, 1, 0));
+	auto right = cross(vec3(0, 1, 0), forward);
 	auto cursorPosition = cursor.get("mouselook");
 	cursorPosition.x *= camera.getAspectRatio();
 	cursorPosition *= sensitivity;
