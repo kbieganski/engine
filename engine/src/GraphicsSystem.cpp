@@ -17,17 +17,29 @@ GraphicsSystem::GraphicsSystem(shared_ptr<const GraphicsContext> context, shared
 void GraphicsSystem::addModelRender(EntityId entity, shared_ptr<const Model> model) {
 	modelRenders.add(entity, context, transforms[entity], model);
 	modelRenders[entity].addTo(sceneRenderer);
-	for (auto& lightSource : lightSources) {
-		modelRenders[entity].addTo(lightSource.second.getShadowMapRenderer());
+	for (auto& sun : suns) {
+		modelRenders[entity].addTo(sun.second.getShadowMapRenderer());
+	}
+	for (auto& spotlight : spotlights) {
+		modelRenders[entity].addTo(spotlight.second.getShadowMapRenderer());
 	}
 }
 
 
-void GraphicsSystem::addLightSource(EntityId entity, uint32_t resolution) {
-	lightSources.add(entity, context, shaders, resolution, transforms[entity]);
-	lightSources[entity].addTo(shadingRenderer);
+void GraphicsSystem::addSun(EntityId entity, uint32_t resolution) {
+	suns.add(entity, context, shaders, resolution, transforms[entity]);
+	suns[entity].addTo(shadingRenderer);
 	for (auto& modelRender : modelRenders) {
-		modelRender.second.addTo(lightSources[entity].getShadowMapRenderer());
+		modelRender.second.addTo(suns[entity].getShadowMapRenderer());
+	}
+}
+
+
+void GraphicsSystem::addSpotlight(EntityId entity, uint32_t resolution) {
+	spotlights.add(entity, context, shaders, resolution, transforms[entity]);
+	spotlights[entity].addTo(shadingRenderer);
+	for (auto& modelRender : modelRenders) {
+		modelRender.second.addTo(spotlights[entity].getShadowMapRenderer());
 	}
 }
 
@@ -35,7 +47,8 @@ void GraphicsSystem::addLightSource(EntityId entity, uint32_t resolution) {
 void GraphicsSystem::update() {
 	if (currentCamera) {
 		modelRenders.update(currentCamera->getViewProjectionTransform());
-		lightSources.update(transforms[currentCameraId].getPosition());
+		suns.update(transforms[currentCameraId].getPosition());
+		spotlights.update(transforms[currentCameraId].getPosition());
 	}
 }
 
@@ -70,8 +83,13 @@ ModelRenderComponent& GraphicsSystem::getModelRender(EntityId entity) {
 }
 
 
-LightSourceComponent& GraphicsSystem::getLightSource(EntityId entity) {
-	return lightSources[entity];
+SunComponent& GraphicsSystem::getSun(EntityId entity) {
+	return suns[entity];
+}
+
+
+SpotlightComponent& GraphicsSystem::getSpotlight(EntityId entity) {
+	return spotlights[entity];
 }
 
 
@@ -95,8 +113,8 @@ const ModelRenderComponent& GraphicsSystem::getModelRender(EntityId entity) cons
 }
 
 
-const LightSourceComponent& GraphicsSystem::getLightSource(EntityId entity) const {
-	return lightSources[entity];
+const SunComponent& GraphicsSystem::getSun(EntityId entity) const {
+	return suns[entity];
 }
 
 

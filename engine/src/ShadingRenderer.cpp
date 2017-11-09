@@ -21,8 +21,9 @@ ShadingRenderer::ShadingRenderer(shared_ptr<const GraphicsContext> context, shar
 	this->geometryBuffer = geometryBuffer;
 	createScreenSurface(geometryBuffer->getSize());
 	createFramebuffer();
-	createAmbientRenderPipeline(shaderAssets);
-	createLightRenderPipeline(shaderAssets);
+	createAmbientLightRenderPipeline(shaderAssets);
+	createSunRenderPipeline(shaderAssets);
+	createSpotlightRenderPipeline(shaderAssets);
 	ambientShadingUniform = make_shared<UniformBuffer>(context, sizeof(AmbientShadingUniform));
 	ambientShadingUniform->set(&ambientShadingUniformData);
 	screenRectangleVertices = make_shared<VertexBuffer>(context, screenRectangleVertexData);
@@ -40,7 +41,7 @@ ShadingRenderer::ShadingRenderer(ShadingRenderer&& moved)
 	:	Renderer(move(moved)) {
 	geometryBuffer = move(moved.geometryBuffer);
 	ambientPipeline = move(moved.ambientPipeline);
-	lightPipeline = move(moved.lightPipeline);
+	sunPipeline = move(moved.sunPipeline);
 }
 
 
@@ -55,13 +56,28 @@ ShadingRenderer& ShadingRenderer::operator=(ShadingRenderer&& moved) {
 	static_cast<Renderer&>(*this) = move(moved);
 	geometryBuffer = move(moved.geometryBuffer);
 	ambientPipeline = move(moved.ambientPipeline);
-	lightPipeline = move(moved.lightPipeline);
+	sunPipeline = move(moved.sunPipeline);
 	return *this;
 }
 
 
-RenderDescription& ShadingRenderer::addRender(shared_ptr<const UniformBuffer> uniformBuffer, shared_ptr<const Texture> shadowMap) {
-	auto& description = Renderer::addRender(lightPipeline, 1, 6);
+RenderDescription& ShadingRenderer::addSunRender(shared_ptr<const UniformBuffer> uniformBuffer, shared_ptr<const Texture> shadowMap) {
+	auto& description = Renderer::addRender(sunPipeline, 1, 6);
+	description.bindUniform(0, uniformBuffer);
+	description.bindUniform(1, geometryBuffer->getTextures()[0]);
+	description.bindUniform(2, geometryBuffer->getTextures()[1]);
+	description.bindUniform(3, geometryBuffer->getTextures()[2]);
+	description.bindUniform(4, geometryBuffer->getTextures()[3]);
+	description.bindUniform(5, geometryBuffer->getTextures()[4]);
+	description.bindUniform(6, shadowMap);
+	description.addVertices(screenRectangleVertices);
+	description.setIndices(screenRectangleIndices);
+	return description;
+}
+
+
+RenderDescription& ShadingRenderer::addSpotlightRender(shared_ptr<const UniformBuffer> uniformBuffer, shared_ptr<const Texture> shadowMap) {
+	auto& description = Renderer::addRender(spotlightPipeline, 1, 6);
 	description.bindUniform(0, uniformBuffer);
 	description.bindUniform(1, geometryBuffer->getTextures()[0]);
 	description.bindUniform(2, geometryBuffer->getTextures()[1]);
@@ -104,15 +120,8 @@ void ShadingRenderer::createScreenSurface(uvec2 size) {
 }
 
 
-void ShadingRenderer::createFramebuffer() {
-	auto framebuffer = new Framebuffer(context, renderTarget);
-	framebuffer->setClearColor(0, {{{ 0, 0, 0, 1 }}});
-	this->framebuffer = framebuffer;
-}
-
-
-void ShadingRenderer::createAmbientRenderPipeline(AssetCache<Shader> &shaderAssets) {
-	auto frag = shaderAssets.load("shaders/ambient_shading_frag.spv");
+void ShadingRenderer::createAmbientLightRenderPipeline(AssetCache<Shader> &shaderAssets) {
+	auto frag = shaderAssets.load("shaders/shading_ambient_frag.spv");
 	auto vert = shaderAssets.load("shaders/shading_vert.spv");
 	RenderPipelineBuilder pipelineBuilder(context, *renderTarget);
 	pipelineBuilder.setFragmentShader(frag);
@@ -125,12 +134,29 @@ void ShadingRenderer::createAmbientRenderPipeline(AssetCache<Shader> &shaderAsse
 }
 
 
-void ShadingRenderer::createLightRenderPipeline(AssetCache<Shader> &shaderAssets) {
-	auto frag = shaderAssets.load("shaders/light_shading_frag.spv");
+void ShadingRenderer::createSunRenderPipeline(AssetCache<Shader> &shaderAssets) {
+	auto frag = shaderAssets.load("shaders/shading_sun_frag.spv");
 	auto vert = shaderAssets.load("shaders/shading_vert.spv");
 	RenderPipelineBuilder pipelineBuilder(context, *renderTarget);
 	pipelineBuilder.setFragmentShader(frag);
 	pipelineBuilder.setVertexShader(vert);
+	configureLightRenderPipelineBuilder(pipelineBuilder);
+	sunPipeline = make_shared<RenderPipeline>(pipelineBuilder.build());
+}
+
+
+void ShadingRenderer::createSpotlightRenderPipeline(AssetCache<Shader> &shaderAssets) {
+	auto frag = shaderAssets.load("shaders/shading_spotlight_frag.spv");
+	auto vert = shaderAssets.load("shaders/shading_vert.spv");
+	RenderPipelineBuilder pipelineBuilder(context, *renderTarget);
+	pipelineBuilder.setFragmentShader(frag);
+	pipelineBuilder.setVertexShader(vert);
+	configureLightRenderPipelineBuilder(pipelineBuilder);
+	spotlightPipeline = make_shared<RenderPipeline>(pipelineBuilder.build());
+}
+
+
+void ShadingRenderer::configureLightRenderPipelineBuilder(RenderPipelineBuilder& pipelineBuilder) const {
 	VkPipelineColorBlendAttachmentState colorBlendAttachmentState = {};
 	colorBlendAttachmentState.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
 	colorBlendAttachmentState.blendEnable = VK_TRUE;
@@ -149,5 +175,11 @@ void ShadingRenderer::createLightRenderPipeline(AssetCache<Shader> &shaderAssets
 	pipelineBuilder.createTextureBinding(5);
 	pipelineBuilder.createTextureBinding(6);
 	pipelineBuilder.createAttributeBinding(4 * sizeof(float), { VK_FORMAT_R32G32_SFLOAT, VK_FORMAT_R32G32_SFLOAT }, { 0, 2 * sizeof(float) });
-	lightPipeline = make_shared<RenderPipeline>(pipelineBuilder.build());
+}
+
+
+void ShadingRenderer::createFramebuffer() {
+	auto framebuffer = new Framebuffer(context, renderTarget);
+	framebuffer->setClearColor(0, {{{ 0, 0, 0, 1 }}});
+	this->framebuffer = framebuffer;
 }

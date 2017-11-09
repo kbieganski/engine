@@ -7,6 +7,9 @@ using glm::vec3;
 using glm::vec4;
 
 
+class RenderPipelineBuilder;
+
+
 class ShadingRenderer : public Renderer {
 public:
 	struct AmbientShadingUniform {
@@ -20,7 +23,8 @@ public:
 
 	ShadingRenderer& operator=(ShadingRenderer&& moved);
 
-	RenderDescription& addRender(shared_ptr<const UniformBuffer> uniformBuffer, shared_ptr<const Texture> shadowMap);
+	RenderDescription& addSunRender(shared_ptr<const UniformBuffer> uniformBuffer, shared_ptr<const Texture> shadowMap);
+	RenderDescription& addSpotlightRender(shared_ptr<const UniformBuffer> uniformBuffer, shared_ptr<const Texture> shadowMap);
 
 	void setAmbientLightColor(vec3 ambientLightColor);
 	void setSkyColor(vec3 skyColor);
@@ -31,13 +35,16 @@ public:
 
 private:
 	void createScreenSurface(uvec2);
-	void createAmbientRenderPipeline(AssetCache<Shader> &shaderAssets);
-	void createLightRenderPipeline(AssetCache<Shader> &shaderAssets);
+	void createAmbientLightRenderPipeline(AssetCache<Shader> &shaderAssets);
+	void createSunRenderPipeline(AssetCache<Shader> &shaderAssets);
+	void createSpotlightRenderPipeline(AssetCache<Shader> &shaderAssets);
+	void configureLightRenderPipelineBuilder(RenderPipelineBuilder& pipelineBuilder) const;
 	void createFramebuffer();
 
 	shared_ptr<const RenderTarget> geometryBuffer;
 	shared_ptr<RenderPipeline> ambientPipeline;
-	shared_ptr<RenderPipeline> lightPipeline;
+	shared_ptr<RenderPipeline> sunPipeline;
+	shared_ptr<RenderPipeline> spotlightPipeline;
 	shared_ptr<UniformBuffer> ambientShadingUniform;
 	shared_ptr<VertexBuffer> screenRectangleVertices;
 	shared_ptr<IndexBuffer> screenRectangleIndices;
