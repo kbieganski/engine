@@ -64,11 +64,11 @@ obj/debug/%.o: src/%.cpp
 shaders: $(VERTEX_SHADERS) $(FRAGMENT_SHADERS)
 	@echo "Shader compilation for engine finished"
 
-work/shaders/%_frag.spv: shaders/%.frag
+work/shaders/%_frag.spv: shaders/%.frag shaders/*.glsl
 	@mkdir -p work/shaders
 	$(SHADER_COMPILER) $(SHADER_COMPILER_FLAGS) $< -o $@
 
-work/shaders/%_vert.spv: shaders/%.vert
+work/shaders/%_vert.spv: shaders/%.vert shaders/*.glsl
 	@mkdir -p work/shaders
 	$(SHADER_COMPILER) $(SHADER_COMPILER_FLAGS) $< -o $@
 
