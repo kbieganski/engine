@@ -11,19 +11,19 @@ Texture::Texture(shared_ptr<const GraphicsContext> context, const string& filena
 	ownsImage = true;
 	this->context = context;
 	aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT;
-	gli::texture2d loadedTexture(gli::load(filename));
+	gli::texture2d loadedTexture(gli::load_dds(filename));
 	if (loadedTexture.empty()) {
 		ERROR("Failed to load image ", filename);
 	}
 	INFO("Loaded image ", filename);
 	size = uvec2(loadedTexture[0].extent().x, loadedTexture.extent().y);
 	StagingBuffer stagingBuffer(context, loadedTexture.size(), loadedTexture.data());
-	createImage(VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT);
+	createImage(VK_FORMAT_BC1_RGB_UNORM_BLOCK, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT);
 	allocateMemory();
 	changeLayout(VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 	stagingBuffer.copyTo(*this);
 	changeLayout(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-	createView(VK_FORMAT_R8G8B8A8_UNORM);
+	createView(VK_FORMAT_BC1_RGB_UNORM_BLOCK);
 }
 
 
