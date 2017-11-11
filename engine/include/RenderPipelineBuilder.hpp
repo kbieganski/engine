@@ -18,6 +18,7 @@ public:
 
 	void setFragmentShader(shared_ptr<const Shader> shader);
 	void setVertexShader(shared_ptr<const Shader> shader);
+	void setFrontFace(VkFrontFace frontFace);
 	void setColorBlendAttachmentState(uint32_t attachment, VkPipelineColorBlendAttachmentState state);
 
 

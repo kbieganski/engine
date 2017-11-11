@@ -151,6 +151,11 @@ void RenderPipelineBuilder::setVertexShader(shared_ptr<const Shader> shader) {
 }
 
 
+void RenderPipelineBuilder::setFrontFace(VkFrontFace frontFace) {
+	rasterizationStateCreateInfo.frontFace = frontFace;
+}
+
+
 void RenderPipelineBuilder::setColorBlendAttachmentState(uint32_t attachment, VkPipelineColorBlendAttachmentState state) {
 	colorBlendAttachmentStates[attachment] = state;
 }

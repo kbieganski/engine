@@ -72,6 +72,7 @@ void ShadowMapRenderer::createRenderPipeline(AssetCache<Shader> &shaderAssets) {
 	auto fragmentShader = shaderAssets.load("shaders/shadowmap_frag.spv");
 	auto vertexShader = shaderAssets.load("shaders/shadowmap_vert.spv");
 	RenderPipelineBuilder pipelineBuilder(context, *renderTarget);
+	pipelineBuilder.setFrontFace(VK_FRONT_FACE_CLOCKWISE);
 	pipelineBuilder.setFragmentShader(fragmentShader);
 	pipelineBuilder.setVertexShader(vertexShader);
 	pipelineBuilder.createUniformBufferBinding(0);
