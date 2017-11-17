@@ -18,8 +18,6 @@ float multisampleShadowMap(vec3 coordinates, float focus) {
 		vec2(0.566637, 0.605213),
 		vec2(0.039766, -0.396100)
 	);
-	//coordinates.z += zBias;
-	//return sampleShadowMap(coordinates).r;
 	float illuminationFactor = 0;
 	for (int i = 0; i < 16; i++) {
 		vec3 bias = vec3(poissonDisk[i] / focus, 0);
@@ -29,11 +27,10 @@ float multisampleShadowMap(vec3 coordinates, float focus) {
 	return illuminationFactor;
 }
 
-float calculateIlluminationFactor(vec3 fragPosition, float focus, float zBias) {
+float calculateIlluminationFactor(vec3 fragPosition, float focus) {
 	vec4 shadowMapCoords = shading.lightView * vec4(fragPosition, 1.0);
 	shadowMapCoords /= shadowMapCoords.w;
 	shadowMapCoords.xy = (shadowMapCoords.xy + vec2(1)) / 2;
-	shadowMapCoords.z += zBias;
 	return multisampleShadowMap(shadowMapCoords.xyz, focus);
 }
 

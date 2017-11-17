@@ -36,7 +36,7 @@ void main() {
 	vec3 diffuseColor = texture(diffuseMap, fragTexCoord).rgb;
 	vec3 specularColor = texture(specularColorMap, fragTexCoord).rgb;
 	float specularHardness = texture(specularHardnessMap, fragTexCoord).r;
-	float illuminationFactor = calculateIlluminationFactor(fragPosition, 400, -0.0);
+	float illuminationFactor = calculateIlluminationFactor(fragPosition, 100);
 	vec3 lightToFragment = fragPosition - shading.lightPosition.xyz;
 	float lightDistance = length(lightToFragment);
 	vec3 lightColor = shading.lightColor.xyz * shading.lightColor.a / pow(lightDistance + 1, 2);
