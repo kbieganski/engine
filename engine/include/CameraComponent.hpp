@@ -29,10 +29,10 @@ public:
 
 
 private:
-	float aspectRatio;
+	float aspectRatio = 1;
 	float fov;
-	float near;
-	float far;
-	vec3 localDirection;
+	float near = 0.1;
+	float far = 100;
+	vec3 localDirection = vec3(0, 0, 1);
 	const TransformComponent& transform;
 };

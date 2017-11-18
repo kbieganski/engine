@@ -1,3 +1,4 @@
+#define GLM_ENABLE_EXPERIMENTAL
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <unordered_map>
 #include <glm/gtx/hash.hpp>

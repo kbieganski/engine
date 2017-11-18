@@ -2,7 +2,7 @@ include ../definitions.mk
 
 # Compiler flags
 COMPILER=g++
-COMPILER_FLAGS=-c -Wall --pedantic -std=c++14 -Iinclude -I../$(ENGINE_INCLUDE) -O3 -DNDEBUG -DBOOST_TEST_DYN_LINK
+COMPILER_FLAGS=-c -Wall --pedantic -std=c++14 -Iinclude -I../$(ENGINE_INCLUDE)  -I../$(GLM_INCLUDE) -I../$(TINYOBJLOADER_INCLUDE) -O3 -DNDEBUG -DBOOST_TEST_DYN_LINK
 LINKER=g++
 LINKER_FLAGS=-s -lboost_unit_test_framework
 

@@ -1,0 +1,9 @@
+[submodule "tinyobjloader"]
+	path = tinyobjloader
+	url = https://github.com/syoyo/tinyobjloader
+[submodule "gli"]
+	path = gli
+	url = https://github.com/g-truc/gli
+[submodule "glm"]
+	path = glm
+	url = https://github.com/g-truc/glm

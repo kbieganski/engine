@@ -1,9 +1,8 @@
-#include <glm/gtx/quaternion.hpp>
 #include "ModelRenderComponent.hpp"
 
 
 using std::make_shared;
-using glm::toMat4;
+using glm::mat4_cast;
 
 
 ModelRenderComponent::ModelRenderComponent(shared_ptr<const GraphicsContext> context, const TransformComponent& _transform, shared_ptr<const Model> model)
@@ -29,7 +28,7 @@ void ModelRenderComponent::addTo(ShadowMapRenderer& shadowMapRenderer) const {
 
 void ModelRenderComponent::update(const mat4& viewProjection) {
 	Uniform uniform;
-	uniform.orientation = toMat4(transform.getOrientation());
+	uniform.orientation = mat4_cast(transform.getOrientation());
 	uniform.world = transform.getTransform();
 	uniform.worldViewProjection = viewProjection * uniform.world;
 	uniformBuffer->set(&uniform);

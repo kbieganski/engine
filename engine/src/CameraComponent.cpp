@@ -1,6 +1,6 @@
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #define GLM_FORCE_LEFT_HANDED
-#include <glm/gtx/transform.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include "CameraComponent.hpp"
 
 
@@ -15,9 +15,6 @@ CameraComponent::CameraComponent(const TransformComponent& _transform)
 	:	transform(_transform) {
 	aspectRatio = 1;
 	fov = radians(90.0f);
-	near = 0.1;
-	far = 100;
-	localDirection = vec3(0, 0, 1);
 }
 
 

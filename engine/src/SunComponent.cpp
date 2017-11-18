@@ -1,5 +1,6 @@
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
-#include <glm/gtx/transform.hpp>
+#define GLM_FORCE_LEFT_HANDED
+#include <glm/gtc/matrix_transform.hpp>
 #include "SunComponent.hpp"
 
 
@@ -28,7 +29,7 @@ void SunComponent::update(vec3 cameraPosition) {
 	auto direction = getDirection();
 	auto view = lookAt(position, position + direction, vec3(0, 1, 0));
 	auto halfAreaSize = transform.getScale() * areaSize / 2.0f;
-	auto projection = ortho(-halfAreaSize.x, halfAreaSize.x, -halfAreaSize.y, halfAreaSize.y, halfAreaSize.z, -halfAreaSize.z);
+	auto projection = ortho(-halfAreaSize.x, halfAreaSize.x, -halfAreaSize.y, halfAreaSize.y, -halfAreaSize.z, halfAreaSize.z);
 	auto viewProjection = projection * view;
 	ShadowMapUniform shadowMapUniform;
 	shadowMapUniform.viewProjection = viewProjection;

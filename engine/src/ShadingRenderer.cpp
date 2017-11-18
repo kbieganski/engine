@@ -1,4 +1,3 @@
-#define GLM_SWIZZLE
 #include "RenderPassBuilder.hpp"
 #include "RenderPipelineBuilder.hpp"
 #include "ShadingRenderer.hpp"
@@ -104,12 +103,12 @@ void ShadingRenderer::setSkyColor(vec3 skyColor) {
 
 
 vec3 ShadingRenderer::getAmbientLightColor() const {
-	return ambientShadingUniformData.ambientLightColor.xyz();
+	return ambientShadingUniformData.ambientLightColor;
 }
 
 
 vec3 ShadingRenderer::getSkyColor() const {
-	return ambientShadingUniformData.skyColor.xyz();
+	return ambientShadingUniformData.skyColor;
 }
 
 

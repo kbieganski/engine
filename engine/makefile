@@ -2,7 +2,7 @@ include ../definitions.mk
 
 # Compiler flags
 COMPILER=g++
-COMPILER_FLAGS=-c -Wall --pedantic -std=c++14 -Iinclude
+COMPILER_FLAGS=-c -Wall --pedantic -std=c++14 -Iinclude -I../$(GLM_INCLUDE) -I../$(GLI_INCLUDE) -I../$(TINYOBJLOADER_INCLUDE)
 ARCHIVER=ar
 ARCHIVER_FLAGS=rvs
 

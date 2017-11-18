@@ -11,8 +11,6 @@ using glm::vec3;
 
 class TransformComponent {
 public:
-	TransformComponent();
-
 	void setParent(const TransformComponent& parent);
 	void setLocalOrientation(quat orientation);
 	void setLocalPosition(vec3 position);
@@ -30,8 +28,8 @@ public:
 
 
 private:
-	quat orientation;
-	vec3 position;
-	vec3 scale;
-	const TransformComponent* parent;
+	quat orientation = quat(1, 0, 0, 0);
+	vec3 position = vec3(0);
+	vec3 scale = vec3(1);
+	const TransformComponent* parent = nullptr;
 };

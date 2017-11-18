@@ -2,7 +2,7 @@ include ../definitions.mk
 
 # Compiler flags
 COMPILER=g++
-COMPILER_FLAGS=-c -Wall --pedantic -std=c++14 -Iinclude -I../$(ENGINE_INCLUDE)
+COMPILER_FLAGS=-c -Wall --pedantic -std=c++14 -Iinclude -I../$(ENGINE_INCLUDE) -I../$(GLM_INCLUDE) -I../$(TINYOBJLOADER_INCLUDE)
 LINKER=g++
 LINKER_FLAGS=-lglfw -lvulkan -lBulletDynamics -lBulletCollision -lLinearMath -lopenal -logg -lvorbisfile -lpthread
 

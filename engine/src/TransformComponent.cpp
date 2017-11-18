@@ -1,16 +1,9 @@
-#include <glm/gtx/transform.hpp>
-#include <glm/gtx/quaternion.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include "TransformComponent.hpp"
 
 
 using glm::translate;
-using glm::toMat4;
-
-
-TransformComponent::TransformComponent() {
-	scale = vec3(1);
-	parent = nullptr;
-}
+using glm::mat4_cast;
 
 
 void TransformComponent::setParent(const TransformComponent& parent) {
@@ -86,7 +79,7 @@ vec3 TransformComponent::getLocalScale() const {
 
 mat4 TransformComponent::getLocalTransform() const {
 	auto scaleMatrix = glm::scale(mat4(1), scale);
-	auto orientationMatrix = toMat4(orientation);
+	auto orientationMatrix = mat4_cast(orientation);
 	auto translationMatrix = translate(mat4(1), position);
 	return translationMatrix * orientationMatrix * scaleMatrix;
 }
