@@ -6,7 +6,7 @@
 #include "CursorInput.hpp"
 #include "GamepadInput.hpp"
 #include "KeyboardInput.hpp"
-#include "Mesh.hpp"
+#include "Model.hpp"
 #include "MouseInput.hpp"
 #include "SoundBuffer.hpp"
 #include "SwapChain.hpp"
@@ -32,6 +32,8 @@ public:
 	AssetCache<Mesh> meshes;
 	AssetCache<Texture> textures;
 	AssetCache<SoundBuffer> sounds;
+	AssetCache<Material> materials;
+	AssetCache<Model> models;
 	MouseInput mouse;
 	CursorInput cursor;
 	KeyboardInput keyboard;

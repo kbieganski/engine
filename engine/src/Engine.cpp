@@ -1,6 +1,7 @@
 #include "GraphicsDeviceSelector.hpp"
 #include "InitialState.hpp"
 #include "Logger.hpp"
+#include "Properties.hpp"
 
 
 using std::make_shared;
@@ -11,6 +12,21 @@ Engine::Engine(GLFWwindow* window, shared_ptr<const GraphicsContext> context, sh
 	:	shaders([context](const string& filename) { return new Shader(context, filename); }),
 	 	meshes([context](const string& filename) { return new Mesh(context, filename); }),
 	 	textures([context](const string& filename) { return new Texture(context, filename); }),
+	 	materials([this](const string& filename) {
+				Properties properties(filename);
+				auto texture = textures.load(properties.get<string>("texture"));
+				auto specularRed = properties.get<float>("specularRed");
+				auto specularGreen = properties.get<float>("specularGreen");
+				auto specularBlue = properties.get<float>("specularBlue");
+				auto specularHardness = properties.get<float>("specularHardness");
+				return new Material(this->context, texture, vec3(specularRed, specularGreen, specularBlue), specularHardness);
+			}),
+		models([this](const string& filename) {
+				Properties properties(filename);
+				auto mesh = meshes.load(properties.get<string>("mesh"));
+				auto material = materials.load(properties.get<string>("material"));
+				return new Model(mesh, material);
+			}),
 	 	mouse(window, directionInput, pressInput),
 	 	cursor(window, swapChain->getScreenSize(), positionInput),
 	 	keyboard(window, directionInput, pressInput) {
