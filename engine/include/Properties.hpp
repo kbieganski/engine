@@ -6,10 +6,10 @@ using std::string;
 using std::map;
 
 
-class Settings {
+class Properties {
 public:
-	void read(const string& settingsAsString);
-	void write(string& settingsAsString);
+	void read(const string& propertiesAsString);
+	void write(string& propertiesAsString);
 
 	void set(const string& key, bool value);
 	void set(const string& key, int64_t value);
@@ -43,7 +43,7 @@ private:
 
 
 template<typename Type>
-Type Settings::get(const string& key, const Type& alternative) const {
+Type Properties::get(const string& key, const Type& alternative) const {
 	auto it = internalMap.find(key);
 	if (it != internalMap.end()) {
 		return internalMap.at(key).get(alternative);
