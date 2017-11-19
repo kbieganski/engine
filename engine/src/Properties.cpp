@@ -1,9 +1,12 @@
 #include <regex>
+#include <fstream>
 #include "Logger.hpp"
 #include "Properties.hpp"
 #include "StringUtility.hpp"
 
 
+using std::ifstream;
+using std::ios;
 using std::regex;
 using std::regex_match;
 using std::string;
@@ -11,6 +14,25 @@ using std::stoi;
 using std::stoul;
 using std::stof;
 using std::to_string;
+
+
+Properties::Properties() {
+
+}
+
+
+Properties::Properties(const string& filename) {
+	ifstream file(filename, ios::ate | ios::binary);
+	if (!file.is_open()) {
+		ERROR("Failed to open file ", filename);
+	}
+	auto fileSize = file.tellg();
+	string contents;
+	contents.resize(fileSize);
+	file.seekg(0);
+	file.read(&contents[0], contents.size());
+	read(contents);
+}
 
 
 void Properties::read(const string& propertiesAsString) {

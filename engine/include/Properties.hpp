@@ -8,6 +8,9 @@ using std::map;
 
 class Properties {
 public:
+	Properties();
+	Properties(const string& filename);
+
 	void read(const string& propertiesAsString);
 	void write(string& propertiesAsString);
 
