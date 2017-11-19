@@ -40,7 +40,6 @@ void Properties::read(const string& propertiesAsString) {
 	size_t lineStart = -1;
 	do {
 		lineStart++;
-		INFO(lineStart);
 		size_t assignmentPosition = propertiesAsString.find('=', lineStart);
 		size_t keyLength = assignmentPosition - lineStart;
 		size_t valuePosition = assignmentPosition + 1;
@@ -48,7 +47,6 @@ void Properties::read(const string& propertiesAsString) {
 		size_t valueLength = lineEnd - valuePosition;
 		string key = propertiesAsString.substr(lineStart, keyLength);
 		string value = propertiesAsString.substr(valuePosition, valueLength);
-		INFO('\'', propertiesAsString.substr(lineStart, keyLength), '\'');
 		set(key, value);
 		lineStart = lineEnd;
 	} while (lineStart != string::npos);
@@ -103,7 +101,7 @@ void Properties::set(const string& key, const char* value) {
 void Properties::set(const string& key, const string& value) {
 	string trimmedKey = StringUtility::trim(key);
 	string trimmedValue = StringUtility::trim(value);
-	INFO("Setting '", trimmedKey, "' set to '", trimmedValue, '\'');
+	INFO("Property '", trimmedKey, "' set to '", trimmedValue, '\'');
 	auto it = internalMap.find(trimmedKey);
 	if (it != internalMap.end()) {
 		it->second.asString = trimmedValue;
