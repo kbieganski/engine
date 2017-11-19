@@ -7,6 +7,25 @@ using std::make_shared;
 using std::make_unique;
 
 
+Engine::Engine(GLFWwindow* window, shared_ptr<const GraphicsContext> context, shared_ptr<const SwapChain> swapChain)
+	:	shaders([context](const string& filename) { return new Shader(context, filename); }),
+	 	meshes([context](const string& filename) { return new Mesh(context, filename); }),
+	 	textures([context](const string& filename) { return new Texture(context, filename); }),
+	 	mouse(window, directionInput, pressInput),
+	 	cursor(window, swapChain->getScreenSize(), positionInput),
+	 	keyboard(window, directionInput, pressInput) {
+	this->window = window;
+	this->context = context;
+	this->swapChain = swapChain;
+	gamepads.reserve(GLFW_JOYSTICK_LAST + 1);
+	for (uint8_t i = 0; i < GLFW_JOYSTICK_LAST + 1; i++) {
+		if (glfwJoystickPresent(i)) {
+			gamepads.push_back(GamepadInput(window, i, directionInput, pressInput));
+		}
+	}
+	run();
+}
+
 void Engine::changeState(shared_ptr<ApplicationState> newState) {
 	INFO("Application state change requested");
 	nextState = newState;
@@ -20,7 +39,7 @@ void Engine::stop() {
 
 
 shared_ptr<const GraphicsContext> Engine::getGraphicsContext() const {
-	return graphicsContext;
+	return context;
 }
 
 
@@ -30,47 +49,19 @@ shared_ptr<const SwapChain> Engine::getSwapChain() const {
 
 
 void Engine::run() {
-	const uvec2 screenSize(800, 600);
-	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
-	window = glfwCreateWindow(screenSize.x, screenSize.y, "Game", nullptr, nullptr);
-	INFO("Created window");
-	{
-		auto graphicsDriver = make_shared<GraphicsDriver>(window);
-		GraphicsDeviceSelector selector(*graphicsDriver);
-		graphicsContext = make_shared<GraphicsContext>(graphicsDriver, selector.selectBest());
-		swapChain = make_shared<SwapChain>(graphicsContext, graphicsDriver->getSurface(), screenSize);
-		running = true;
-		currentState = make_shared<InitialState>(*this);
-		while (!glfwWindowShouldClose(window)) {
-			if (nextState != nullptr) {
-				INFO("Changing application state");
-				currentState = nextState;
-				nextState = nullptr;
-			}
-			glfwPollEvents();
-			currentState->update();
-			graphicsContext->waitForPresentationQueue();
-			swapChain->draw();
+	running = true;
+	currentState = make_shared<InitialState>(*this);
+	while (!glfwWindowShouldClose(window)) {
+		if (nextState != nullptr) {
+			INFO("Changing application state");
+			currentState = nextState;
+			nextState = nullptr;
 		}
-		vkDeviceWaitIdle(graphicsContext->getDevice());
+		glfwPollEvents();
+		for (auto& gamepad : gamepads) {
+			gamepad.update();
+		}
+		currentState->update();
+		context->waitForPresentationQueue();
 	}
-	glfwDestroyWindow(window);
-	INFO("Destroyed window");
-}
-
-
-int main(int argc, char** argv) {
-	INITIALIZE_LOGGER();
-	if (!glfwInit()) {
-		ERROR("Failed to initialize GLFW");
-		FINALIZE_LOGGER();
-		return 1;
-	}
-	Engine* engine = new Engine;
-	engine->run();
-	delete engine;
-	glfwTerminate();
-	FINALIZE_LOGGER();
-	return 0;
 }
