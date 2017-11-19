@@ -120,8 +120,8 @@ void ShadingRenderer::createScreenSurface(uvec2 size) {
 
 
 void ShadingRenderer::createAmbientLightRenderPipeline(AssetCache<Shader> &shaderAssets) {
-	auto frag = shaderAssets.load("shaders/shading_ambient_frag.spv");
-	auto vert = shaderAssets.load("shaders/shading_vert.spv");
+	auto frag = shaderAssets.load("shading_ambient_frag.spv");
+	auto vert = shaderAssets.load("shading_vert.spv");
 	RenderPipelineBuilder pipelineBuilder(context, *renderTarget);
 	pipelineBuilder.setFragmentShader(frag);
 	pipelineBuilder.setVertexShader(vert);
@@ -134,8 +134,8 @@ void ShadingRenderer::createAmbientLightRenderPipeline(AssetCache<Shader> &shade
 
 
 void ShadingRenderer::createSunRenderPipeline(AssetCache<Shader> &shaderAssets) {
-	auto frag = shaderAssets.load("shaders/shading_sun_frag.spv");
-	auto vert = shaderAssets.load("shaders/shading_vert.spv");
+	auto frag = shaderAssets.load("shading_sun_frag.spv");
+	auto vert = shaderAssets.load("shading_vert.spv");
 	RenderPipelineBuilder pipelineBuilder(context, *renderTarget);
 	pipelineBuilder.setFragmentShader(frag);
 	pipelineBuilder.setVertexShader(vert);
@@ -145,8 +145,8 @@ void ShadingRenderer::createSunRenderPipeline(AssetCache<Shader> &shaderAssets) 
 
 
 void ShadingRenderer::createSpotlightRenderPipeline(AssetCache<Shader> &shaderAssets) {
-	auto frag = shaderAssets.load("shaders/shading_spotlight_frag.spv");
-	auto vert = shaderAssets.load("shaders/shading_vert.spv");
+	auto frag = shaderAssets.load("shading_spotlight_frag.spv");
+	auto vert = shaderAssets.load("shading_vert.spv");
 	RenderPipelineBuilder pipelineBuilder(context, *renderTarget);
 	pipelineBuilder.setFragmentShader(frag);
 	pipelineBuilder.setVertexShader(vert);

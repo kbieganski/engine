@@ -31,8 +31,8 @@ void ScreenRenderer::render() {
 
 
 void ScreenRenderer::createScreenRenderDescription(shared_ptr<const GraphicsContext> context, shared_ptr<const RenderTarget> screenSurface, AssetCache<Shader> &shaderAssets) {
-	auto screenVertexShader = shaderAssets.load("shaders/screen_vert.spv");
-	auto screenFragmentShader = shaderAssets.load("shaders/screen_frag.spv");
+	auto screenVertexShader = shaderAssets.load("screen_vert.spv");
+	auto screenFragmentShader = shaderAssets.load("screen_frag.spv");
 	RenderPipelineBuilder pipelineBuilder(context, swapChain->getRenderPass(), swapChain->getScreenSize());
 	pipelineBuilder.setFragmentShader(screenFragmentShader);
 	pipelineBuilder.setVertexShader(screenVertexShader);

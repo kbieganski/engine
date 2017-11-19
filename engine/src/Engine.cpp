@@ -9,11 +9,10 @@ using std::make_unique;
 
 
 Engine::Engine(GLFWwindow* window, shared_ptr<const GraphicsContext> context, shared_ptr<const SwapChain> swapChain)
-	:	shaders([context](const string& filename) { return new Shader(context, filename); }),
-	 	meshes([context](const string& filename) { return new Mesh(context, filename); }),
-	 	textures([context](const string& filename) { return new Texture(context, filename); }),
-	 	materials([this](const string& filename) {
-				Properties properties(filename);
+	: 	materials([this](const string& filename) {
+				auto filepath = "materials/" + filename;
+				INFO("Reading material ", filepath);
+				Properties properties(filepath);
 				auto texture = textures.load(properties.get<string>("texture"));
 				auto specularRed = properties.get<float>("specularRed");
 				auto specularGreen = properties.get<float>("specularGreen");
@@ -21,12 +20,20 @@ Engine::Engine(GLFWwindow* window, shared_ptr<const GraphicsContext> context, sh
 				auto specularHardness = properties.get<float>("specularHardness");
 				return new Material(this->context, texture, vec3(specularRed, specularGreen, specularBlue), specularHardness);
 			}),
+	 	meshes([context](const string& filename) { return new Mesh(context, "meshes/" + filename); }),
 		models([this](const string& filename) {
-				Properties properties(filename);
+				auto filepath = "models/" + filename;
+				INFO("Reading model ", filepath);
+				Properties properties(filepath);
 				auto mesh = meshes.load(properties.get<string>("mesh"));
 				auto material = materials.load(properties.get<string>("material"));
 				return new Model(mesh, material);
 			}),
+		shaders([context](const string& filename) { return new Shader(context, "shaders/" + filename); }),
+		sounds([](const string& filename) {
+				return new SoundBuffer("sounds/" + filename);
+			}),
+	textures([context](const string& filename) { return new Texture(context, "textures/" + filename); }),
 	 	mouse(window, directionInput, pressInput),
 	 	cursor(window, swapChain->getScreenSize(), positionInput),
 	 	keyboard(window, directionInput, pressInput) {

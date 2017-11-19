@@ -28,12 +28,12 @@ public:
 	shared_ptr<const GraphicsContext> getGraphicsContext() const;
 	shared_ptr<const SwapChain> getSwapChain() const;
 
-	AssetCache<Shader> shaders;
-	AssetCache<Mesh> meshes;
-	AssetCache<Texture> textures;
-	AssetCache<SoundBuffer> sounds;
 	AssetCache<Material> materials;
+	AssetCache<Mesh> meshes;
 	AssetCache<Model> models;
+	AssetCache<Shader> shaders;
+	AssetCache<SoundBuffer> sounds;
+	AssetCache<Texture> textures;
 	MouseInput mouse;
 	CursorInput cursor;
 	KeyboardInput keyboard;
