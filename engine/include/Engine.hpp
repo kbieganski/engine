@@ -8,6 +8,7 @@
 #include "KeyboardInput.hpp"
 #include "Model.hpp"
 #include "MouseInput.hpp"
+#include "Properties.hpp"
 #include "SoundBuffer.hpp"
 #include "SwapChain.hpp"
 #include "Texture.hpp"
@@ -15,7 +16,7 @@
 
 class Engine {
 public:
-	Engine(GLFWwindow* window, shared_ptr<const GraphicsContext> context, shared_ptr<const SwapChain> swapChain);
+	Engine(GLFWwindow* window, shared_ptr<const GraphicsContext> context, shared_ptr<const SwapChain> swapChain, Properties& settings);
 	Engine(const Engine&) = delete;
 	Engine(Engine&&) = delete;
 
@@ -41,6 +42,8 @@ public:
 	UserInput<vec2> positionInput;
 	UserInput<float> directionInput;
 	UserInput<bool> pressInput;
+	Properties& settings;
+
 
 private:
 	void run();

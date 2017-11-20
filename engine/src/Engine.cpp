@@ -12,7 +12,7 @@ using std::make_shared;
 using std::make_unique;
 
 
-Engine::Engine(GLFWwindow* window, shared_ptr<const GraphicsContext> context, shared_ptr<const SwapChain> swapChain)
+Engine::Engine(GLFWwindow* window, shared_ptr<const GraphicsContext> context, shared_ptr<const SwapChain> swapChain, Properties& _settings)
 	: 	materials([this](const string& filename) {
 				auto filepath = "materials/" + filename;
 				INFO("Reading material ", filepath);
@@ -37,7 +37,8 @@ Engine::Engine(GLFWwindow* window, shared_ptr<const GraphicsContext> context, sh
 		sounds([](const string& filename) {
 				return new SoundBuffer("sounds/" + filename);
 			}),
-	textures([context](const string& filename) { return new Texture(context, "textures/" + filename); }),
+		settings(_settings),
+		textures([context](const string& filename) { return new Texture(context, "textures/" + filename); }),
 	 	mouse(window, directionInput, pressInput),
 	 	cursor(window, swapChain->getScreenSize(), positionInput),
 	 	keyboard(window, directionInput, pressInput) {
