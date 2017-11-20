@@ -36,7 +36,7 @@ int main(int argc, char** argv) {
 	ApplicationLauncher launcher;
 	try {
 		launcher.launch();
-	} catch (exception&) {
+	} catch (Exception&) {
 		FINALIZE_LOGGER();
 		return 1;
 	}
