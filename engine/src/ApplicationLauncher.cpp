@@ -23,12 +23,20 @@ void ApplicationLauncher::createWindow() {
 	if (!glfwInit()) {
 		ERROR("Failed to initialize GLFW");
 	}
-	settings.readFromFile("settings");
-	screenSize.x = settings.get<uint32_t>("screenWidth");
-	screenSize.y = settings.get<uint32_t>("screenHeight");
+	try {
+		settings.readFromFile("settings");
+	} catch (Exception&) {
+		INFO("Using default settings");
+	}
+	screenSize.x = settings.get<uint32_t>("screenWidth", 1280);
+	screenSize.y = settings.get<uint32_t>("screenHeight", 720);
+	GLFWmonitor* monitor = nullptr;
+	if (settings.get<bool>("fullscreen", false)) {
+		monitor = glfwGetPrimaryMonitor();
+	}
 	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
-	window = glfwCreateWindow(screenSize.x, screenSize.y, "Game", nullptr, nullptr);
+	window = glfwCreateWindow(screenSize.x, screenSize.y, "Game", monitor, nullptr);
 	INFO("Created window");
 }
 
