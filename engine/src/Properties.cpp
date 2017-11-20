@@ -22,6 +22,11 @@ Properties::Properties() {
 
 
 Properties::Properties(const string& filename) {
+	readFromFile(filename);
+}
+
+
+void Properties::readFromFile(const string& filename) {
 	ifstream file(filename, ios::ate | ios::binary);
 	if (!file.is_open()) {
 		ERROR("Failed to open file ", filename);

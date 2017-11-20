@@ -11,6 +11,7 @@ public:
 	Properties();
 	Properties(const string& filename);
 
+	void readFromFile(const string& filename);
 	void read(const string& propertiesAsString);
 	void write(string& propertiesAsString);
 
