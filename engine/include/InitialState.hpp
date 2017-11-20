@@ -6,7 +6,7 @@ class InitialState : public ApplicationState {
 public:
 	InitialState(Engine& engine);
 
-	virtual void update() {}
+	virtual void update(float dt) {}
 
 private:
 	void main();

@@ -3,5 +3,5 @@
 
 class ApplicationState {
 public:
-	virtual void update() = 0;
+	virtual void update(float dt) = 0;
 };

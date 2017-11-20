@@ -1,9 +1,13 @@
+#include <chrono>
 #include "GraphicsDeviceSelector.hpp"
 #include "InitialState.hpp"
 #include "Logger.hpp"
 #include "Properties.hpp"
 
 
+using std::chrono::high_resolution_clock;
+using std::chrono::duration_cast;
+using std::chrono::microseconds;
 using std::make_shared;
 using std::make_unique;
 
@@ -74,6 +78,7 @@ shared_ptr<const SwapChain> Engine::getSwapChain() const {
 void Engine::run() {
 	running = true;
 	currentState = make_shared<InitialState>(*this);
+	auto lastTime = high_resolution_clock::now();
 	while (!glfwWindowShouldClose(window)) {
 		if (nextState != nullptr) {
 			INFO("Changing application state");
@@ -84,7 +89,10 @@ void Engine::run() {
 		for (auto& gamepad : gamepads) {
 			gamepad.update();
 		}
-		currentState->update();
+		auto currentTime = high_resolution_clock::now();
+		auto dt = currentTime - lastTime;
+		currentState->update(duration_cast<microseconds>(dt).count() / 1000000.0f);
+		lastTime = currentTime;
 		context->waitForPresentationQueue();
 	}
 }
