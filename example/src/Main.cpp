@@ -1,4 +1,10 @@
 #include <InitialState.hpp>
+#include "ExampleState.hpp"
 
 
-void InitialState::main() {}
+using std::make_shared;
+
+
+void InitialState::main() {
+	engine.changeState(make_shared<ExampleState>(engine));
+}

@@ -1,0 +1,5 @@
+texture=floor.dds
+specularRed=0.5
+specularGreen=0.5
+specularBlue=0.5
+specularHardness=80

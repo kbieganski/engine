@@ -1,7 +1,9 @@
 #include <glm/gtc/quaternion.hpp>
 #include "FirstPersonControls.hpp"
+#include "Logger.hpp"
 
 
+using std::abs;
 using glm::angleAxis;
 using glm::cross;
 using glm::normalize;
@@ -34,7 +36,7 @@ float FirstPersonControls::getMouseSensitivity() const {
 
 
 void FirstPersonControls::updateMovement() {
-	auto movement = vec2(direction.get("horizontal"), direction.get("vertical"));
+	auto movement = vec2(direction.get("movement_horizontal"), direction.get("movement_vertical"));
 	character.move(movement);
 	if (press.get("jump")) {
 		character.jump();
@@ -46,10 +48,7 @@ void FirstPersonControls::updateDirection(float dt) {
 	auto cameraDirection = camera.getDirection();
 	auto forward = normalize(vec3(cameraDirection.x, 0, cameraDirection.z));
 	auto right = cross(vec3(0, 1, 0), forward);
-	auto cursorPosition = cursor.get("mouselook");
-	cursorPosition.x *= camera.getAspectRatio();
-	cursorPosition *= sensitivity;
-	auto rotationAngles = cursorPosition * 180.0f * dt;
+	auto rotationAngles = getRotationAngles(dt);
 	auto pitchRotation = angleAxis(-rotationAngles.y, right);
 	auto yawRotation = angleAxis(rotationAngles.x, vec3(0, 1, 0));
 	auto rotation = yawRotation * pitchRotation;
@@ -57,4 +56,19 @@ void FirstPersonControls::updateDirection(float dt) {
 	camera.setLocalDirection(newCameraDirection);
 	auto newCharDirection = yawRotation * forward;
 	character.setLocalDirection(newCharDirection);
+}
+
+
+vec2 FirstPersonControls::getRotationAngles(float dt) const {
+	vec2 rotationAngles(direction.get("look_horizontal"), direction.get("look_vertical"));
+	auto cursorPosition = cursor.get("mouselook");
+	cursorPosition.x *= camera.getAspectRatio();
+	cursorPosition *= 100;
+	if (abs(cursorPosition.x) > abs(rotationAngles.x)) {
+		rotationAngles.x = cursorPosition.x;
+	}
+	if (abs(cursorPosition.y) > abs(rotationAngles.y)) {
+		rotationAngles.y = cursorPosition.y;
+	}
+	return rotationAngles * dt * sensitivity;
 }

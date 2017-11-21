@@ -29,14 +29,14 @@ example: example-release
 example-release: engine-release
 	@mkdir -p example/lib/release
 	@cp engine/lib/release/$(ENGINE_LIBRARY) example/lib/release
-	@cd example; make release
 	@cp -rf engine/work example
+	@cd example; make release
 
 example-debug: engine-debug
 	@mkdir -p example/lib/debug
 	@cp engine/lib/debug/$(ENGINE_LIBRARY) example/lib/debug
-	@cd example; make debug
 	@cp -rf engine/work example
+	@cd example; make debug
 
 t: test
 test: test-build

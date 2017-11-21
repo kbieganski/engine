@@ -37,11 +37,11 @@ Engine::Engine(GLFWwindow* window, shared_ptr<const GraphicsContext> context, sh
 		sounds([](const string& filename) {
 				return new SoundBuffer("sounds/" + filename);
 			}),
-		settings(_settings),
 		textures([context](const string& filename) { return new Texture(context, "textures/" + filename); }),
 	 	mouse(window, directionInput, pressInput),
 	 	cursor(window, swapChain->getScreenSize(), positionInput),
-	 	keyboard(window, directionInput, pressInput) {
+	 	keyboard(window, directionInput, pressInput),
+		settings(_settings) {
 	this->window = window;
 	this->context = context;
 	this->swapChain = swapChain;

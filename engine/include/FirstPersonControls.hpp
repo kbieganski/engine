@@ -21,6 +21,7 @@ public:
 private:
 	void updateDirection(float dt);
 	void updateMovement();
+	vec2 getRotationAngles(float dt) const;
 
 	float sensitivity = 1;
 	CharacterComponent& character;

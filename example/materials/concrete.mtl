@@ -1,0 +1,5 @@
+texture=concrete.dds
+specularRed=0.2
+specularBlue=0.2
+specularGreen=0.2
+specularHardness=1

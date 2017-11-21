@@ -22,7 +22,7 @@ DEBUG_LINKER_FLAGS=
 DEBUG_LIBRARIES=lib/debug/$(ENGINE_LIBRARY)
 
 # Release build rules
-release: bin/release/$(EXAMPLE_EXECUTABLE)
+release: assets bin/release/$(EXAMPLE_EXECUTABLE)
 
 bin/release/$(EXAMPLE_EXECUTABLE): $(RELEASE_OBJECTS) $(RELEASE_LIBRARIES)
 	@mkdir -p bin/release
@@ -39,7 +39,7 @@ obj/release/%.o: src/%.cpp
 	@rm -f deps/release/$*.d.tmp
 
 # Debug build rules
-debug: bin/debug/$(EXAMPLE_EXECUTABLE)
+debug: assets bin/debug/$(EXAMPLE_EXECUTABLE)
 
 bin/debug/$(EXAMPLE_EXECUTABLE): $(DEBUG_OBJECTS) $(DEBUG_LIBRARIES)
 	@mkdir -p bin/debug
@@ -54,6 +54,15 @@ obj/debug/%.o: src/%.cpp
 	$(COMPILER) $< -MM $(COMPILER_FLAGS) $(DEBUG_COMPILER_FLAGS) > deps/debug/$*.d.tmp
 	@sed "s/.*:/obj\/debug\/$*.o:/" < deps/debug/$*.d.tmp > deps/debug/$*.d
 	@rm -f deps/debug/$*.d.tmp
+
+assets: materials/* meshes/* models/* sounds/* textures/* settings
+	@mkdir -p work
+	@cp -rf materials work
+	@cp -rf meshes work
+	@cp -rf models work
+	@cp -rf sounds work
+	@cp -rf textures work
+	@cp -rf settings work
 
 clean:
 	@rm -rf bin obj deps work

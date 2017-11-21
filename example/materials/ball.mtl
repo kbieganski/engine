@@ -1,0 +1,5 @@
+texture=ball.dds
+specularRed=0.4
+specularGreen=0.4
+specularBlue=0.4
+specularHardness=12
