@@ -25,11 +25,11 @@ The repository contains Git submodules for some of the dependencies. To acquire 
 
 ## Compilation
 
-Make sure all dependencies are satisfied. To build the engine, run unit tests and compile the example, run `make release` or just `make` in the root directory. To build a debug build, use `make debug`.
+Make sure all dependencies are satisfied. To build the engine, run unit tests and compile the example app, run `make release` or just `make` in the root directory. To compile a debug build, use `make debug`.
 
 If you only want to build the engine, which is a static library, run `make engine`, `make engine-release`, or `make engine-debug`.
 
-To build the example app, run `make example`, `make example-release`, or `make example-debug`. To build and launch the example app, use `make example-run`, `exmaple-release-run`, or `example-debug-run`.
+To build the example app, run `make example`, `make example-release`, or `make example-debug`. To build and launch the example app, use `make example-run`, `make exmaple-release-run`, or `make example-debug-run`.
 
 To build and run the unit tests, use `make test`. To only build the tests, use `make test-build`.
 
