@@ -1,14 +1,14 @@
-#include "ContactSoundComponent.hpp"
+#include "ContactSound.hpp"
 
 
-ContactSoundComponent::ContactSoundComponent(RigidBodyComponent& _rigidBody, SoundSourceComponent& _soundSource)
+ContactSound::ContactSound(RigidBody& _rigidBody, SoundSource& _soundSource)
 	:	rigidBody(_rigidBody),
 		soundSource(_soundSource) {
 	soundSource.setLooped(true);
 }
 
 
-void ContactSoundComponent::update() {
+void ContactSound::update() {
 	auto speed = length(rigidBody.getLinearVelocity());
 	auto volume = speed / maxVolumeSpeed;
 	if (volume > 1) {
@@ -25,11 +25,11 @@ void ContactSoundComponent::update() {
 }
 
 
-void ContactSoundComponent::setMaximumVolumeSpeed(float speed) {
+void ContactSound::setMaximumVolumeSpeed(float speed) {
 	maxVolumeSpeed = speed;
 }
 
 
-float ContactSoundComponent::getMaximumVolumeSpeed() const {
+float ContactSound::getMaximumVolumeSpeed() const {
 	return maxVolumeSpeed;
 }

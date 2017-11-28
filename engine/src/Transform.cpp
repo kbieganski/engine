@@ -1,32 +1,32 @@
 #include <glm/gtc/matrix_transform.hpp>
-#include "TransformComponent.hpp"
+#include "Transform.hpp"
 
 
 using glm::translate;
 using glm::mat4_cast;
 
 
-void TransformComponent::setParent(const TransformComponent& parent) {
+void Transform::setParent(const Transform& parent) {
 	this->parent = &parent;
 }
 
 
-void TransformComponent::setLocalOrientation(quat orientation) {
+void Transform::setLocalOrientation(quat orientation) {
 	this->orientation = orientation;
 }
 
 
-void TransformComponent::setLocalPosition(vec3 position) {
+void Transform::setLocalPosition(vec3 position) {
 	this->position = position;
 }
 
 
-void TransformComponent::setLocalScale(vec3 scale) {
+void Transform::setLocalScale(vec3 scale) {
 	this->scale = scale;
 }
 
 
-quat TransformComponent::getOrientation() const {
+quat Transform::getOrientation() const {
 	if (parent) {
 		return parent->getOrientation() * getLocalOrientation();
 	} else {
@@ -35,7 +35,7 @@ quat TransformComponent::getOrientation() const {
 }
 
 
-vec3 TransformComponent::getPosition() const {
+vec3 Transform::getPosition() const {
 	if (parent) {
 		return parent->getPosition() + getLocalPosition();
 	} else {
@@ -44,7 +44,7 @@ vec3 TransformComponent::getPosition() const {
 }
 
 
-vec3 TransformComponent::getScale() const {
+vec3 Transform::getScale() const {
 	if (parent) {
 		return parent->getScale() * getLocalScale();
 	} else {
@@ -53,7 +53,7 @@ vec3 TransformComponent::getScale() const {
 }
 
 
-mat4 TransformComponent::getTransform() const {
+mat4 Transform::getTransform() const {
 	if (parent) {
 		return parent->getTransform() * getLocalTransform();
 	} else {
@@ -62,22 +62,22 @@ mat4 TransformComponent::getTransform() const {
 }
 
 
-quat TransformComponent::getLocalOrientation() const {
+quat Transform::getLocalOrientation() const {
 	return orientation;
 }
 
 
-vec3 TransformComponent::getLocalPosition() const {
+vec3 Transform::getLocalPosition() const {
 	return position;
 }
 
 
-vec3 TransformComponent::getLocalScale() const {
+vec3 Transform::getLocalScale() const {
 	return scale;
 }
 
 
-mat4 TransformComponent::getLocalTransform() const {
+mat4 Transform::getLocalTransform() const {
 	auto scaleMatrix = glm::scale(mat4(1), scale);
 	auto orientationMatrix = mat4_cast(orientation);
 	auto translationMatrix = translate(mat4(1), position);

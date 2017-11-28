@@ -2,15 +2,15 @@
 #include "Scene.hpp"
 #include "ShadowMapRenderer.hpp"
 #include "ShadingRenderer.hpp"
-#include "TransformComponent.hpp"
+#include "Transform.hpp"
 
 
 using glm::vec4;
 
 
-class CameraComponent : public DependentOn<TransformComponent> {
+class Camera : public DependentOn<Transform> {
 public:
-	CameraComponent(const TransformComponent& transform);
+	Camera(const Transform& transform);
 
 	void setAspectRatio(float aspectRatio);
 	void setFieldOfView(float fov);
@@ -35,5 +35,5 @@ private:
 	float near = 0.1;
 	float far = 100;
 	vec3 localDirection = vec3(0, 0, 1);
-	const TransformComponent& transform;
+	const Transform& transform;
 };

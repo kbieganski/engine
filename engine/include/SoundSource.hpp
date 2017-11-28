@@ -2,21 +2,21 @@
 #include <memory>
 #include "Scene.hpp"
 #include "SoundBuffer.hpp"
-#include "TransformComponent.hpp"
+#include "Transform.hpp"
 
 
 using std::shared_ptr;
 
 
-class SoundSourceComponent : public DependentOn<TransformComponent> {
+class SoundSource : public DependentOn<Transform> {
 public:
-	SoundSourceComponent(TransformComponent& transform, shared_ptr<const SoundBuffer> soundBuffer);
-	SoundSourceComponent(const SoundSourceComponent&) = delete;
-	SoundSourceComponent(SoundSourceComponent&& moved);
-	~SoundSourceComponent();
+	SoundSource(Transform& transform, shared_ptr<const SoundBuffer> soundBuffer);
+	SoundSource(const SoundSource&) = delete;
+	SoundSource(SoundSource&& moved);
+	~SoundSource();
 
-	SoundSourceComponent& operator=(const SoundSourceComponent&) = delete;
-	SoundSourceComponent& operator=(SoundSourceComponent&&) = delete;
+	SoundSource& operator=(const SoundSource&) = delete;
+	SoundSource& operator=(SoundSource&&) = delete;
 
 	void update();
 	void play() const;
@@ -44,5 +44,5 @@ public:
 private:
 	shared_ptr<const SoundBuffer> soundBuffer;
 	unsigned source;
-	TransformComponent& transform;
+	Transform& transform;
 };

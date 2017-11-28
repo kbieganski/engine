@@ -1,8 +1,8 @@
-#include "SoundSourceComponent.hpp"
+#include "SoundSource.hpp"
 #include <AL/al.h>
 
 
-SoundSourceComponent::SoundSourceComponent(TransformComponent& _transform, shared_ptr<const SoundBuffer> soundBuffer)
+SoundSource::SoundSource(Transform& _transform, shared_ptr<const SoundBuffer> soundBuffer)
 	:	transform(_transform) {
 	this->soundBuffer = soundBuffer;
 	alGenSources(1, &source);
@@ -10,7 +10,7 @@ SoundSourceComponent::SoundSourceComponent(TransformComponent& _transform, share
 }
 
 
-SoundSourceComponent::SoundSourceComponent(SoundSourceComponent&& moved)
+SoundSource::SoundSource(SoundSource&& moved)
 	:	transform(moved.transform) {
 	soundBuffer = move(moved.soundBuffer);
 	source = moved.source;
@@ -18,7 +18,7 @@ SoundSourceComponent::SoundSourceComponent(SoundSourceComponent&& moved)
 }
 
 
-SoundSourceComponent::~SoundSourceComponent() {
+SoundSource::~SoundSource() {
 	stop();
 	if (source) {
 		alDeleteSources(1, &source);
@@ -26,114 +26,114 @@ SoundSourceComponent::~SoundSourceComponent() {
 }
 
 
-void SoundSourceComponent::update() {
+void SoundSource::update() {
 	auto position = transform.getPosition();
 	alSource3f(source, AL_POSITION, position.x, position.y, position.z);
 }
 
 
-void SoundSourceComponent::play() const {
+void SoundSource::play() const {
 	alSourcePlay(source);
 }
 
 
-void SoundSourceComponent::pause() const {
+void SoundSource::pause() const {
 	alSourcePause(source);
 }
 
 
-void SoundSourceComponent::stop() const {
+void SoundSource::stop() const {
 	alSourceStop(source);
 }
 
 
-void SoundSourceComponent::setAttenuation(float attenuation) {
+void SoundSource::setAttenuation(float attenuation) {
 	alSourcef(source, AL_ROLLOFF_FACTOR, attenuation);
 }
 
 
-void SoundSourceComponent::setLooped(bool looped) {
+void SoundSource::setLooped(bool looped) {
 	alSourcei(source, AL_LOOPING, looped);
 }
 
 
-void SoundSourceComponent::setMinimalDistance(float distance) {
+void SoundSource::setMinimalDistance(float distance) {
 	alSourcef(source, AL_REFERENCE_DISTANCE, distance);
 }
 
 
-void SoundSourceComponent::setPitch(float pitch) {
+void SoundSource::setPitch(float pitch) {
 	alSourcef(source, AL_PITCH, pitch);
 }
 
 
-void SoundSourceComponent::setRelative(bool relative) {
+void SoundSource::setRelative(bool relative) {
 	alSourcei(source, AL_SOURCE_RELATIVE, relative);
 }
 
 
-void SoundSourceComponent::setVolume(float volume) {
+void SoundSource::setVolume(float volume) {
 	alSourcef(source, AL_GAIN, volume);
 }
 
 
-float SoundSourceComponent::getAttenuation() const {
+float SoundSource::getAttenuation() const {
 	ALfloat rolloff;
 	alGetSourcef(source, AL_ROLLOFF_FACTOR, &rolloff);
 	return rolloff;
 }
 
 
-float SoundSourceComponent::getMinimalDistance() const {
+float SoundSource::getMinimalDistance() const {
 	ALfloat distance;
 	alGetSourcef(source, AL_REFERENCE_DISTANCE, &distance);
 	return distance;
 }
 
 
-float SoundSourceComponent::getPitch() const {
+float SoundSource::getPitch() const {
 	ALfloat pitch;
 	alGetSourcef(source, AL_PITCH, &pitch);
 	return pitch;
 }
 
 
-float SoundSourceComponent::getVolume() const {
+float SoundSource::getVolume() const {
 	ALfloat volume;
 	alGetSourcef(source, AL_GAIN, &volume);
 	return volume;
 }
 
 
-bool SoundSourceComponent::isPaused() const {
+bool SoundSource::isPaused() const {
 	ALint state;
 	alGetSourcei(source, AL_SOURCE_STATE, &state);
 	return state == AL_PAUSED;
 }
 
 
-bool SoundSourceComponent::isPlaying() const {
+bool SoundSource::isPlaying() const {
 	ALint state;
 	alGetSourcei(source, AL_SOURCE_STATE, &state);
 	return state == AL_PLAYING;
 }
 
 
-bool SoundSourceComponent::isStopped() const {
+bool SoundSource::isStopped() const {
 	ALint state;
 	alGetSourcei(source, AL_SOURCE_STATE, &state);
 	return state == AL_STOPPED || state == AL_INITIAL;
 }
 
 
-bool SoundSourceComponent::isLooped() const {
+bool SoundSource::isLooped() const {
 	ALint looped;
 	alGetSourcei(source, AL_LOOPING, &looped);
 	return looped != 0;
 }
 
 
-bool SoundSourceComponent::isRelative() const {
+bool SoundSource::isRelative() const {
 	ALint relative;
 	alGetSourcei(source, AL_SOURCE_RELATIVE, &relative);
 	return relative != 0;

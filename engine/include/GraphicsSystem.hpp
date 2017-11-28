@@ -1,11 +1,11 @@
 #pragma once
-#include "CameraComponent.hpp"
-#include "SunComponent.hpp"
-#include "ModelRenderComponent.hpp"
+#include "Camera.hpp"
+#include "Sun.hpp"
+#include "ModelRender.hpp"
 #include "SceneRenderer.hpp"
 #include "ScreenRenderer.hpp"
 #include "ShadingRenderer.hpp"
-#include "SpotlightComponent.hpp"
+#include "Spotlight.hpp"
 #include "SwapChain.hpp"
 
 
@@ -13,9 +13,9 @@ class GraphicsSystem {
 public:
 	GraphicsSystem(Scene& scene, shared_ptr<const GraphicsContext> context, shared_ptr<const SwapChain> swapChain, AssetCache<Shader> &shaders);
 
-	void add(ModelRenderComponent& modelRender);
-	void add(SunComponent& sun);
-	void add(SpotlightComponent& spotlight);
+	void add(ModelRender& modelRender);
+	void add(Sun& sun);
+	void add(Spotlight& spotlight);
 
 	void update();
 	void render();
@@ -24,12 +24,12 @@ public:
 	void setSkyColor(vec3 skyColor);
 	void setCurrentCamera(EntityId entity);
 
-	CameraComponent& getCurrentCamera();
+	Camera& getCurrentCamera();
 	vec3 getAmbientLightColor() const;
 	vec3 getSkyColor() const;
-	const ModelRenderComponent& getModelRender(EntityId entity) const;
-	const SunComponent& getSun(EntityId entity) const;
-	const CameraComponent& getCurrentCamera() const;
+	const ModelRender& getModelRender(EntityId entity) const;
+	const Sun& getSun(EntityId entity) const;
+	const Camera& getCurrentCamera() const;
 	shared_ptr<const GraphicsContext> getContext() const;
 
 
@@ -41,6 +41,6 @@ private:
 	ShadingRenderer shadingRenderer;
 	ScreenRenderer screenRenderer;
 	Scene& scene;
-	CameraComponent* currentCamera = nullptr;
+	Camera* currentCamera = nullptr;
 	EntityId currentCameraId;
 };

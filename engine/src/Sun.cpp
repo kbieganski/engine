@@ -2,7 +2,7 @@
 #define GLM_FORCE_LEFT_HANDED
 #include <glm/gtc/matrix_transform.hpp>
 #include "GraphicsSystem.hpp"
-#include "SunComponent.hpp"
+#include "Sun.hpp"
 
 
 using std::make_shared;
@@ -11,7 +11,7 @@ using glm::normalize;
 using glm::ortho;
 
 
-SunComponent::SunComponent(const TransformComponent& _transform, GraphicsSystem& graphicsSystem, AssetCache<Shader> &shaderAssets, uint32_t shadowMapResolution)
+Sun::Sun(const Transform& _transform, GraphicsSystem& graphicsSystem, AssetCache<Shader> &shaderAssets, uint32_t shadowMapResolution)
 	:	shadowMapRenderer(graphicsSystem.getContext(), shaderAssets, shadowMapResolution),
 		transform(_transform) {
 	shadowMapUniformBuffer = make_shared<UniformBuffer>(graphicsSystem.getContext(), sizeof(ShadowMapUniform));
@@ -21,12 +21,12 @@ SunComponent::SunComponent(const TransformComponent& _transform, GraphicsSystem&
 }
 
 
-void SunComponent::addTo(ShadingRenderer& shadingRenderer) const {
+void Sun::addTo(ShadingRenderer& shadingRenderer) const {
 	shadingRenderer.addSunRender(shadingUniformBuffer, shadowMapRenderer.getRenderTarget()->getTextures()[0]);
 }
 
 
-void SunComponent::update(vec3 cameraPosition) {
+void Sun::update(vec3 cameraPosition) {
 	auto position = transform.getPosition();
 	auto direction = getDirection();
 	auto view = lookAt(position, position + direction, vec3(0, 1, 0));
@@ -46,46 +46,46 @@ void SunComponent::update(vec3 cameraPosition) {
 }
 
 
-void SunComponent::setAreaSize(vec3 areaSize) {
+void Sun::setAreaSize(vec3 areaSize) {
 	this->areaSize = areaSize;
 }
 
 
-void SunComponent::setColor(vec3 color) {
+void Sun::setColor(vec3 color) {
 	this->color = color;
 }
 
 
-void SunComponent::setLocalDirection(vec3 direction) {
+void Sun::setLocalDirection(vec3 direction) {
 	localDirection = normalize(direction);
 }
 
 
-vec3 SunComponent::getColor() const {
+vec3 Sun::getColor() const {
 	return color;
 }
 
 
-vec3 SunComponent::getDirection() const {
+vec3 Sun::getDirection() const {
 	return transform.getOrientation() * localDirection;
 }
 
 
-vec3 SunComponent::getAreaSize() const {
+vec3 Sun::getAreaSize() const {
 	return transform.getScale() * areaSize;
 }
 
 
-vec3 SunComponent::getLocalDirection() const {
+vec3 Sun::getLocalDirection() const {
 	return localDirection;
 }
 
 
-ShadowMapRenderer& SunComponent::getShadowMapRenderer() {
+ShadowMapRenderer& Sun::getShadowMapRenderer() {
 	return shadowMapRenderer;
 }
 
 
-const ShadowMapRenderer& SunComponent::getShadowMapRenderer() const {
+const ShadowMapRenderer& Sun::getShadowMapRenderer() const {
 	return shadowMapRenderer;
 }

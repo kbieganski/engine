@@ -1,6 +1,6 @@
 #pragma once
-#include "CharacterComponent.hpp"
-#include "CameraComponent.hpp"
+#include "Character.hpp"
+#include "Camera.hpp"
 #include "UserInput.hpp"
 
 
@@ -9,7 +9,7 @@ using glm::vec2;
 
 class FirstPersonControls {
 public:
-	FirstPersonControls(CharacterComponent& character, CameraComponent& camera, UserInput<bool>& press, UserInput<float>& direction, UserInput<vec2>& cursor);
+	FirstPersonControls(Character& character, Camera& camera, UserInput<bool>& press, UserInput<float>& direction, UserInput<vec2>& cursor);
 
 	void update(float dt);
 
@@ -24,8 +24,8 @@ private:
 	vec2 getRotationAngles(float dt) const;
 
 	float sensitivity = 1;
-	CharacterComponent& character;
-	CameraComponent& camera;
+	Character& character;
+	Camera& camera;
 	UserInput<bool>& press;
 	UserInput<float>& direction;
 	UserInput<vec2>& cursor;

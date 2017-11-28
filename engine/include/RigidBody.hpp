@@ -2,21 +2,21 @@
 #include <bullet/btBulletDynamicsCommon.h>
 #include "Mesh.hpp"
 #include "Scene.hpp"
-#include "TransformComponent.hpp"
+#include "Transform.hpp"
 
 
 class PhysicsSystem;
 
 
-class RigidBodyComponent : public DependentOn<TransformComponent>, public btMotionState {
+class RigidBody : public DependentOn<Transform>, public btMotionState {
 public:
-	RigidBodyComponent(TransformComponent& transform, PhysicsSystem& physicsSystem);
-	RigidBodyComponent(const RigidBodyComponent&) = delete;
-	RigidBodyComponent(RigidBodyComponent&& moved);
-	~RigidBodyComponent();
+	RigidBody(Transform& transform, PhysicsSystem& physicsSystem);
+	RigidBody(const RigidBody&) = delete;
+	RigidBody(RigidBody&& moved);
+	~RigidBody();
 
-	RigidBodyComponent& operator=(const RigidBodyComponent&) = delete;
-	RigidBodyComponent& operator=(RigidBodyComponent&& moved) = delete;
+	RigidBody& operator=(const RigidBody&) = delete;
+	RigidBody& operator=(RigidBody&& moved) = delete;
 
 	void applyForce(vec3 force);
 
@@ -45,7 +45,7 @@ public:
 
 private:
 	float mass = 0;
-	TransformComponent& transform;
+	Transform& transform;
 	btDiscreteDynamicsWorld& dynamicsWorld;
 	unique_ptr<btRigidBody> body;
 	shared_ptr<const btCollisionShape> collisionShape;

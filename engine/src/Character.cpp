@@ -1,4 +1,4 @@
-#include "CharacterComponent.hpp"
+#include "Character.hpp"
 
 
 using std::make_shared;
@@ -7,7 +7,7 @@ using glm::length;
 using glm::normalize;
 
 
-CharacterComponent::CharacterComponent(RigidBodyComponent& _rigidBody)
+Character::Character(RigidBody& _rigidBody)
 	:	rigidBody(_rigidBody) {
 	rigidBody.setShape(make_shared<btCapsuleShape>(0.4, 1.8));
 	rigidBody.setMass(80);
@@ -15,7 +15,7 @@ CharacterComponent::CharacterComponent(RigidBodyComponent& _rigidBody)
 }
 
 
-void CharacterComponent::move(vec2 movement) {
+void Character::move(vec2 movement) {
 	if (rigidBody.isOnGround()) {
 		auto forward = direction;
 		auto right = cross(vec3(0, 1, 0), forward);
@@ -29,7 +29,7 @@ void CharacterComponent::move(vec2 movement) {
 }
 
 
-void CharacterComponent::jump() {
+void Character::jump() {
 	if (rigidBody.isOnGround()) {
 		auto velocity = rigidBody.getLinearVelocity();
 		velocity.y = jumpSpeed;
@@ -38,7 +38,7 @@ void CharacterComponent::jump() {
 }
 
 
-void CharacterComponent::update() {
+void Character::update() {
 	auto velocity = rigidBody.getLinearVelocity();
 	auto speed = btVector3(velocity.x, 0, velocity.z).length();
 	if (speed > maxSpeed) {
@@ -54,46 +54,46 @@ void CharacterComponent::update() {
 }
 
 
-void CharacterComponent::setAcceleration(float acceleration) {
+void Character::setAcceleration(float acceleration) {
 	this->acceleration = acceleration;
 }
 
 
-void CharacterComponent::setJumpSpeed(float jumpSpeed) {
+void Character::setJumpSpeed(float jumpSpeed) {
 	this->jumpSpeed = jumpSpeed;
 }
 
 
-void CharacterComponent::setLocalDirection(vec3 newDirection) {
+void Character::setLocalDirection(vec3 newDirection) {
 	direction = newDirection;
 }
 
 
-void CharacterComponent::setMaximumSpeed(float maxSpeed) {
+void Character::setMaximumSpeed(float maxSpeed) {
 	this->maxSpeed = maxSpeed;
 }
 
 
-float CharacterComponent::getAcceleration() const {
+float Character::getAcceleration() const {
 	return acceleration;
 }
 
 
-vec3 CharacterComponent::getDirection() const {
+vec3 Character::getDirection() const {
 	return direction;
 }
 
 
-float CharacterComponent::getJumpSpeed() const {
+float Character::getJumpSpeed() const {
 	return jumpSpeed;
 }
 
 
-vec3 CharacterComponent::getLocalDirection() const {
+vec3 Character::getLocalDirection() const {
 	return direction;
 }
 
 
-float CharacterComponent::getMaximumSpeed() const {
+float Character::getMaximumSpeed() const {
 	return maxSpeed;
 }

@@ -2,8 +2,8 @@
 #include <PhysicsSystem.hpp>
 #include <GraphicsSystem.hpp>
 #include <SoundSystem.hpp>
-#include <CharacterComponent.hpp>
-#include <ContactSoundComponent.hpp>
+#include <Character.hpp>
+#include <ContactSound.hpp>
 #include <FirstPersonControls.hpp>
 #include <Engine.hpp>
 

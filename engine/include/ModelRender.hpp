@@ -3,13 +3,13 @@
 #include "Scene.hpp"
 #include "SceneRenderer.hpp"
 #include "ShadowMapRenderer.hpp"
-#include "TransformComponent.hpp"
+#include "Transform.hpp"
 
 
 class GraphicsSystem;
 
 
-class ModelRenderComponent : public DependentOn<TransformComponent> {
+class ModelRender : public DependentOn<Transform> {
 public:
 	struct Uniform {
 		mat4 orientation;
@@ -17,7 +17,7 @@ public:
 		mat4 worldViewProjection;
 	};
 
-	ModelRenderComponent(const TransformComponent& transform, GraphicsSystem& graphicsSystem, shared_ptr<const Model> model);
+	ModelRender(const Transform& transform, GraphicsSystem& graphicsSystem, shared_ptr<const Model> model);
 
 	void addTo(SceneRenderer& sceneRenderer) const;
 	void addTo(ShadowMapRenderer& shadowMapRenderer) const;
@@ -25,7 +25,7 @@ public:
 
 
 private:
-	const TransformComponent& transform;
+	const Transform& transform;
 	shared_ptr<UniformBuffer> uniformBuffer;
 	shared_ptr<const Model> model;
 };

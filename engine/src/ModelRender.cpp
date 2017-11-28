@@ -1,12 +1,12 @@
 #include "GraphicsSystem.hpp"
-#include "ModelRenderComponent.hpp"
+#include "ModelRender.hpp"
 
 
 using std::make_shared;
 using glm::mat4_cast;
 
 
-ModelRenderComponent::ModelRenderComponent(const TransformComponent& _transform, GraphicsSystem& graphicsSystem, shared_ptr<const Model> model)
+ModelRender::ModelRender(const Transform& _transform, GraphicsSystem& graphicsSystem, shared_ptr<const Model> model)
 	:	transform(_transform) {
 	this->model = model;
 	uniformBuffer = make_shared<UniformBuffer>(graphicsSystem.getContext(), sizeof(Uniform));
@@ -14,21 +14,21 @@ ModelRenderComponent::ModelRenderComponent(const TransformComponent& _transform,
 }
 
 
-void ModelRenderComponent::addTo(SceneRenderer& sceneRenderer) const {
+void ModelRender::addTo(SceneRenderer& sceneRenderer) const {
 	auto& renderDescription = sceneRenderer.addRender();
 	renderDescription.bindUniform(0, uniformBuffer);
 	model->describe(renderDescription, 1);
 }
 
 
-void ModelRenderComponent::addTo(ShadowMapRenderer& shadowMapRenderer) const {
+void ModelRender::addTo(ShadowMapRenderer& shadowMapRenderer) const {
 	auto& renderDescription = shadowMapRenderer.addRender();
 	renderDescription.bindUniform(0, uniformBuffer);
 	model->describeAttributes(renderDescription);
 }
 
 
-void ModelRenderComponent::update(const mat4& viewProjection) {
+void ModelRender::update(const mat4& viewProjection) {
 	Uniform uniform;
 	uniform.orientation = mat4_cast(transform.getOrientation());
 	uniform.world = transform.getTransform();

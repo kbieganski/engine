@@ -9,9 +9,9 @@ using glm::quat;
 using glm::vec3;
 
 
-class TransformComponent {
+class Transform {
 public:
-	void setParent(const TransformComponent& parent);
+	void setParent(const Transform& parent);
 	void setLocalOrientation(quat orientation);
 	void setLocalPosition(vec3 position);
 	void setLocalScale(vec3 scale);
@@ -31,5 +31,5 @@ private:
 	quat orientation = quat(1, 0, 0, 0);
 	vec3 position = vec3(0);
 	vec3 scale = vec3(1);
-	const TransformComponent* parent = nullptr;
+	const Transform* parent = nullptr;
 };

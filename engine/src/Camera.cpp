@@ -1,7 +1,7 @@
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #define GLM_FORCE_LEFT_HANDED
 #include <glm/gtc/matrix_transform.hpp>
-#include "CameraComponent.hpp"
+#include "Camera.hpp"
 
 
 using std::make_shared;
@@ -11,80 +11,80 @@ using glm::perspective;
 using glm::radians;
 
 
-CameraComponent::CameraComponent(const TransformComponent& _transform)
+Camera::Camera(const Transform& _transform)
 	:	transform(_transform) {
 	aspectRatio = 1;
 	fov = radians(90.0f);
 }
 
 
-void CameraComponent::setAspectRatio(float aspectRatio) {
+void Camera::setAspectRatio(float aspectRatio) {
 	this->aspectRatio = aspectRatio;
 }
 
 
-void CameraComponent::setFieldOfView(float fov) {
+void Camera::setFieldOfView(float fov) {
 	this->fov = fov;
 }
 
 
-void CameraComponent::setNearPlane(float near) {
+void Camera::setNearPlane(float near) {
 	this->near = near;
 }
 
 
-void CameraComponent::setFarPlane(float far) {
+void Camera::setFarPlane(float far) {
 	this->far = far;
 }
 
 
-void CameraComponent::setLocalDirection(vec3 direction) {
+void Camera::setLocalDirection(vec3 direction) {
 	localDirection = normalize(direction);
 }
 
 
-float CameraComponent::getAspectRatio() const {
+float Camera::getAspectRatio() const {
 	return aspectRatio;
 }
 
 
-float CameraComponent::getFieldOfView() const {
+float Camera::getFieldOfView() const {
 	return fov;
 }
 
 
-float CameraComponent::getNearPlane() const {
+float Camera::getNearPlane() const {
 	return near;
 }
 
 
-float CameraComponent::getFarPlane() const {
+float Camera::getFarPlane() const {
 	return far;
 }
 
 
-vec3 CameraComponent::getDirection() const {
+vec3 Camera::getDirection() const {
 	return transform.getOrientation() * localDirection;
 }
 
 
-vec3 CameraComponent::getLocalDirection() const {
+vec3 Camera::getLocalDirection() const {
 	return localDirection;
 }
 
 
-mat4 CameraComponent::getViewTransform() const {
+mat4 Camera::getViewTransform() const {
 	vec3 position = transform.getPosition();
 	return lookAt(position, position + getDirection(), vec3(0, 1, 0));
 }
 
 
-mat4 CameraComponent::getProjectionTransform() const {
+mat4 Camera::getProjectionTransform() const {
 	auto projection = perspective(fov, aspectRatio, near, far);
 	return projection;
 }
 
 
-mat4 CameraComponent::getViewProjectionTransform() const {
+mat4 Camera::getViewProjectionTransform() const {
 	return getProjectionTransform() * getViewTransform();
 }

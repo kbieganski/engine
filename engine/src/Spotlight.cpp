@@ -2,7 +2,7 @@
 #define GLM_FORCE_LEFT_HANDED
 #include <glm/gtc/matrix_transform.hpp>
 #include "GraphicsSystem.hpp"
-#include "SpotlightComponent.hpp"
+#include "Spotlight.hpp"
 
 
 using std::make_shared;
@@ -14,7 +14,7 @@ using glm::radians;
 using glm::perspective;
 
 
-SpotlightComponent::SpotlightComponent(const TransformComponent& _transform, GraphicsSystem& graphicsSystem, AssetCache<Shader> &shaderAssets, uint32_t shadowMapResolution)
+Spotlight::Spotlight(const Transform& _transform, GraphicsSystem& graphicsSystem, AssetCache<Shader> &shaderAssets, uint32_t shadowMapResolution)
 	:	shadowMapRenderer(graphicsSystem.getContext(), shaderAssets, shadowMapResolution),
 		transform(_transform) {
 	shadowMapUniformBuffer = make_shared<UniformBuffer>(graphicsSystem.getContext(), sizeof(ShadowMapUniform));
@@ -24,12 +24,12 @@ SpotlightComponent::SpotlightComponent(const TransformComponent& _transform, Gra
 }
 
 
-void SpotlightComponent::addTo(ShadingRenderer& shadingRenderer) const {
+void Spotlight::addTo(ShadingRenderer& shadingRenderer) const {
 	shadingRenderer.addSpotlightRender(shadingUniformBuffer, shadowMapRenderer.getRenderTarget()->getTextures()[0]);
 }
 
 
-void SpotlightComponent::update(vec3 cameraPosition) {
+void Spotlight::update(vec3 cameraPosition) {
 	auto position = transform.getPosition();
 	auto view = lookAt(position, position + getDirection(), vec3(0, 1, 0));
 	auto projection = perspective(radians(fov), 1.0f, 0.01f, getMaximumDistance());
@@ -47,71 +47,71 @@ void SpotlightComponent::update(vec3 cameraPosition) {
 }
 
 
-void SpotlightComponent::setAngle(float angle) {
+void Spotlight::setAngle(float angle) {
 	fov = angle;
 }
 
 
-void SpotlightComponent::setColor(vec3 color) {
+void Spotlight::setColor(vec3 color) {
 	this->color = color;
 }
 
 
-void SpotlightComponent::setPower(float power) {
+void Spotlight::setPower(float power) {
 	this->power = power;
 }
 
 
-void SpotlightComponent::setThreshold(float threshold) {
+void Spotlight::setThreshold(float threshold) {
 	this->threshold = threshold;
 }
 
 
-void SpotlightComponent::setLocalDirection(vec3 direction) {
+void Spotlight::setLocalDirection(vec3 direction) {
 	localDirection = normalize(direction);
 }
 
 
-float SpotlightComponent::getAngle() const {
+float Spotlight::getAngle() const {
 	return fov;
 }
 
 
-vec3 SpotlightComponent::getColor() const {
+vec3 Spotlight::getColor() const {
 	return color;
 }
 
 
-float SpotlightComponent::getPower() const {
+float Spotlight::getPower() const {
 	return power;
 }
 
 
-float SpotlightComponent::getMaximumDistance() const {
+float Spotlight::getMaximumDistance() const {
 	return sqrt(max(color.r, max(color.g, color.b)) * power / threshold) - 1;
 }
 
 
-float SpotlightComponent::getThreshold() const {
+float Spotlight::getThreshold() const {
 	return threshold;
 }
 
 
-vec3 SpotlightComponent::getDirection() const {
+vec3 Spotlight::getDirection() const {
 	return transform.getOrientation() * localDirection;
 }
 
 
-vec3 SpotlightComponent::getLocalDirection() const {
+vec3 Spotlight::getLocalDirection() const {
 	return localDirection;
 }
 
 
-ShadowMapRenderer& SpotlightComponent::getShadowMapRenderer() {
+ShadowMapRenderer& Spotlight::getShadowMapRenderer() {
 	return shadowMapRenderer;
 }
 
 
-const ShadowMapRenderer& SpotlightComponent::getShadowMapRenderer() const {
+const ShadowMapRenderer& Spotlight::getShadowMapRenderer() const {
 	return shadowMapRenderer;
 }

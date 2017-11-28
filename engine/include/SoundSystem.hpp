@@ -1,4 +1,4 @@
-#include "CameraComponent.hpp"
+#include "Camera.hpp"
 #include <AL/alc.h>
 
 
@@ -18,14 +18,14 @@ public:
 	void setCurrentCamera(EntityId entity);
 
 	float getVolume() const;
-	CameraComponent& getCurrentCamera();
-	const CameraComponent& getCurrentCamera() const;
+	Camera& getCurrentCamera();
+	const Camera& getCurrentCamera() const;
 
 
 private:
 	ALCdevice* device;
 	ALCcontext* context;
 	Scene& scene;
-	CameraComponent* currentCamera = nullptr;
+	Camera* currentCamera = nullptr;
 	EntityId currentCameraId;
 };

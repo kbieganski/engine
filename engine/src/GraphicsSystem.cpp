@@ -14,32 +14,32 @@ GraphicsSystem::GraphicsSystem(Scene& _scene, shared_ptr<const GraphicsContext> 
 
 
 
-void GraphicsSystem::add(ModelRenderComponent& modelRender) {
+void GraphicsSystem::add(ModelRender& modelRender) {
 	modelRender.addTo(sceneRenderer);
-	INFO("Sun count: ", scene.get<SunComponent>().size());
-	for (auto& sun : scene.get<SunComponent>()) {
+	INFO("Sun count: ", scene.get<Sun>().size());
+	for (auto& sun : scene.get<Sun>()) {
 		modelRender.addTo(sun.second.getShadowMapRenderer());
 	}
-	INFO("Spotlight count: ", scene.get<SunComponent>().size());
-	for (auto& spotlight : scene.get<SpotlightComponent>()) {
+	INFO("Spotlight count: ", scene.get<Sun>().size());
+	for (auto& spotlight : scene.get<Spotlight>()) {
 		modelRender.addTo(spotlight.second.getShadowMapRenderer());
 	}
 }
 
 
-void GraphicsSystem::add(SunComponent& sun) {
+void GraphicsSystem::add(Sun& sun) {
 	sun.addTo(shadingRenderer);
-	INFO("ModelRender count: ", scene.get<ModelRenderComponent>().size());
-	for (auto& modelRender : scene.get<ModelRenderComponent>()) {
+	INFO("ModelRender count: ", scene.get<ModelRender>().size());
+	for (auto& modelRender : scene.get<ModelRender>()) {
 		modelRender.second.addTo(sun.getShadowMapRenderer());
 	}
 }
 
 
-void GraphicsSystem::add(SpotlightComponent& spotlight) {
+void GraphicsSystem::add(Spotlight& spotlight) {
 	spotlight.addTo(shadingRenderer);
-	INFO("ModelRender count: ", scene.get<ModelRenderComponent>().size());
-	for (auto& modelRender : scene.get<ModelRenderComponent>()) {
+	INFO("ModelRender count: ", scene.get<ModelRender>().size());
+	for (auto& modelRender : scene.get<ModelRender>()) {
 		modelRender.second.addTo(spotlight.getShadowMapRenderer());
 	}
 }
@@ -47,9 +47,9 @@ void GraphicsSystem::add(SpotlightComponent& spotlight) {
 
 void GraphicsSystem::update() {
 	if (currentCamera) {
-		scene.update<ModelRenderComponent>(currentCamera->getViewProjectionTransform());
-		scene.update<SunComponent>(scene.get<TransformComponent>(currentCameraId).getPosition());
-		scene.update<SpotlightComponent>(scene.get<TransformComponent>(currentCameraId).getPosition());
+		scene.update<ModelRender>(currentCamera->getViewProjectionTransform());
+		scene.update<Sun>(scene.get<Transform>(currentCameraId).getPosition());
+		scene.update<Spotlight>(scene.get<Transform>(currentCameraId).getPosition());
 	}
 }
 
@@ -75,11 +75,11 @@ void GraphicsSystem::setSkyColor(vec3 skyColor) {
 
 void GraphicsSystem::setCurrentCamera(EntityId entity) {
 	currentCameraId = entity;
-	currentCamera = &scene.get<CameraComponent>(entity);
+	currentCamera = &scene.get<Camera>(entity);
 }
 
 
-CameraComponent& GraphicsSystem::getCurrentCamera() {
+Camera& GraphicsSystem::getCurrentCamera() {
 	return *currentCamera;
 }
 
@@ -94,7 +94,7 @@ vec3 GraphicsSystem::getSkyColor() const {
 }
 
 
-const CameraComponent& GraphicsSystem::getCurrentCamera() const {
+const Camera& GraphicsSystem::getCurrentCamera() const {
 	return *currentCamera;
 }
 

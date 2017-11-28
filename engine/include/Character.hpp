@@ -1,14 +1,14 @@
 #pragma once
-#include "RigidBodyComponent.hpp"
+#include "RigidBody.hpp"
 #include "Scene.hpp"
 
 
 using glm::vec2;
 
 
-class CharacterComponent : public DependentOn<RigidBodyComponent> {
+class Character : public DependentOn<RigidBody> {
 public:
-	CharacterComponent(RigidBodyComponent& rigidBody);
+	Character(RigidBody& rigidBody);
 
 	void move(vec2 movement);
 	void jump();
@@ -31,5 +31,5 @@ private:
 	float maxSpeed = 10;
 	float jumpSpeed = 4;
 	vec3 direction;
-	RigidBodyComponent& rigidBody;
+	RigidBody& rigidBody;
 };
