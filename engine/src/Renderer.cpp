@@ -24,10 +24,12 @@ Renderer::~Renderer() {
 
 
 Renderer& Renderer::operator=(Renderer&& moved) {
-	commandBuffer = moved.commandBuffer;
 	context = moved.context;
 	renderTarget = move(moved.renderTarget);
 	framebuffer = move(moved.framebuffer);
+	dirty = moved.dirty;
+	commandBuffer = moved.commandBuffer;
+	renderDescriptions = move(moved.renderDescriptions);
 	moved.commandBuffer = VK_NULL_HANDLE;
 	moved.framebuffer = nullptr;
 	return *this;
