@@ -1,4 +1,5 @@
 #pragma once
+#include "Scene.hpp"
 #include "ShadowMapRenderer.hpp"
 #include "ShadingRenderer.hpp"
 #include "TransformComponent.hpp"
@@ -7,7 +8,7 @@
 using glm::vec4;
 
 
-class CameraComponent {
+class CameraComponent : public DependentOn<TransformComponent> {
 public:
 	CameraComponent(const TransformComponent& transform);
 

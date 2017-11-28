@@ -1,12 +1,16 @@
 #pragma once
 #include <bullet/btBulletDynamicsCommon.h>
 #include "Mesh.hpp"
+#include "Scene.hpp"
 #include "TransformComponent.hpp"
 
 
-class RigidBodyComponent : public btMotionState {
+class PhysicsSystem;
+
+
+class RigidBodyComponent : public DependentOn<TransformComponent>, public btMotionState {
 public:
-	RigidBodyComponent(TransformComponent& transform, btDiscreteDynamicsWorld& dynamicsWorld);
+	RigidBodyComponent(TransformComponent& transform, PhysicsSystem& physicsSystem);
 	RigidBodyComponent(const RigidBodyComponent&) = delete;
 	RigidBodyComponent(RigidBodyComponent&& moved);
 	~RigidBodyComponent();
@@ -41,8 +45,8 @@ public:
 
 private:
 	float mass = 0;
+	TransformComponent& transform;
 	btDiscreteDynamicsWorld& dynamicsWorld;
 	unique_ptr<btRigidBody> body;
 	shared_ptr<const btCollisionShape> collisionShape;
-	TransformComponent& transform;
 };

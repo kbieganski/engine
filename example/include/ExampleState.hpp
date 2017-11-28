@@ -11,6 +11,7 @@
 class ExampleState : public ApplicationState {
 public:
 	ExampleState(Engine& _engine);
+	~ExampleState();
 
 	virtual void update(float dt);
 
@@ -32,10 +33,7 @@ private:
 	float elapsedTime = 0;
 	Engine& engine;
 	shared_ptr<const GraphicsContext> context;
-	ComponentSystem<TransformComponent> transforms;
-	ComponentSystem<CameraComponent> cameras;
-	ComponentSystem<CharacterComponent> characters;
-	ComponentSystem<ContactSoundComponent> frictionSounds;
+	Scene scene;
 	PhysicsSystem physics;
 	SoundSystem sound;
 	GraphicsSystem graphics;

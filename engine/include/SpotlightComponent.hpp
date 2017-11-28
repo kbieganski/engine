@@ -1,4 +1,5 @@
 #pragma once
+#include "Scene.hpp"
 #include "ShadowMapRenderer.hpp"
 #include "ShadingRenderer.hpp"
 #include "TransformComponent.hpp"
@@ -7,7 +8,10 @@
 using glm::vec4;
 
 
-class SpotlightComponent {
+class GraphicsSystem;
+
+
+class SpotlightComponent : public DependentOn<TransformComponent> {
 public:
 	struct ShadowMapUniform {
 		mat4 viewProjection;
@@ -20,7 +24,7 @@ public:
 		vec4 cameraPosition;
 	};
 
-	SpotlightComponent(shared_ptr<const GraphicsContext> context, AssetCache<Shader> &shaderAssets, uint32_t shadowMapResolution, const TransformComponent& transform);
+	SpotlightComponent(const TransformComponent& transform, GraphicsSystem& graphicsSystem, AssetCache<Shader> &shaderAssets, uint32_t shadowMapResolution);
 
 	void addTo(ShadingRenderer& shadingRenderer) const;
 	void update(vec3 cameraPosition);

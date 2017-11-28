@@ -1,6 +1,7 @@
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #define GLM_FORCE_LEFT_HANDED
 #include <glm/gtc/matrix_transform.hpp>
+#include "GraphicsSystem.hpp"
 #include "SpotlightComponent.hpp"
 
 
@@ -13,12 +14,13 @@ using glm::radians;
 using glm::perspective;
 
 
-SpotlightComponent::SpotlightComponent(shared_ptr<const GraphicsContext> context, AssetCache<Shader> &shaderAssets, uint32_t shadowMapResolution, const TransformComponent& _transform)
-	:	shadowMapRenderer(context, shaderAssets, shadowMapResolution),
+SpotlightComponent::SpotlightComponent(const TransformComponent& _transform, GraphicsSystem& graphicsSystem, AssetCache<Shader> &shaderAssets, uint32_t shadowMapResolution)
+	:	shadowMapRenderer(graphicsSystem.getContext(), shaderAssets, shadowMapResolution),
 		transform(_transform) {
-	shadowMapUniformBuffer = make_shared<UniformBuffer>(context, sizeof(ShadowMapUniform));
-	shadingUniformBuffer = make_shared<UniformBuffer>(context, sizeof(ShadingUniform));
+	shadowMapUniformBuffer = make_shared<UniformBuffer>(graphicsSystem.getContext(), sizeof(ShadowMapUniform));
+	shadingUniformBuffer = make_shared<UniformBuffer>(graphicsSystem.getContext(), sizeof(ShadingUniform));
 	shadowMapRenderer.setUniformBuffer(shadowMapUniformBuffer);
+	graphicsSystem.add(*this);
 }
 
 

@@ -1,3 +1,4 @@
+#include "GraphicsSystem.hpp"
 #include "ModelRenderComponent.hpp"
 
 
@@ -5,10 +6,11 @@ using std::make_shared;
 using glm::mat4_cast;
 
 
-ModelRenderComponent::ModelRenderComponent(shared_ptr<const GraphicsContext> context, const TransformComponent& _transform, shared_ptr<const Model> model)
+ModelRenderComponent::ModelRenderComponent(const TransformComponent& _transform, GraphicsSystem& graphicsSystem, shared_ptr<const Model> model)
 	:	transform(_transform) {
 	this->model = model;
-	uniformBuffer = make_shared<UniformBuffer>(context, sizeof(Uniform));
+	uniformBuffer = make_shared<UniformBuffer>(graphicsSystem.getContext(), sizeof(Uniform));
+	graphicsSystem.add(*this);
 }
 
 

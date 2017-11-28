@@ -1,3 +1,4 @@
+#include "PhysicsSystem.hpp"
 #include "RigidBodyComponent.hpp"
 
 
@@ -6,9 +7,9 @@ using std::make_unique;
 using std::move;
 
 
-RigidBodyComponent::RigidBodyComponent(TransformComponent& _transform, btDiscreteDynamicsWorld& _dynamicsWorld)
-	:	dynamicsWorld(_dynamicsWorld),
-		transform(_transform) {
+RigidBodyComponent::RigidBodyComponent(TransformComponent& _transform, PhysicsSystem& physicsSystem)
+	:	transform(_transform),
+		dynamicsWorld(physicsSystem.getDynamicsWorld()) {
 	collisionShape = make_shared<btEmptyShape>();
 	btRigidBody::btRigidBodyConstructionInfo bodyInfo(0, this, const_cast<btCollisionShape*>(collisionShape.get()));
 	body = make_unique<btRigidBody>(bodyInfo);
@@ -17,8 +18,8 @@ RigidBodyComponent::RigidBodyComponent(TransformComponent& _transform, btDiscret
 
 
 RigidBodyComponent::RigidBodyComponent(RigidBodyComponent&& moved)
-	:	dynamicsWorld(moved.dynamicsWorld),
-		transform(moved.transform) {
+	:	transform(moved.transform),
+		dynamicsWorld(moved.dynamicsWorld) {
 	mass = moved.mass;
 	collisionShape = move(moved.collisionShape);
 	body = move(moved.body);

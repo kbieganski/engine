@@ -1,18 +1,16 @@
 #pragma once
-#include "ComponentSystem.hpp"
-#include "RigidBodyComponent.hpp"
+#include <bullet/btBulletDynamicsCommon.h>
 
 
 class PhysicsSystem {
 public:
-	PhysicsSystem(ComponentSystem<TransformComponent>& transforms);
-
-	void addRigidBody(EntityId entity);
+	PhysicsSystem();
 
 	void update(float dt);
 
-	RigidBodyComponent& getRigidBody(EntityId entity);
-	const RigidBodyComponent& getRigidBody(EntityId entity) const;
+	btDiscreteDynamicsWorld& getDynamicsWorld();
+	const btDiscreteDynamicsWorld& getDynamicsWorld() const;
+
 
 private:
 	btDbvtBroadphase broadphase;
@@ -20,6 +18,4 @@ private:
 	btCollisionDispatcher dispatcher;
 	btSequentialImpulseConstraintSolver solver;
 	btDiscreteDynamicsWorld dynamicsWorld;
-	ComponentSystem<TransformComponent>& transforms;
-	ComponentSystem<RigidBodyComponent> rigidBodies;
 };

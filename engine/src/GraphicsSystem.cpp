@@ -1,54 +1,55 @@
 #include "GraphicsSystem.hpp"
+#include "Logger.hpp"
 
 
-GraphicsSystem::GraphicsSystem(shared_ptr<const GraphicsContext> context, shared_ptr<const SwapChain> swapChain, AssetCache<Shader> &shaderAssets, ComponentSystem<TransformComponent>& _transforms, ComponentSystem<CameraComponent>& _cameras)
+GraphicsSystem::GraphicsSystem(Scene& _scene, shared_ptr<const GraphicsContext> context, shared_ptr<const SwapChain> swapChain, AssetCache<Shader> &shaderAssets)
 	:	shaders(shaderAssets),
 		sceneRenderer(context, shaderAssets, swapChain->getScreenSize()),
 		shadingRenderer(context, sceneRenderer.getRenderTarget(), shaderAssets),
 		screenRenderer(context, swapChain, shadingRenderer.getRenderTarget(), shaderAssets),
-		transforms(_transforms),
-		cameras(_cameras) {
+		scene(_scene) {
 	ambientColor = vec3(0.1);
 	this->context = context;
 }
 
 
 
-void GraphicsSystem::addModelRender(EntityId entity, shared_ptr<const Model> model) {
-	modelRenders.add(entity, context, transforms[entity], model);
-	modelRenders[entity].addTo(sceneRenderer);
-	for (auto& sun : suns) {
-		modelRenders[entity].addTo(sun.second.getShadowMapRenderer());
+void GraphicsSystem::add(ModelRenderComponent& modelRender) {
+	modelRender.addTo(sceneRenderer);
+	INFO("Sun count: ", scene.get<SunComponent>().size());
+	for (auto& sun : scene.get<SunComponent>()) {
+		modelRender.addTo(sun.second.getShadowMapRenderer());
 	}
-	for (auto& spotlight : spotlights) {
-		modelRenders[entity].addTo(spotlight.second.getShadowMapRenderer());
-	}
-}
-
-
-void GraphicsSystem::addSun(EntityId entity, uint32_t resolution) {
-	suns.add(entity, context, shaders, resolution, transforms[entity]);
-	suns[entity].addTo(shadingRenderer);
-	for (auto& modelRender : modelRenders) {
-		modelRender.second.addTo(suns[entity].getShadowMapRenderer());
+	INFO("Spotlight count: ", scene.get<SunComponent>().size());
+	for (auto& spotlight : scene.get<SpotlightComponent>()) {
+		modelRender.addTo(spotlight.second.getShadowMapRenderer());
 	}
 }
 
 
-void GraphicsSystem::addSpotlight(EntityId entity, uint32_t resolution) {
-	spotlights.add(entity, context, shaders, resolution, transforms[entity]);
-	spotlights[entity].addTo(shadingRenderer);
-	for (auto& modelRender : modelRenders) {
-		modelRender.second.addTo(spotlights[entity].getShadowMapRenderer());
+void GraphicsSystem::add(SunComponent& sun) {
+	sun.addTo(shadingRenderer);
+	INFO("ModelRender count: ", scene.get<ModelRenderComponent>().size());
+	for (auto& modelRender : scene.get<ModelRenderComponent>()) {
+		modelRender.second.addTo(sun.getShadowMapRenderer());
+	}
+}
+
+
+void GraphicsSystem::add(SpotlightComponent& spotlight) {
+	spotlight.addTo(shadingRenderer);
+	INFO("ModelRender count: ", scene.get<ModelRenderComponent>().size());
+	for (auto& modelRender : scene.get<ModelRenderComponent>()) {
+		modelRender.second.addTo(spotlight.getShadowMapRenderer());
 	}
 }
 
 
 void GraphicsSystem::update() {
 	if (currentCamera) {
-		modelRenders.update(currentCamera->getViewProjectionTransform());
-		suns.update(transforms[currentCameraId].getPosition());
-		spotlights.update(transforms[currentCameraId].getPosition());
+		scene.update<ModelRenderComponent>(currentCamera->getViewProjectionTransform());
+		scene.update<SunComponent>(scene.get<TransformComponent>(currentCameraId).getPosition());
+		scene.update<SpotlightComponent>(scene.get<TransformComponent>(currentCameraId).getPosition());
 	}
 }
 
@@ -74,22 +75,7 @@ void GraphicsSystem::setSkyColor(vec3 skyColor) {
 
 void GraphicsSystem::setCurrentCamera(EntityId entity) {
 	currentCameraId = entity;
-	currentCamera = &cameras[entity];
-}
-
-
-ModelRenderComponent& GraphicsSystem::getModelRender(EntityId entity) {
-	return modelRenders[entity];
-}
-
-
-SunComponent& GraphicsSystem::getSun(EntityId entity) {
-	return suns[entity];
-}
-
-
-SpotlightComponent& GraphicsSystem::getSpotlight(EntityId entity) {
-	return spotlights[entity];
+	currentCamera = &scene.get<CameraComponent>(entity);
 }
 
 
@@ -108,16 +94,11 @@ vec3 GraphicsSystem::getSkyColor() const {
 }
 
 
-const ModelRenderComponent& GraphicsSystem::getModelRender(EntityId entity) const {
-	return modelRenders[entity];
-}
-
-
-const SunComponent& GraphicsSystem::getSun(EntityId entity) const {
-	return suns[entity];
-}
-
-
 const CameraComponent& GraphicsSystem::getCurrentCamera() const {
 	return *currentCamera;
+}
+
+
+shared_ptr<const GraphicsContext> GraphicsSystem::getContext() const {
+	return context;
 }

@@ -1,14 +1,14 @@
 #include <AL/al.h>
 #include "Logger.hpp"
+#include "SoundSourceComponent.hpp"
 #include "SoundSystem.hpp"
 
 
 using std::move;
 
 
-SoundSystem::SoundSystem(ComponentSystem<TransformComponent>& _transforms, ComponentSystem<CameraComponent>& _cameras)
-	:	transforms(_transforms),
-		cameras(_cameras) {
+SoundSystem::SoundSystem(Scene& _scene)
+	:	scene(_scene) {
 	currentCamera = nullptr;
 	device = alcOpenDevice(nullptr);
 	context = alcCreateContext(device, nullptr);
@@ -17,11 +17,9 @@ SoundSystem::SoundSystem(ComponentSystem<TransformComponent>& _transforms, Compo
 
 
 SoundSystem::SoundSystem(SoundSystem&& moved)
-	:	transforms(moved.transforms),
-		cameras(moved.cameras) {
+	:	scene(moved.scene) {
 	device = moved.device;
 	context = moved.context;
-	soundSources = move(moved.soundSources);
 	currentCamera = moved.currentCamera;
 	currentCameraId = moved.currentCameraId;
 	moved.context = nullptr;
@@ -40,13 +38,8 @@ SoundSystem::~SoundSystem() {
 }
 
 
-void SoundSystem::addSoundSource(EntityId entity, shared_ptr<const SoundBuffer> soundBuffer) {
-	soundSources.add(entity, transforms[entity], soundBuffer);
-}
-
-
 void SoundSystem::update() {
-	soundSources.update();
+	scene.update<SoundSourceComponent>();
 	if (currentCamera) {
 		auto direction = currentCamera->getDirection();
 		auto forward = normalize(vec3(direction.x, 0, direction.z));
@@ -54,7 +47,7 @@ void SoundSystem::update() {
 		auto up = cross(right, direction);
 		float orientation[] = { direction.x, direction.y, direction.z, up.x, up.y, up.z };
 		alListenerfv(AL_ORIENTATION, orientation);
-		auto position = transforms[currentCameraId].getPosition();
+		auto position = scene.get<TransformComponent>(currentCameraId).getPosition();
 		alListener3f(AL_POSITION, position.x, position.y, position.z);
 		alListener3f(AL_VELOCITY, 0, 0, 0);
 	}
@@ -68,12 +61,7 @@ void SoundSystem::setVolume(float volume) {
 
 void SoundSystem::setCurrentCamera(EntityId entity) {
 	currentCameraId = entity;
-	currentCamera = &cameras[entity];
-}
-
-
-SoundSourceComponent& SoundSystem::getSoundSource(EntityId entity) {
-	return soundSources[entity];
+	currentCamera = &scene.get<CameraComponent>(entity);
 }
 
 
@@ -86,11 +74,6 @@ float SoundSystem::getVolume() const {
 
 CameraComponent& SoundSystem::getCurrentCamera() {
 	return *currentCamera;
-}
-
-
-const SoundSourceComponent& SoundSystem::getSoundSource(EntityId entity) const {
-	return soundSources[entity];
 }
 
 

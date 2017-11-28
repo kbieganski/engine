@@ -1,11 +1,12 @@
 #pragma once
 #include <memory>
-#include "SoundBuffer.hpp"
 #include "RigidBodyComponent.hpp"
+#include "Scene.hpp"
+#include "SoundBuffer.hpp"
 #include "SoundSourceComponent.hpp"
 
 
-class ContactSoundComponent {
+class ContactSoundComponent : public DependentOn<RigidBodyComponent, SoundSourceComponent> {
 public:
 	ContactSoundComponent(RigidBodyComponent& rigidBody, SoundSourceComponent& soundSource);
 

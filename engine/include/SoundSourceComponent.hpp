@@ -1,5 +1,6 @@
 #pragma once
 #include <memory>
+#include "Scene.hpp"
 #include "SoundBuffer.hpp"
 #include "TransformComponent.hpp"
 
@@ -7,7 +8,7 @@
 using std::shared_ptr;
 
 
-class SoundSourceComponent {
+class SoundSourceComponent : public DependentOn<TransformComponent> {
 public:
 	SoundSourceComponent(TransformComponent& transform, shared_ptr<const SoundBuffer> soundBuffer);
 	SoundSourceComponent(const SoundSourceComponent&) = delete;

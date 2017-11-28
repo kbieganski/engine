@@ -1,16 +1,10 @@
 #include "PhysicsSystem.hpp"
 
 
-PhysicsSystem::PhysicsSystem(ComponentSystem<TransformComponent>& _transforms)
+PhysicsSystem::PhysicsSystem()
 	:	dispatcher(&collisionConfiguration),
-		dynamicsWorld(&dispatcher, &broadphase, &solver, &collisionConfiguration),
-		transforms(_transforms) {
+		dynamicsWorld(&dispatcher, &broadphase, &solver, &collisionConfiguration) {
 	dynamicsWorld.setGravity(btVector3(0, -9.8, 0));
-}
-
-
-void PhysicsSystem::addRigidBody(EntityId entity) {
-	rigidBodies.add(entity, transforms[entity], dynamicsWorld);
 }
 
 
@@ -19,11 +13,11 @@ void PhysicsSystem::update(float dt) {
 }
 
 
-RigidBodyComponent& PhysicsSystem::getRigidBody(EntityId entity) {
-	return rigidBodies[entity];
+btDiscreteDynamicsWorld& PhysicsSystem::getDynamicsWorld() {
+	return dynamicsWorld;
 }
 
 
-const RigidBodyComponent& PhysicsSystem::getRigidBody(EntityId entity) const {
-	return rigidBodies[entity];
+const btDiscreteDynamicsWorld& PhysicsSystem::getDynamicsWorld() const {
+	return dynamicsWorld;
 }

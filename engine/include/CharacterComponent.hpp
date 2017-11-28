@@ -1,11 +1,12 @@
 #pragma once
 #include "RigidBodyComponent.hpp"
+#include "Scene.hpp"
 
 
 using glm::vec2;
 
 
-class CharacterComponent {
+class CharacterComponent : public DependentOn<RigidBodyComponent> {
 public:
 	CharacterComponent(RigidBodyComponent& rigidBody);
 
