@@ -68,7 +68,8 @@ RenderDescription& ShadingRenderer::addSunRender(shared_ptr<const UniformBuffer>
 	description.bindUniform(3, geometryBuffer->getTextures()[2]);
 	description.bindUniform(4, geometryBuffer->getTextures()[3]);
 	description.bindUniform(5, geometryBuffer->getTextures()[4]);
-	description.bindUniform(6, shadowMap);
+	auto shadowSampler = make_shared<Sampler>(context, true);
+	description.bindUniform(6, shadowMap, shadowSampler);
 	description.addVertices(screenRectangleVertices);
 	description.setIndices(screenRectangleIndices);
 	return description;
@@ -83,7 +84,8 @@ RenderDescription& ShadingRenderer::addSpotlightRender(shared_ptr<const UniformB
 	description.bindUniform(3, geometryBuffer->getTextures()[2]);
 	description.bindUniform(4, geometryBuffer->getTextures()[3]);
 	description.bindUniform(5, geometryBuffer->getTextures()[4]);
-	description.bindUniform(6, shadowMap);
+	auto shadowSampler = make_shared<Sampler>(context, true);
+	description.bindUniform(6, shadowMap, shadowSampler);
 	description.addVertices(screenRectangleVertices);
 	description.setIndices(screenRectangleIndices);
 	return description;

@@ -4,7 +4,7 @@
 
 class Sampler {
 public:
-	Sampler(shared_ptr<const GraphicsContext> context);
+	Sampler(shared_ptr<const GraphicsContext> context, bool compare);
 	Sampler(const Sampler& copied) = delete;
 	Sampler(Sampler&& moved);
 	~Sampler();
@@ -16,7 +16,7 @@ public:
 
 
 private:
-	void create();
+	void create(bool compare);
 
 	VkSampler handle;
 	shared_ptr<const GraphicsContext> context;

@@ -20,6 +20,7 @@ public:
 	void setIndices(shared_ptr<const IndexBuffer> IndexBuffer);
 	void bindUniform(uint32_t index, shared_ptr<const UniformBuffer> uniformBuffer);
 	void bindUniform(uint32_t index, shared_ptr<const Texture> texture);
+	void bindUniform(uint32_t index, shared_ptr<const Texture> texture, shared_ptr<const Sampler> sampler);
 	void bindTo(VkCommandBuffer commandBuffer) const;
 
 
@@ -34,7 +35,7 @@ private:
 	shared_ptr<const IndexBuffer> indexBuffer;
 	vector<shared_ptr<const VertexBuffer>> vertexBuffers;
 	vector<shared_ptr<const void>> uniforms;
+	vector<shared_ptr<const Sampler>> samplers;
 	shared_ptr<const RenderPipeline> pipeline;
 	shared_ptr<const GraphicsContext> context;
-	Sampler sampler;
 };

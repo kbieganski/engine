@@ -5,9 +5,9 @@
 using std::move;
 
 
-Sampler::Sampler(shared_ptr<const GraphicsContext> context) {
+Sampler::Sampler(shared_ptr<const GraphicsContext> context, bool compare) {
 	this->context = context;
-	create();
+	create(compare);
 }
 
 
@@ -37,7 +37,7 @@ VkSampler Sampler::getHandle() const {
 }
 
 
-void Sampler::create() {
+void Sampler::create(bool compare) {
 	VkSamplerCreateInfo createInfo = {};
 	createInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
 	createInfo.magFilter = VK_FILTER_LINEAR;
@@ -49,7 +49,7 @@ void Sampler::create() {
 	createInfo.maxAnisotropy = 16;
 	createInfo.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
 	createInfo.unnormalizedCoordinates = VK_FALSE;
-	createInfo.compareEnable = VK_TRUE;
+	createInfo.compareEnable = compare ? VK_TRUE : VK_FALSE;
 	createInfo.compareOp = VK_COMPARE_OP_LESS;
 	createInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
 	createInfo.mipLodBias = 0.0f;

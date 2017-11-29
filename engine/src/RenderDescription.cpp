@@ -2,11 +2,11 @@
 #include "RenderDescription.hpp"
 
 
+using std::make_shared;
 using std::move;
 
 
-RenderDescription::RenderDescription(shared_ptr<const GraphicsContext> context, shared_ptr<const RenderPipeline> pipeline, uint32_t uniformBufferCount, uint32_t textureCount)
-	:	sampler(context) {
+RenderDescription::RenderDescription(shared_ptr<const GraphicsContext> context, shared_ptr<const RenderPipeline> pipeline, uint32_t uniformBufferCount, uint32_t textureCount) {
 	this->context = context;
 	this->pipeline = pipeline;
 	createDescriptorPool(uniformBufferCount, textureCount);
@@ -14,18 +14,8 @@ RenderDescription::RenderDescription(shared_ptr<const GraphicsContext> context, 
 }
 
 
-RenderDescription::RenderDescription(RenderDescription&& moved)
-:	sampler(move(moved.sampler)) {
-	descriptorPool = moved.descriptorPool;
-	descriptorSet = moved.descriptorSet;
-	vertexBufferHandles = move(moved.vertexBufferHandles);
-	vertexOffsets = move(moved.vertexOffsets);
-	indexBuffer = move(moved.indexBuffer);
-	vertexBuffers = move(moved.vertexBuffers);
-	uniforms = move(moved.uniforms);
-	pipeline = move(moved.pipeline);
-	context = moved.context;
-	moved.descriptorPool = VK_NULL_HANDLE;
+RenderDescription::RenderDescription(RenderDescription&& moved) {
+	*this = move(moved);
 }
 
 
@@ -46,8 +36,8 @@ RenderDescription& RenderDescription::operator=(RenderDescription&& moved) {
 	vertexBuffers = move(moved.vertexBuffers);
 	uniforms = move(moved.uniforms);
 	pipeline = move(moved.pipeline);
+	samplers = move(moved.samplers);
 	context = moved.context;
-	sampler = move(moved.sampler);
 	moved.descriptorPool = VK_NULL_HANDLE;
 	return *this;
 }
@@ -87,14 +77,23 @@ void RenderDescription::bindUniform(uint32_t index, shared_ptr<const UniformBuff
 
 
 void RenderDescription::bindUniform(uint32_t index, shared_ptr<const Texture> texture) {
+	bindUniform(index, texture, make_shared<Sampler>(context, false));
+}
+
+
+void RenderDescription::bindUniform(uint32_t index, shared_ptr<const Texture> texture, shared_ptr<const Sampler> sampler) {
 	if (index >= uniforms.size()) {
 		uniforms.resize(index + 1);
 	}
+	if (index >= samplers.size()) {
+		samplers.resize(index + 1);
+	}
 	uniforms[index] = texture;
+	samplers[index] = sampler;
 	VkDescriptorImageInfo imageInfo = {};
 	imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 	imageInfo.imageView = texture->getView();
-	imageInfo.sampler = sampler.getHandle();
+	imageInfo.sampler = sampler->getHandle();
 	VkWriteDescriptorSet descriptorWrite = {};
 	descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
 	descriptorWrite.dstSet = descriptorSet;
