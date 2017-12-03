@@ -1,6 +1,7 @@
 #include <Character.hpp>
 #include <ContactSound.hpp>
 #include "ExampleState.hpp"
+#include "Orbiting.hpp"
 
 
 #define PI 3.142
@@ -17,17 +18,9 @@ using std::sqrt;
 
 ExampleState::ExampleState(Engine& _engine)
 	:	engine(_engine),
-		physics(),
 		sound(scene),
 		graphics(scene, engine.getGraphicsContext(), engine.getSwapChain(), engine.shaders) {
-	for (size_t i = 0; i < BALL_COUNT; i++) {
-		auto dist = sqrt(64.0f * i / (BALL_COUNT - 1));
-		vec3 position;
-		position.x = sin(2 * PI * i / (BALL_COUNT - 1)) * dist;
-		position.y = 0;
-		position.z = cos(2 * PI * i / (BALL_COUNT - 1)) * dist;
-		createBall(position);
-	}
+	createBalls();
 	createBottom();
 	createColumns();
 	createSpotlight();
@@ -45,14 +38,9 @@ ExampleState::~ExampleState() {
 
 
 void ExampleState::update(float dt) {
-	elapsedTime += dt;
-
 	controls->update(dt);
 	engine.cursor.setPosition(vec2(0, 0));
-	scene.get<Transform>(spotlightIndex).setLocalPosition(vec3(22.0f * sin(elapsedTime / 8), 5.0f, 22.0f * cos(elapsedTime / 8)));
-	scene.get<Spotlight>(spotlightIndex).setLocalDirection(vec3(0.57735 * -sin(elapsedTime / 8), -0.57735, 0.57735 * -cos(elapsedTime / 8)));
-	scene.get<Sun>(sunIndex).setLocalDirection(vec3(0.666666 * cos(elapsedTime / 4), -0.333333, 0.666666 * sin(elapsedTime / 4)));
-
+	scene.update<Orbiting>(dt);
 	physics.update(dt);
 	scene.update<Character>();
 	scene.update<ContactSound>();
@@ -62,90 +50,114 @@ void ExampleState::update(float dt) {
 }
 
 
+void ExampleState::createBalls() {
+	for (size_t i = 0; i < BALL_COUNT; i++) {
+		auto dist = sqrt(64.0f * i / (BALL_COUNT - 1));
+		vec3 position;
+		position.x = sin(2 * PI * i / (BALL_COUNT - 1)) * dist;
+		position.y = 0;
+		position.z = cos(2 * PI * i / (BALL_COUNT - 1)) * dist;
+		createBall(position);
+	}
+}
+
+
 void ExampleState::createBall(vec3 position) {
-	scene.create<Transform>(entityIndex);
-	scene.get<Transform>(entityIndex).setLocalPosition(position);
-	scene.create<RigidBody>(entityIndex, physics);
-	scene.get<RigidBody>(entityIndex).setShape(make_shared<btSphereShape>(1));
-	scene.get<RigidBody>(entityIndex).setMass(10);
-	scene.get<RigidBody>(entityIndex).getBody().setRestitution(1);
-	scene.create<SoundSource>(entityIndex, engine.sounds.load("ball.ogg"));
-	scene.create<ContactSound>(entityIndex);
-	scene.create<ModelRender>(entityIndex, graphics, engine.models.load("ball.mdl"));
-	entityIndex++;
+	auto entity = scene.createEntity();
+	scene.create<Transform>(entity);
+	scene.get<Transform>(entity).setLocalPosition(position);
+	scene.create<RigidBody>(entity, physics);
+	scene.get<RigidBody>(entity).setShape(make_shared<btSphereShape>(1));
+	scene.get<RigidBody>(entity).setMass(10);
+	scene.get<RigidBody>(entity).getBody().setRestitution(1);
+	scene.create<SoundSource>(entity, engine.sounds.load("ball.ogg"));
+	scene.create<ContactSound>(entity);
+	scene.create<ModelRender>(entity, graphics, engine.models.load("ball.mdl"));
 }
 
 
 void ExampleState::createBottom() {
-	scene.create<Transform>(entityIndex);
-	scene.get<Transform>(entityIndex).setLocalPosition(vec3(0, -5, 0));
-	scene.create<ModelRender>(entityIndex, graphics, engine.models.load("bottom.mdl"));
-	scene.create<RigidBody>(entityIndex, physics);
-	scene.get<RigidBody>(entityIndex).setShape(engine.meshes.load("bottom.obj"));
-	scene.get<RigidBody>(entityIndex).getBody().setRestitution(0.2);
-	entityIndex++;
+	auto entity = scene.createEntity();
+	scene.create<Transform>(entity);
+	scene.get<Transform>(entity).setLocalPosition(vec3(0, -5, 0));
+	scene.create<ModelRender>(entity, graphics, engine.models.load("bottom.mdl"));
+	scene.create<RigidBody>(entity, physics);
+	scene.get<RigidBody>(entity).setShape(engine.meshes.load("bottom.obj"));
+	scene.get<RigidBody>(entity).getBody().setRestitution(0.2);
 }
 
 
 void ExampleState::createColumns() {
 	auto angleBetweenColumns = 2 * PI / COLUMN_COUNT;
-	for (size_t i = entityIndex; i < entityIndex + COLUMN_COUNT; i++) {
-		scene.create<Transform>(i);
-		scene.get<Transform>(i).setLocalPosition(vec3(18 * sin(i * angleBetweenColumns), 3, 18 * cos(i * angleBetweenColumns)));
-		scene.create<ModelRender>(i, graphics, engine.models.load("column.mdl"));
-		scene.create<RigidBody>(i, physics);
-		scene.get<RigidBody>(i).setShape(engine.meshes.load("column.obj"));
-		scene.get<RigidBody>(i).getBody().setRestitution(0.4);
+	for (size_t i = 0; i < COLUMN_COUNT; i++) {
+		float angle = i * angleBetweenColumns;
+		createColumn(vec3(18 * sin(angle), 3, 18 * cos(angle)));
 	}
-	entityIndex += COLUMN_COUNT;
+}
+
+
+void ExampleState::createColumn(vec3 position) {
+	auto entity = scene.createEntity();
+	scene.create<Transform>(entity);
+	scene.get<Transform>(entity).setLocalPosition(position);
+	scene.create<ModelRender>(entity, graphics, engine.models.load("column.mdl"));
+	scene.create<RigidBody>(entity, physics);
+	scene.get<RigidBody>(entity).setShape(engine.meshes.load("column.obj"));
+	scene.get<RigidBody>(entity).getBody().setRestitution(0.4);
 }
 
 
 void ExampleState::createPlayer() {
-	scene.create<Transform>(entityIndex);
-	scene.get<Transform>(entityIndex).setLocalPosition(vec3(0, -2, -15));
-	scene.create<RigidBody>(entityIndex, physics);
-	scene.create<Character>(entityIndex);
-	entityIndex++;
-	scene.create<Transform>(entityIndex);
-	scene.get<Transform>(entityIndex).setParent(scene.get<Transform>(entityIndex - 1));
-	scene.get<Transform>(entityIndex).setLocalPosition(vec3(0, 1.6, 0));
-	scene.create<Camera>(entityIndex);
+	auto character = scene.createEntity();
+	scene.create<Transform>(character);
+	scene.get<Transform>(character).setLocalPosition(vec3(0, -2, -15));
+	scene.create<RigidBody>(character, physics);
+	scene.create<Character>(character);
+	auto camera = scene.createEntity();
+	scene.create<Transform>(camera);
+	scene.get<Transform>(camera).setParent(scene.get<Transform>(character));
+	scene.get<Transform>(camera).setLocalPosition(vec3(0, 1.6, 0));
+	scene.create<Camera>(camera);
 	auto screenSize = engine.getSwapChain()->getScreenSize();
-	scene.get<Camera>(entityIndex).setAspectRatio(static_cast<float>(screenSize.x) / screenSize.y);
-	graphics.setCurrentCamera(entityIndex);
-	sound.setCurrentCamera(entityIndex);
-	controls = make_unique<FirstPersonControls>(scene.get<Character>(entityIndex - 1), graphics.getCurrentCamera(), engine.pressInput, engine.directionInput, engine.positionInput);
-	controls->setMouseSensitivity(0.5);
-	entityIndex++;
+	auto aspectRatio = static_cast<float>(screenSize.x) / screenSize.y;
+	scene.get<Camera>(camera).setAspectRatio(aspectRatio);
+	graphics.setCurrentCamera(camera);
+	sound.setCurrentCamera(camera);
+	controls = make_unique<FirstPersonControls>(scene.get<Character>(character), graphics.getCurrentCamera(), engine.pressInput, engine.directionInput, engine.positionInput);
 }
 
 
 void ExampleState::createSpotlight() {
-	spotlightIndex = entityIndex;
-	scene.create<Transform>(entityIndex);
-	scene.create<Spotlight>(entityIndex, graphics, engine.shaders, 512);
-	scene.get<Spotlight>(entityIndex).setColor(vec3(0.3, 0.5, 0.6));
-	entityIndex++;
+	auto entity = scene.createEntity();
+	scene.create<Transform>(entity);
+	auto& spotlight = scene.create<Spotlight>(entity, graphics, engine.shaders, 512);
+	spotlight.setColor(vec3(0.3, 0.5, 0.6));
+	spotlight.setLocalDirection(vec3(0, -1, 1));
+	auto& satellite = scene.create<Orbiting>(entity);
+	satellite.setPivot(vec3(0, 5, 0));
+	satellite.setCycleDuration(15);
+	satellite.setOrbitRadius(23);
 }
 
 
 void ExampleState::createSun() {
-	sunIndex = entityIndex;
-	scene.create<Transform>(entityIndex);
-	scene.get<Transform>(entityIndex).setLocalPosition(vec3(0, 2, 0));
-	scene.create<Sun>(entityIndex, graphics, engine.shaders, 2048);
-	scene.get<Sun>(entityIndex).setColor(vec3(0.7, 0.6, 0.5));
-	scene.get<Sun>(entityIndex).setLocalDirection(vec3(1, -1, 1));
-	entityIndex++;
+	auto entity = scene.createEntity();
+	scene.create<Transform>(entity);
+	scene.get<Transform>(entity).setLocalPosition(vec3(0, 2, 0));
+	scene.create<Sun>(entity, graphics, engine.shaders, 2048);
+	scene.get<Sun>(entity).setColor(vec3(0.7, 0.6, 0.5));
+	scene.get<Sun>(entity).setLocalDirection(vec3(0, -2, 3));
+	scene.create<Orbiting>(entity);
+	scene.get<Orbiting>(entity).setCounterClockwise(true);
+	scene.get<Orbiting>(entity).setCycleDuration(30);
 }
 
 
 void ExampleState::createTop() {
-	scene.create<Transform>(entityIndex);
-	scene.get<Transform>(entityIndex).setLocalPosition(vec3(0, 12, 0));
-	scene.create<ModelRender>(entityIndex, graphics, engine.models.load("top.mdl"));
-	entityIndex++;
+	auto entity = scene.createEntity();
+	scene.create<Transform>(entity);
+	scene.get<Transform>(entity).setLocalPosition(vec3(0, 12, 0));
+	scene.create<ModelRender>(entity, graphics, engine.models.load("top.mdl"));
 }
 
 

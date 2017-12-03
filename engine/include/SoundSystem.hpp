@@ -1,3 +1,4 @@
+#pragma once
 #include "Camera.hpp"
 #include <AL/alc.h>
 

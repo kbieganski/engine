@@ -1,11 +1,9 @@
 #pragma once
+#include <Engine.hpp>
 #include <PhysicsSystem.hpp>
+#include <FirstPersonControls.hpp>
 #include <GraphicsSystem.hpp>
 #include <SoundSystem.hpp>
-#include <Character.hpp>
-#include <ContactSound.hpp>
-#include <FirstPersonControls.hpp>
-#include <Engine.hpp>
 
 
 class ExampleState : public ApplicationState {
@@ -17,9 +15,11 @@ public:
 
 
 private:
+	void createBalls();
 	void createBall(vec3 position);
 	void createBottom();
 	void createColumns();
+	void createColumn(vec3 position);
 	void createPlayer();
 	void createSpotlight();
 	void createSun();
@@ -27,12 +27,7 @@ private:
 	void setAmbientColors();
 	void setupControls();
 
-	size_t entityIndex = 0;
-	size_t sunIndex;
-	size_t spotlightIndex;
-	float elapsedTime = 0;
 	Engine& engine;
-	shared_ptr<const GraphicsContext> context;
 	Scene scene;
 	PhysicsSystem physics;
 	SoundSystem sound;

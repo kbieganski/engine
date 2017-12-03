@@ -22,7 +22,7 @@ float multisampleShadowMap(vec3 coordinates, float focus) {
 	for (int i = 0; i < 16; i++) {
 		vec3 bias = vec3(poissonDisk[i] / focus, 0);
 		vec3 biasedCoordinates = coordinates + bias;
-		illuminationFactor += sampleShadowMap(biasedCoordinates).r / 16;
+		illuminationFactor += sampleShadowMap(biasedCoordinates) / 16;
 	}
 	return illuminationFactor;
 }
@@ -36,15 +36,16 @@ float calculateIlluminationFactor(vec3 fragPosition, float focus) {
 
 vec3 calculateDiffuseComponent(vec3 fragNormal, vec3 lightDirection, vec3 diffuseColor, vec3 lightColor) {
 	float diffuseFactor = dot(fragNormal, -lightDirection);
-	diffuseFactor = clamp(diffuseFactor, 0, 1);
+	diffuseFactor = max(diffuseFactor, 0);
 	return diffuseColor * lightColor * diffuseFactor;
 }
 
 vec3 calculateSpecularComponent(vec3 fragPosition, vec3 fragNormal, vec3 lightDirection, vec3 specularColor, float specularHardness, vec3 lightColor) {
+	float x = dot(fragNormal, -lightDirection);
 	vec3 vertexToCamera = normalize(shading.cameraPosition.xyz - fragPosition);
 	vec3 lightReflect = normalize(reflect(lightDirection, fragNormal));
 	float specularFactor = dot(vertexToCamera, lightReflect);
-	specularFactor = clamp(specularFactor, 0, 1);
+	specularFactor = max(specularFactor, 0);
 	specularFactor = pow(specularFactor, specularHardness);
-	return specularColor * specularFactor * lightColor;
+	return x*specularColor * specularFactor * lightColor;
 }

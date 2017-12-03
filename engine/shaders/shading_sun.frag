@@ -39,6 +39,5 @@ void main() {
 	float illuminationFactor = calculateIlluminationFactor(fragPosition, 400);
 	vec3 diffuseComponent = calculateDiffuseComponent(fragNormal, shading.lightDirection.xyz, diffuseColor, shading.lightColor.xyz);
 	vec3 specularComponent = calculateSpecularComponent(fragPosition, fragNormal, shading.lightDirection.xyz, specularColor, specularHardness, shading.lightColor.xyz);
-	//outColor = vec4(0,0,0,1);
 	outColor = vec4(illuminationFactor * (diffuseComponent + specularComponent), 1);
 }
